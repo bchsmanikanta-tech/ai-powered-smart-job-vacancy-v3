@@ -1,0 +1,791 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Job Applicants | Smart Job Finder</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --bg-body: #f4f7f6;
+            --bg-nav: #ffffff;
+            --bg-card: #ffffff;
+            --border-card: #e5e9eb;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --text-dim: #94a3b8;
+            --primary-green: #10b981;
+            --primary-green-hover: #059669;
+            --radius-sm: 8px;
+            --radius-md: 14px;
+            --radius-lg: 20px;
+            --shadow-sm: 0 1px 3px rgba(0,0,0,0.04);
+            --shadow-card: 0 10px 30px rgba(0,0,0,0.05);
+            --font-main: 'Plus Jakarta Sans', sans-serif;
+            --transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        [data-theme="dark"] {
+            --bg-body: #0b111e;
+            --bg-nav: #111928;
+            --bg-card: #162032;
+            --border-card: #222f46;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --text-dim: #64748b;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: var(--font-main);
+            background: var(--bg-body);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        /* ---------------- TOP NAVBAR ---------------- */
+        .portal-navbar {
+            background: var(--bg-nav);
+            border-bottom: 1px solid var(--border-card);
+            padding: 14px 40px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .nav-brand {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+            color: var(--primary-green);
+            font-size: 1.15rem;
+            font-weight: 800;
+        }
+
+        .nav-actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .btn-nav-dash {
+            background: transparent;
+            border: 1px solid var(--primary-green);
+            color: var(--primary-green);
+            padding: 7px 18px;
+            border-radius: 30px;
+            font-size: 0.82rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: var(--transition);
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-nav-dash:hover {
+            background: rgba(16, 185, 129, 0.08);
+        }
+
+        .btn-nav-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            border: 1px solid var(--border-card);
+            background: transparent;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 0.95rem;
+            transition: var(--transition);
+        }
+
+        .btn-nav-logout {
+            background: transparent;
+            border: 1px solid #ef4444;
+            color: #ef4444;
+            padding: 7px 16px;
+            border-radius: 30px;
+            font-size: 0.82rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-nav-logout:hover {
+            background: rgba(239, 68, 68, 0.08);
+        }
+
+        /* ---------------- MAIN CONTAINER ---------------- */
+        .portal-content {
+            max-width: 1280px;
+            width: 100%;
+            margin: 36px auto 70px auto;
+            padding: 0 24px;
+        }
+
+        .page-header-center {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .page-title {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--primary-green);
+            margin-bottom: 6px;
+            letter-spacing: -0.02em;
+        }
+
+        .page-subtitle {
+            font-size: 0.88rem;
+            color: var(--text-muted);
+        }
+
+        /* ---------------- APPLICANTS TABLE CARD ---------------- */
+        .table-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-card);
+            border-radius: var(--radius-lg);
+            padding: 24px;
+            box-shadow: var(--shadow-card);
+            overflow-x: auto;
+        }
+
+        .applicants-table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+            font-size: 0.85rem;
+        }
+
+        .applicants-table thead th {
+            padding: 14px 12px;
+            font-size: 0.72rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-dim);
+            border-bottom: 1px solid var(--border-card);
+        }
+
+        .applicants-table tbody tr {
+            border-bottom: 1px solid var(--border-card);
+            transition: background 0.15s ease;
+        }
+
+        .applicants-table tbody tr:hover {
+            background: rgba(0, 0, 0, 0.015);
+        }
+
+        .applicants-table td {
+            padding: 18px 12px;
+            vertical-align: middle;
+        }
+
+        .candidate-name-cell {
+            font-weight: 800;
+            color: var(--text-main);
+            font-size: 0.92rem;
+        }
+
+        .ai-match-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            background: rgba(59, 130, 246, 0.08);
+            border: 1px solid rgba(59, 130, 246, 0.25);
+            color: #2563eb;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.68rem;
+            font-weight: 800;
+            margin-top: 4px;
+        }
+
+        .btn-read-letter {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            border: 1px solid var(--border-card);
+            background: var(--bg-body);
+            color: var(--text-muted);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.64rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: var(--transition);
+            text-align: center;
+            line-height: 1.1;
+        }
+
+        .btn-read-letter i {
+            font-size: 0.85rem;
+            margin-bottom: 2px;
+        }
+
+        .btn-read-letter:hover {
+            border-color: var(--primary-green);
+            color: var(--primary-green);
+            background: #fff;
+        }
+
+        /* ---------------- STATUS PILLS ---------------- */
+        .status-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.72rem;
+            font-weight: 800;
+        }
+
+        .status-selected {
+            background: rgba(16, 185, 129, 0.12);
+            color: #10b981;
+        }
+
+        .status-pending {
+            background: rgba(245, 158, 11, 0.12);
+            color: #f59e0b;
+        }
+
+        .status-rejected {
+            background: rgba(239, 68, 68, 0.12);
+            color: #ef4444;
+        }
+
+        /* ---------------- ACTION BUTTONS ---------------- */
+        .action-cell-stack {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            align-items: flex-start;
+        }
+
+        .action-row-btns {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-act-accept {
+            background: #10b981;
+            color: #fff;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 0.74rem;
+            font-weight: 800;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            transition: var(--transition);
+        }
+
+        .btn-act-accept:hover {
+            background: #059669;
+        }
+
+        .btn-act-accepted {
+            background: rgba(16, 185, 129, 0.12);
+            color: #10b981;
+            border: 1px solid #10b981;
+            padding: 5px 10px;
+            border-radius: 6px;
+            font-size: 0.74rem;
+            font-weight: 800;
+            cursor: default;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .btn-act-reject {
+            background: transparent;
+            color: #ef4444;
+            border: 1px solid #ef4444;
+            padding: 5px 10px;
+            border-radius: 6px;
+            font-size: 0.74rem;
+            font-weight: 800;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            transition: var(--transition);
+        }
+
+        .btn-act-reject:hover {
+            background: rgba(239, 68, 68, 0.08);
+        }
+
+        .btn-act-chat {
+            background: transparent;
+            color: var(--text-muted);
+            border: 1px solid var(--border-card);
+            padding: 5px 14px;
+            border-radius: 6px;
+            font-size: 0.74rem;
+            font-weight: 700;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            transition: var(--transition);
+        }
+
+        .btn-act-chat:hover {
+            color: var(--text-main);
+            border-color: var(--text-muted);
+        }
+
+        /* ---------------- COVER LETTER MODAL ---------------- */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0,0,0,0.5);
+            backdrop-filter: blur(5px);
+            z-index: 1000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-card);
+            border-radius: var(--radius-md);
+            max-width: 500px;
+            width: 100%;
+            padding: 24px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+        }
+
+        /* ---------------- TOAST ---------------- */
+        .toast-container {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .portal-toast {
+            background: #1e293b;
+            color: #fff;
+            padding: 12px 20px;
+            border-radius: 10px;
+            font-size: 0.86rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            animation: slideInToast 0.3s ease;
+        }
+
+        @keyframes slideInToast {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        @media (max-width: 768px) {
+            .portal-navbar { padding: 12px 16px; }
+            .page-title { font-size: 1.6rem; }
+        }
+    </style>
+</head>
+<body>
+    <div id="toast-container" class="toast-container"></div>
+
+    <!-- =========================================================
+         TOP NAVBAR
+         ========================================================= -->
+    <header class="portal-navbar">
+        <a href="company-dashboard.html" class="nav-brand">
+            <i class="fa-solid fa-users"></i> Job Applicants
+        </a>
+
+        <div class="nav-actions">
+            <a href="company-dashboard.html" class="btn-nav-dash" id="btn-back-company-dash">
+                <i class="fa-solid fa-house"></i> Dashboard
+            </a>
+            <button class="btn-nav-icon" title="Notifications" onclick="showToast('No new notifications.', 'info')">
+                <i class="fa-regular fa-bell"></i>
+            </button>
+            <button class="btn-nav-icon" id="btn-theme-toggle" title="Toggle Theme">
+                <i class="fa-regular fa-sun" id="theme-icon"></i>
+            </button>
+            <button class="btn-nav-logout" id="btn-portal-logout" title="Sign Out">
+                Logout
+            </button>
+        </div>
+    </header>
+
+    <!-- =========================================================
+         PAGE CONTENT
+         ========================================================= -->
+    <main class="portal-content">
+        <div class="page-header-center">
+            <h1 class="page-title">Manage Candidate Applications</h1>
+            <p class="page-subtitle">Evaluate applications, check qualifications, and select suitable candidates</p>
+        </div>
+
+        <div class="table-card">
+            <table class="applicants-table">
+                <thead>
+                    <tr>
+                        <th>Candidate Name</th>
+                        <th>Email Address</th>
+                        <th>Applied Position</th>
+                        <th>City & State</th>
+                        <th>CGPA</th>
+                        <th>Cover Letter</th>
+                        <th>Submitted Resume</th>
+                        <th>Certification</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody id="applicants-table-body">
+                    <!-- Populated dynamically -->
+                </tbody>
+            </table>
+        </div>
+    </main>
+
+    <!-- =========================================================
+         COVER LETTER MODAL
+         ========================================================= -->
+    <div class="modal-overlay" id="modal-cover-letter">
+        <div class="modal-card">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                <h3 style="font-size: 1.1rem; font-weight: 800; color: var(--text-main);">Candidate Cover Letter</h3>
+                <button onclick="closeCoverLetterModal()" style="background: none; border: none; font-size: 1.4rem; cursor: pointer; color: var(--text-muted);">&times;</button>
+            </div>
+            <div id="modal-letter-content" style="font-size: 0.86rem; color: var(--text-muted); line-height: 1.6; background: var(--bg-body); padding: 14px; border-radius: 8px; max-height: 300px; overflow-y: auto;">
+                <!-- Letter Text -->
+            </div>
+        </div>
+    </div>
+
+    <!-- =========================================================
+         DIRECT CANDIDATE CHAT MODAL
+         ========================================================= -->
+    <div class="modal-overlay" id="modal-candidate-chat">
+        <div class="modal-card" style="max-width: 440px; width: 100%; border-radius: 16px; padding: 22px; box-shadow: 0 20px 45px rgba(0,0,0,0.18);">
+            
+            <!-- Header -->
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; padding-bottom: 12px; border-bottom: 1px solid var(--border-card);">
+                <div style="display: flex; align-items: center; gap: 8px; font-size: 1.12rem; font-weight: 800; color: var(--text-main);">
+                    <i class="fa-regular fa-comment-dots" style="color: var(--text-muted);"></i>
+                    <span>Chat with <span id="chat-candidate-name">Candidate</span></span>
+                </div>
+                <button onclick="closeCandidateChatModal()" style="background: none; border: none; font-size: 1.25rem; cursor: pointer; color: var(--text-muted); line-height: 1;">&times;</button>
+            </div>
+
+            <!-- Messages Area -->
+            <div id="chat-messages-box" style="min-height: 240px; max-height: 320px; overflow-y: auto; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 12px 6px; margin-bottom: 16px;">
+                <div id="chat-empty-state" style="text-align: center; color: var(--text-dim);">
+                    <i class="fa-regular fa-comment-dots" style="font-size: 2.2rem; margin-bottom: 10px; display: block; color: var(--text-dim);"></i>
+                    <p style="font-size: 0.8rem; color: var(--text-muted); max-width: 240px; margin: 0 auto; line-height: 1.4;">
+                        No message history yet. Send a message to start chatting!
+                    </p>
+                </div>
+                <div id="chat-conversation-flow" style="display: none; width: 100%; flex-direction: column; gap: 10px;">
+                    <!-- Messages populated dynamically -->
+                </div>
+            </div>
+
+            <!-- Input Row -->
+            <div style="display: flex; align-items: center; gap: 8px;">
+                <input type="text" id="chat-input-text" placeholder="Type a message..." style="flex: 1; padding: 11px 14px; border: 1px solid var(--border-card); border-radius: 8px; font-size: 0.88rem; outline: none; background: var(--bg-card); color: var(--text-main);" onkeypress="if(event.key === 'Enter') sendCandidateMessage()">
+                <button onclick="sendCandidateMessage()" style="width: 44px; height: 44px; border-radius: 10px; background: linear-gradient(135deg, #3b82f6, #06b6d4); color: #fff; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 1.05rem; box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);">
+                    <i class="fa-solid fa-paper-plane"></i>
+                </button>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/supabase-config.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/db.js"></script>
+    <script>
+        let currentCompany = 'BVCITS';
+        let companyEmail = 'company@smartjob.com';
+
+        function getQueryParams() {
+            const params = new URLSearchParams(window.location.search);
+            return {
+                email: params.get('session_email'),
+                name: params.get('session_name'),
+                role: params.get('session_role')
+            };
+        }
+
+        function loadApplicantsList() {
+            const q = getQueryParams();
+            const user = window.auth?.getCurrentUser();
+
+            if (q.name) currentCompany = decodeURIComponent(q.name);
+            else if (user) currentCompany = user.fullName || user.email.split('@')[0];
+
+            if (q.email) companyEmail = decodeURIComponent(q.email);
+            else if (user) companyEmail = user.email;
+
+            // Sync Dashboard Return link
+            const dashLink = document.getElementById('btn-back-company-dash');
+            if (dashLink) {
+                dashLink.href = `company-dashboard.html?session_email=${encodeURIComponent(companyEmail)}&session_name=${encodeURIComponent(currentCompany)}&session_role=company`;
+            }
+
+            const tbody = document.getElementById('applicants-table-body');
+            if (!tbody) return;
+
+            let allApps = JSON.parse(localStorage.getItem('smarthire_applications') || '[]');
+            
+            // Remove demo placeholder records
+            allApps = allApps.filter(a => a.id !== 'app_1' && a.id !== 'app_2' && a.id !== 'app_101' && a.id !== 'app_102' && a.applicantName !== 'Priya Patel' && a.applicantName !== 'Rahul Sharma');
+            localStorage.setItem('smarthire_applications', JSON.stringify(allApps));
+
+            tbody.innerHTML = '';
+
+            if (allApps.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="10" style="text-align: center; color: var(--text-dim); padding: 50px 20px;">
+                            <i class="fa-solid fa-folder-open" style="font-size: 2.4rem; color: #cbd5e1; margin-bottom: 12px; display: block;"></i>
+                            <div style="font-size: 0.95rem; font-weight: 700; color: var(--text-muted);">No Candidate Applications Received Yet</div>
+                            <small style="color: var(--text-dim);">When registered job seekers apply to your posted vacancies, their applications will be listed here.</small>
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+            allApps.forEach(a => {
+                const tr = document.createElement('tr');
+
+                // Status tag
+                let statusBadge = `<span class="status-pill status-pending"><i class="fa-solid fa-circle" style="font-size: 0.5rem;"></i> Pending</span>`;
+                if (a.status === 'Shortlisted' || a.status === 'Accepted' || a.status === 'Hired') {
+                    statusBadge = `<span class="status-pill status-selected"><i class="fa-solid fa-circle" style="font-size: 0.5rem;"></i> Selected</span>`;
+                } else if (a.status === 'Rejected') {
+                    statusBadge = `<span class="status-pill status-rejected"><i class="fa-solid fa-circle" style="font-size: 0.5rem;"></i> Rejected</span>`;
+                }
+
+                // Action buttons
+                let acceptBtn = `<button class="btn-act-accept" onclick="updateAppStatus('${a.id}', 'Shortlisted')"><i class="fa-solid fa-circle-check"></i> Accept</button>`;
+                if (a.status === 'Shortlisted' || a.status === 'Accepted') {
+                    acceptBtn = `<button class="btn-act-accepted"><i class="fa-solid fa-circle-check"></i> Accepted</button>`;
+                }
+
+                const letterText = (a.coverLetter || 'No cover letter provided.').replace(/'/g, "\\'");
+
+                tr.innerHTML = `
+                    <td>
+                        <div class="candidate-name-cell">${a.applicantName || 'Candidate'}</div>
+                        <div class="ai-match-badge"><i class="fa-solid fa-wand-magic-sparkles"></i> ${a.matchScore || 85}% AI Match</div>
+                    </td>
+                    <td style="color: var(--text-muted);">${a.applicantEmail}</td>
+                    <td style="font-weight: 700; color: var(--text-main);">${a.jobTitle || 'Engineer'}</td>
+                    <td style="color: var(--text-muted);">${a.city || 'Hyderabad, Telangana'}</td>
+                    <td style="font-weight: 800; color: var(--text-main); font-size: 0.95rem;">${a.cgpa || '8.5'}</td>
+                    <td>
+                        <button class="btn-read-letter" onclick="openCoverLetter('${letterText}')" title="Read Cover Letter">
+                            <i class="fa-regular fa-eye"></i> Read Letter
+                        </button>
+                    </td>
+                    <td style="color: var(--text-dim); font-size: 0.8rem;">${a.resume || 'No resume'}</td>
+                    <td style="color: var(--text-dim); font-size: 0.8rem;">${a.certification || 'No cert'}</td>
+                    <td>${statusBadge}</td>
+                    <td>
+                        <div class="action-cell-stack">
+                            <div class="action-row-btns">
+                                ${acceptBtn}
+                                <button class="btn-act-reject" onclick="updateAppStatus('${a.id}', 'Rejected')"><i class="fa-solid fa-circle-xmark"></i> Reject</button>
+                            </div>
+                            <button class="btn-act-chat" onclick="openCandidateChat('${(a.applicantName || 'Candidate').replace(/'/g, "\\'")}', '${(a.applicantEmail || 'candidate@gmail.com').replace(/'/g, "\\'")}')"><i class="fa-regular fa-comment-dots"></i> Chat</button>
+                        </div>
+                    </td>
+                `;
+
+                tbody.appendChild(tr);
+            });
+        }
+
+        function updateAppStatus(appId, newStatus) {
+            const allApps = JSON.parse(localStorage.getItem('smarthire_applications') || '[]');
+            const index = allApps.findIndex(a => a.id === appId);
+
+            if (index !== -1) {
+                allApps[index].status = newStatus;
+                localStorage.setItem('smarthire_applications', JSON.stringify(allApps));
+
+                if (newStatus === 'Shortlisted') {
+                    showToast(`Candidate ${allApps[index].applicantName} accepted & shortlisted!`, 'success');
+                } else {
+                    showToast(`Candidate application marked as rejected.`, 'info');
+                }
+
+                loadApplicantsList();
+            }
+        }
+
+        let activeChatEmail = '';
+        let activeChatName = '';
+
+        function openCandidateChat(name, email) {
+            activeChatName = name;
+            activeChatEmail = email;
+
+            document.getElementById('chat-candidate-name').textContent = name;
+            loadChatHistory(email);
+            document.getElementById('modal-candidate-chat')?.classList.add('active');
+            setTimeout(() => document.getElementById('chat-input-text')?.focus(), 150);
+        }
+
+        function closeCandidateChatModal() {
+            document.getElementById('modal-candidate-chat')?.classList.remove('active');
+        }
+
+        function loadChatHistory(email) {
+            const flow = document.getElementById('chat-conversation-flow');
+            const empty = document.getElementById('chat-empty-state');
+            const box = document.getElementById('chat-messages-box');
+            if (!flow || !empty) return;
+
+            const allChats = JSON.parse(localStorage.getItem('smarthire_chat_db') || '{}');
+            const history = allChats[email] || [];
+
+            if (history.length === 0) {
+                flow.style.display = 'none';
+                empty.style.display = 'block';
+                box.style.justifyContent = 'center';
+            } else {
+                empty.style.display = 'none';
+                flow.style.display = 'flex';
+                box.style.justifyContent = 'flex-start';
+                flow.innerHTML = '';
+
+                history.forEach(m => {
+                    const isMe = m.sender === 'company';
+                    const msgDiv = document.createElement('div');
+                    msgDiv.style.cssText = `max-width: 80%; padding: 8px 12px; border-radius: 12px; font-size: 0.84rem; line-height: 1.4; align-self: ${isMe ? 'flex-end' : 'flex-start'}; background: ${isMe ? 'linear-gradient(135deg, #3b82f6, #06b6d4)' : 'var(--bg-body)'}; color: ${isMe ? '#fff' : 'var(--text-main)'}; border: ${isMe ? 'none' : '1px solid var(--border-card)'};`;
+                    msgDiv.textContent = m.text;
+                    flow.appendChild(msgDiv);
+                });
+
+                box.scrollTop = box.scrollHeight;
+            }
+        }
+
+        function sendCandidateMessage() {
+            const input = document.getElementById('chat-input-text');
+            const text = input?.value.trim();
+            if (!text || !activeChatEmail) return;
+
+            const allChats = JSON.parse(localStorage.getItem('smarthire_chat_db') || '{}');
+            if (!allChats[activeChatEmail]) allChats[activeChatEmail] = [];
+
+            allChats[activeChatEmail].push({
+                sender: 'company',
+                text: text,
+                time: new Date().toISOString()
+            });
+
+            localStorage.setItem('smarthire_chat_db', JSON.stringify(allChats));
+            input.value = '';
+            loadChatHistory(activeChatEmail);
+        }
+
+        function openCoverLetter(text) {
+            document.getElementById('modal-letter-content').textContent = text;
+            document.getElementById('modal-cover-letter')?.classList.add('active');
+        }
+
+        function closeCoverLetterModal() {
+            document.getElementById('modal-cover-letter')?.classList.remove('active');
+        }
+
+        function showToast(message, type = 'info') {
+            const container = document.getElementById('toast-container');
+            if (!container) return;
+            const toast = document.createElement('div');
+            toast.className = 'portal-toast';
+            let icon = type === 'success' ? 'fa-solid fa-circle-check' : 'fa-solid fa-circle-info';
+            toast.innerHTML = `<i class="${icon}" style="color: ${type === 'success' ? '#10b981' : '#38bdf8'};"></i> <span>${message}</span>`;
+            container.appendChild(toast);
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transform = 'translateY(20px)';
+                toast.style.transition = 'all 0.3s ease';
+                setTimeout(() => toast.remove(), 300);
+            }, 3500);
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            loadApplicantsList();
+
+            // Theme Toggle
+            const themeBtn = document.getElementById('btn-theme-toggle');
+            const themeIcon = document.getElementById('theme-icon');
+            themeBtn?.addEventListener('click', () => {
+                const currentTheme = document.documentElement.getAttribute('data-theme');
+                if (currentTheme === 'dark') {
+                    document.documentElement.removeAttribute('data-theme');
+                    themeIcon.className = 'fa-regular fa-sun';
+                } else {
+                    document.documentElement.setAttribute('data-theme', 'dark');
+                    themeIcon.className = 'fa-solid fa-moon';
+                }
+            });
+
+            // Logout
+            document.getElementById('btn-portal-logout')?.addEventListener('click', () => {
+                window.auth?.logout();
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,13 @@
+{
+  "name": "smart-job-vacancy-finder",
+  "version": "1.0.0",
+  "description": "Smart Job Vacancy Finder - Modern Authentication & AI Job Portal",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "keywords": ["jobs", "vacancy", "login", "register", "auth"],
+  "author": "",
+  "license": "ISC"
+}

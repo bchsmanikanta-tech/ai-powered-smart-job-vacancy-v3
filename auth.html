@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Powered Smart Job Vacancy Finder System | Login & Register</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="bg-shape shape-1"></div>
+    <div class="bg-shape shape-2"></div>
+    <div class="bg-shape shape-3"></div>
+    <div class="grid-overlay"></div>
+
+    <div id="toast-container" class="toast-container"></div>
+
+    <div class="top-status-bar">
+        <a href="index.html" class="btn-supabase-status" style="text-decoration: none; color: #fff;">
+            <i class="fa-solid fa-arrow-left"></i>
+            <span>Back to Home</span>
+        </a>
+    </div>
+
+    <main class="auth-wrapper">
+        <div class="auth-card glass-panel">
+            <!-- Left Info / Branding Banner -->
+            <div class="auth-brand-side">
+                <div class="brand-header">
+                    <a href="index.html" class="brand-logo" style="text-decoration: none;">
+                        <i class="fa-solid fa-bolt-lightning brand-icon"></i>
+                        <span>SmartJob <span class="highlight">Finder</span></span>
+                    </a>
+                    <span class="badge badge-accent">AI Portal</span>
+                </div>
+
+                <div class="brand-content">
+                    <h1 class="brand-title">Find Your Dream Career <span class="gradient-text">Faster & Smarter</span></h1>
+                    <p class="brand-desc">
+                        Connect with verified recruiters, explore AI-matched job vacancies, and accelerate your career with direct interview paths.
+                    </p>
+
+                    <div class="feature-list">
+                        <div class="feature-item">
+                            <div class="feature-icon"><i class="fa-solid fa-bolt"></i></div>
+                            <div>
+                                <h4>Instant Smart Matching</h4>
+                                <p>Automated skill-to-job pairing with 95% accuracy</p>
+                            </div>
+                        </div>
+                        <div class="feature-item">
+                            <div class="feature-icon"><i class="fa-solid fa-database"></i></div>
+                            <div>
+                                <h4>Supabase PostgreSQL</h4>
+                                <p>Cloud database authentication & real-time sync</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="quick-demo-section">
+                    <p class="quick-demo-title"><i class="fa-solid fa-wand-magic-sparkles"></i> Quick Demo Fill:</p>
+                    <div class="demo-buttons">
+                        <button type="button" class="btn-demo" id="demo-seeker">Job Seeker</button>
+                        <button type="button" class="btn-demo" id="demo-recruiter">Employer</button>
+                        <button type="button" class="btn-demo" id="demo-admin">Admin</button>
+                    </div>
+                </div>
+
+                <div class="brand-footer">
+                    <span>© 2026 AI Powered Smart Job Vacancy Finder System. All rights reserved.</span>
+                </div>
+            </div>
+
+            <!-- Right Form Section -->
+            <div class="auth-form-side">
+                <div class="tab-switcher">
+                    <button class="tab-btn active" id="tab-login" data-target="login-form">
+                        <i class="fa-solid fa-arrow-right-to-bracket"></i> Sign In
+                    </button>
+                    <button class="tab-btn" id="tab-register" data-target="register-form">
+                        <i class="fa-solid fa-user-plus"></i> Create Account
+                    </button>
+                    <div class="tab-indicator"></div>
+                </div>
+
+                <!-- LOGIN FORM -->
+                <div class="form-container active" id="login-container">
+                    <div class="form-header">
+                        <h2>Welcome Back</h2>
+                        <p>Sign in to access your jobs, applications, and analytics</p>
+                    </div>
+
+                    <form id="login-form" novalidate>
+                        <div class="form-group">
+                            <label for="login-email">Email Address or Username</label>
+                            <div class="input-wrapper">
+                                <i class="fa-regular fa-envelope input-icon"></i>
+                                <input type="text" id="login-email" name="login-email" placeholder="name@domain.com" required autocomplete="email">
+                            </div>
+                            <span class="field-error" id="login-email-error"></span>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="label-row">
+                                <label for="login-password">Password</label>
+                                <a href="javascript:void(0)" class="forgot-link" id="btn-forgot-password">Forgot Password?</a>
+                            </div>
+                            <div class="input-wrapper">
+                                <i class="fa-solid fa-lock input-icon"></i>
+                                <input type="password" id="login-password" name="login-password" placeholder="••••••••" required autocomplete="current-password">
+                                <button type="button" class="toggle-password" data-target="login-password" aria-label="Toggle password visibility">
+                                    <i class="fa-regular fa-eye"></i>
+                                </button>
+                            </div>
+                            <span class="field-error" id="login-password-error"></span>
+                        </div>
+
+                        <div class="form-row remember-row">
+                            <label class="custom-checkbox">
+                                <input type="checkbox" id="remember-me" checked>
+                                <span class="checkmark"></span>
+                                <span class="checkbox-label">Keep me logged in for 30 days</span>
+                            </label>
+                        </div>
+
+                        <button type="submit" class="btn-primary" id="btn-submit-login">
+                            <span class="btn-text">Sign In to Account</span>
+                            <i class="fa-solid fa-arrow-right btn-icon"></i>
+                            <div class="spinner"></div>
+                        </button>
+                    </form>
+
+                    <div class="divider">
+                        <span>or sign in with</span>
+                    </div>
+
+                    <div class="social-login">
+                        <button type="button" class="btn-social" id="btn-google-login">
+                            <i class="fa-brands fa-google"></i> Google
+                        </button>
+                        <button type="button" class="btn-social" id="btn-linkedin-login">
+                            <i class="fa-brands fa-linkedin-in"></i> LinkedIn
+                        </button>
+                        <button type="button" class="btn-social" id="btn-github-login">
+                            <i class="fa-brands fa-github"></i> GitHub
+                        </button>
+                    </div>
+
+                    <div class="switch-prompt">
+                        Don't have an account yet? 
+                        <a href="javascript:void(0)" id="switch-to-register">Register for free</a>
+                    </div>
+                </div>
+
+                <!-- REGISTER FORM -->
+                <div class="form-container" id="register-container">
+                    <div class="form-header">
+                        <h2>Create Account</h2>
+                        <p>Join thousands of professionals finding opportunities today</p>
+                    </div>
+
+                    <form id="register-form" novalidate>
+                        <div class="form-group">
+                            <label>I want to join as:</label>
+                            <div class="role-selector">
+                                <label class="role-card active">
+                                    <input type="radio" name="user-role" value="seeker" checked>
+                                    <div class="role-content">
+                                        <i class="fa-solid fa-user-tie"></i>
+                                        <div>
+                                            <strong>Job Seeker</strong>
+                                            <small>Find & apply to jobs</small>
+                                        </div>
+                                    </div>
+                                </label>
+                                <label class="role-card">
+                                    <input type="radio" name="user-role" value="employer">
+                                    <div class="role-content">
+                                        <i class="fa-solid fa-building"></i>
+                                        <div>
+                                            <strong>Employer</strong>
+                                            <small>Post jobs & hire</small>
+                                        </div>
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="form-row-2col">
+                            <div class="form-group">
+                                <label for="reg-fullname">Full Name</label>
+                                <div class="input-wrapper">
+                                    <i class="fa-regular fa-user input-icon"></i>
+                                    <input type="text" id="reg-fullname" name="reg-fullname" placeholder="Alex Morgan" required>
+                                </div>
+                                <span class="field-error" id="reg-fullname-error"></span>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="reg-phone">Phone Number</label>
+                                <div class="input-wrapper">
+                                    <i class="fa-solid fa-phone input-icon"></i>
+                                    <input type="tel" id="reg-phone" name="reg-phone" placeholder="+1 234 567 8900" required>
+                                </div>
+                                <span class="field-error" id="reg-phone-error"></span>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="reg-email">Email Address</label>
+                            <div class="input-wrapper">
+                                <i class="fa-regular fa-envelope input-icon"></i>
+                                <input type="email" id="reg-email" name="reg-email" placeholder="name@domain.com" required autocomplete="email">
+                            </div>
+                            <span class="field-error" id="reg-email-error"></span>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="reg-password">Password</label>
+                            <div class="input-wrapper">
+                                <i class="fa-solid fa-lock input-icon"></i>
+                                <input type="password" id="reg-password" name="reg-password" placeholder="Minimum 8 characters" required autocomplete="new-password">
+                                <button type="button" class="toggle-password" data-target="reg-password" aria-label="Toggle password visibility">
+                                    <i class="fa-regular fa-eye"></i>
+                                </button>
+                            </div>
+                            <div class="password-meter" id="password-meter">
+                                <div class="meter-bar"><div class="meter-fill" id="meter-fill"></div></div>
+                                <div class="meter-text">
+                                    <span id="meter-label">Password strength</span>
+                                    <span id="meter-score" class="strength-weak">None</span>
+                                </div>
+                            </div>
+                            <span class="field-error" id="reg-password-error"></span>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="reg-confirm-password">Confirm Password</label>
+                            <div class="input-wrapper">
+                                <i class="fa-solid fa-shield-heart input-icon"></i>
+                                <input type="password" id="reg-confirm-password" name="reg-confirm-password" placeholder="Re-enter password" required autocomplete="new-password">
+                                <button type="button" class="toggle-password" data-target="reg-confirm-password" aria-label="Toggle password visibility">
+                                    <i class="fa-regular fa-eye"></i>
+                                </button>
+                            </div>
+                            <span class="field-error" id="reg-confirm-password-error"></span>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="custom-checkbox">
+                                <input type="checkbox" id="reg-terms" required>
+                                <span class="checkmark"></span>
+                                <span class="checkbox-label">I agree to the <a href="javascript:void(0)" class="inline-link">Terms of Service</a> & <a href="javascript:void(0)" class="inline-link">Privacy Policy</a></span>
+                            </label>
+                            <span class="field-error" id="reg-terms-error"></span>
+                        </div>
+
+                        <button type="submit" class="btn-primary" id="btn-submit-register">
+                            <span class="btn-text">Create Free Account</span>
+                            <i class="fa-solid fa-check btn-icon"></i>
+                            <div class="spinner"></div>
+                        </button>
+                    </form>
+
+                    <div class="switch-prompt">
+                        Already have an account? 
+                        <a href="javascript:void(0)" id="switch-to-login">Sign in</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Supabase JS Client SDK -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/supabase-config.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>

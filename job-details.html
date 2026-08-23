@@ -1,0 +1,992 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Job Details | Smart Job Finder</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --bg-body: #f4f7f6;
+            --bg-nav: #ffffff;
+            --bg-card: #ffffff;
+            --border-card: #e5e9eb;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --text-dim: #94a3b8;
+            --primary-blue: #3b82f6;
+            --primary-green: #2ea374;
+            --primary-green-hover: #248a61;
+            --radius-sm: 8px;
+            --radius-md: 14px;
+            --radius-lg: 20px;
+            --shadow-sm: 0 1px 3px rgba(0,0,0,0.04);
+            --shadow-card: 0 12px 36px rgba(99, 102, 241, 0.08);
+            --font-main: 'Plus Jakarta Sans', sans-serif;
+            --transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        [data-theme="dark"] {
+            --bg-body: #0b111e;
+            --bg-nav: #111928;
+            --bg-card: #162032;
+            --border-card: #222f46;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --text-dim: #64748b;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: var(--font-main);
+            background: var(--bg-body);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        /* ---------------- TOP NAVBAR ---------------- */
+        .portal-navbar {
+            background: var(--bg-nav);
+            border-bottom: 1px solid var(--border-card);
+            padding: 14px 40px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .nav-brand {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+            color: var(--primary-blue);
+            font-size: 1.15rem;
+            font-weight: 800;
+        }
+
+        .nav-actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .btn-nav-action {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 18px;
+            border-radius: 30px;
+            font-size: 0.84rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: var(--transition);
+            text-decoration: none;
+            font-family: var(--font-main);
+        }
+
+        .btn-nav-back {
+            background: transparent;
+            border: 1px solid var(--primary-blue);
+            color: var(--primary-blue);
+        }
+
+        .btn-nav-back:hover {
+            background: rgba(59, 130, 246, 0.08);
+        }
+
+        .btn-nav-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            border: 1px solid var(--border-card);
+            background: transparent;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 0.95rem;
+            transition: var(--transition);
+        }
+
+        .btn-nav-logout {
+            background: transparent;
+            border: 1px solid #ef4444;
+            color: #ef4444;
+            padding: 7px 16px;
+            border-radius: 30px;
+            font-size: 0.82rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-nav-logout:hover {
+            background: rgba(239, 68, 68, 0.08);
+        }
+
+        /* ---------------- MAIN CONTAINER ---------------- */
+        .portal-content {
+            max-width: 1100px;
+            width: 100%;
+            margin: 36px auto 60px auto;
+            padding: 0 20px;
+        }
+
+        .job-detail-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-card);
+            border-radius: var(--radius-lg);
+            padding: 40px;
+            box-shadow: var(--shadow-card);
+        }
+
+        /* ---------------- HEADER SECTION ---------------- */
+        .job-detail-header {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            margin-bottom: 24px;
+        }
+
+        .job-title-large {
+            font-size: 1.85rem;
+            font-weight: 800;
+            color: #3b82f6;
+            margin-bottom: 4px;
+            letter-spacing: -0.02em;
+        }
+
+        .company-subtitle {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: var(--text-muted);
+        }
+
+        .btn-apply-hero {
+            background: var(--primary-green);
+            color: #fff;
+            border: none;
+            padding: 12px 26px;
+            border-radius: 10px;
+            font-size: 0.92rem;
+            font-weight: 800;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 4px 14px rgba(46, 163, 116, 0.3);
+            transition: var(--transition);
+        }
+
+        .btn-apply-hero:hover {
+            background: var(--primary-green-hover);
+            transform: translateY(-1px);
+        }
+
+        .btn-apply-hero.applied {
+            background: #64748b;
+            box-shadow: none;
+            cursor: default;
+        }
+
+        .card-divider {
+            height: 1px;
+            background: var(--border-card);
+            margin: 0 0 28px 0;
+        }
+
+        /* ---------------- 2-COLUMN LAYOUT ---------------- */
+        .detail-body-grid {
+            display: grid;
+            grid-template-columns: 1.35fr 1fr;
+            gap: 32px;
+            align-items: start;
+        }
+
+        /* ---------------- 2x2 INFO GRID ---------------- */
+        .info-pill-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+            margin-bottom: 30px;
+        }
+
+        .info-badge-box {
+            background: var(--bg-body);
+            border: 1px solid var(--border-card);
+            border-radius: var(--radius-sm);
+            padding: 14px 16px;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .badge-icon-wrap {
+            font-size: 1.1rem;
+        }
+
+        .info-badge-label {
+            font-size: 0.72rem;
+            font-weight: 700;
+            color: var(--text-dim);
+            text-transform: capitalize;
+            margin-bottom: 2px;
+        }
+
+        .info-badge-value {
+            font-size: 0.88rem;
+            font-weight: 800;
+            color: var(--text-main);
+        }
+
+        /* ---------------- DESCRIPTION BLOCKS ---------------- */
+        .content-section {
+            margin-bottom: 26px;
+        }
+
+        .section-header-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 1rem;
+            font-weight: 800;
+            color: var(--text-main);
+            margin-bottom: 10px;
+        }
+
+        .content-paragraph {
+            font-size: 0.88rem;
+            color: var(--text-muted);
+            line-height: 1.65;
+        }
+
+        /* ---------------- RIGHT SIDEBAR CARDS ---------------- */
+        .side-card {
+            background: var(--bg-body);
+            border: 1px solid var(--border-card);
+            border-radius: var(--radius-md);
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .side-card-title {
+            font-size: 0.88rem;
+            font-weight: 800;
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 14px;
+        }
+
+        .skills-tag-wrap {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .skill-tag-pill {
+            background: #64748b;
+            color: #fff;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.76rem;
+            font-weight: 700;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .skill-tag-matched {
+            background: #2ea374;
+        }
+
+        /* ---------------- MATCH & GAP ANALYSIS ---------------- */
+        .match-score-ring-box {
+            text-align: center;
+            padding: 16px 0;
+        }
+
+        .score-circle-ring {
+            width: 86px;
+            height: 86px;
+            border-radius: 50%;
+            border: 6px solid #e2e8f0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.45rem;
+            font-weight: 900;
+            color: #ef4444;
+            margin: 0 auto 12px auto;
+        }
+
+        .score-circle-ring.good {
+            border-color: #2ea374;
+            color: #2ea374;
+        }
+
+        .score-hint-text {
+            font-size: 0.78rem;
+            color: var(--text-muted);
+            line-height: 1.4;
+            margin-bottom: 18px;
+        }
+
+        .gap-analysis-box {
+            border-top: 1px solid var(--border-card);
+            padding-top: 16px;
+        }
+
+        .gap-progress-header {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.78rem;
+            font-weight: 800;
+            color: var(--text-main);
+            margin-bottom: 6px;
+        }
+
+        .gap-progress-bar {
+            width: 100%;
+            height: 6px;
+            background: #e2e8f0;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 10px;
+        }
+
+        .gap-progress-fill {
+            height: 100%;
+            background: #ef4444;
+            border-radius: 4px;
+        }
+
+        .gap-counts-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.74rem;
+            font-weight: 700;
+            margin-bottom: 14px;
+        }
+
+        .warning-gap-card {
+            background: #fffbeb;
+            border: 1px solid #fef3c7;
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 16px;
+        }
+
+        [data-theme="dark"] .warning-gap-card {
+            background: rgba(245, 158, 11, 0.1);
+            border-color: rgba(245, 158, 11, 0.2);
+        }
+
+        .warning-gap-title {
+            font-size: 0.76rem;
+            font-weight: 800;
+            color: #b45309;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .tag-yellow-pill {
+            background: #fef08a;
+            color: #854d0e;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 0.72rem;
+            font-weight: 700;
+        }
+
+        [data-theme="dark"] .tag-yellow-pill {
+            background: rgba(253, 224, 71, 0.2);
+            color: #fef08a;
+        }
+
+        .tag-blue-pill {
+            background: rgba(59, 130, 246, 0.12);
+            color: #2563eb;
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 0.72rem;
+            font-weight: 700;
+        }
+
+        /* ---------------- TOAST NOTIFICATION ---------------- */
+        .toast-container {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .portal-toast {
+            background: #1e293b;
+            color: #fff;
+            padding: 12px 20px;
+            border-radius: 10px;
+            font-size: 0.86rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            animation: slideInToast 0.3s ease;
+        }
+
+        @keyframes slideInToast {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        @media (max-width: 900px) {
+            .detail-body-grid { grid-template-columns: 1fr; }
+            .job-detail-card { padding: 24px; }
+            .info-pill-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <div id="toast-container" class="toast-container"></div>
+
+    <!-- =========================================================
+         TOP NAVBAR
+         ========================================================= -->
+    <header class="portal-navbar">
+        <a href="search-vacancies.html" class="nav-brand">
+            <i class="fa-solid fa-briefcase"></i> Job Details
+        </a>
+
+        <div class="nav-actions">
+            <a href="search-vacancies.html" class="btn-nav-action btn-nav-back" id="btn-back-jobs">
+                <i class="fa-solid fa-arrow-left"></i> Back to Jobs
+            </a>
+            <button class="btn-nav-icon" title="Notifications" onclick="showToast('No new notifications.', 'info')">
+                <i class="fa-regular fa-bell"></i>
+            </button>
+            <button class="btn-nav-icon" id="btn-theme-toggle" title="Toggle Theme">
+                <i class="fa-regular fa-sun" id="theme-icon"></i>
+            </button>
+            <button class="btn-nav-logout" id="btn-portal-logout" title="Sign Out">
+                Logout
+            </button>
+        </div>
+    </header>
+
+    <!-- =========================================================
+         MAIN DETAIL CARD
+         ========================================================= -->
+    <main class="portal-content">
+        <div class="job-detail-card">
+            
+            <!-- 1. Header Row -->
+            <div class="job-detail-header">
+                <div>
+                    <h1 class="job-title-large" id="detail-job-title">Frontend UI/UX Architect</h1>
+                    <div class="company-subtitle" id="detail-company-name">InnovateX Labs</div>
+                </div>
+                <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+                    <button class="btn-apply-hero" id="btn-save-job-detail" style="background: transparent; color: #f59e0b; border: 1px solid #f59e0b; box-shadow: none;" onclick="handleToggleSaveJobDetails()">
+                        <i class="fa-regular fa-bookmark" id="detail-save-icon"></i> <span id="detail-save-text">Save Job</span>
+                    </button>
+                    <button class="btn-apply-hero" style="background: transparent; color: #2563eb; border: 1px solid #2563eb; box-shadow: none;" onclick="openJobDetailsRecruiterChat()">
+                        <i class="fa-regular fa-comment-dots"></i> Chat with Recruiter
+                    </button>
+                    <button class="btn-apply-hero" id="btn-apply-action" onclick="handleApplyAction()">
+                        <i class="fa-solid fa-paper-plane"></i> <span id="apply-btn-text">Apply Now</span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="card-divider"></div>
+
+            <!-- 2. Body Grid -->
+            <div class="detail-body-grid">
+                
+                <!-- Left Column -->
+                <div>
+                    <!-- 2x2 Info Grid -->
+                    <div class="info-pill-grid">
+                        <div class="info-badge-box">
+                            <div class="badge-icon-wrap" style="color: #3b82f6;"><i class="fa-solid fa-location-dot"></i></div>
+                            <div>
+                                <div class="info-badge-label">Location</div>
+                                <div class="info-badge-value" id="badge-location">Remote</div>
+                            </div>
+                        </div>
+
+                        <div class="info-badge-box">
+                            <div class="badge-icon-wrap" style="color: #10b981;"><i class="fa-solid fa-indian-rupee-sign"></i></div>
+                            <div>
+                                <div class="info-badge-label">Salary Package</div>
+                                <div class="info-badge-value" id="badge-salary" style="color: #10b981;">₹15 - ₹22 LPA</div>
+                            </div>
+                        </div>
+
+                        <div class="info-badge-box">
+                            <div class="badge-icon-wrap" style="color: #f59e0b;"><i class="fa-regular fa-clock"></i></div>
+                            <div>
+                                <div class="info-badge-label">Job Type</div>
+                                <div class="info-badge-value" id="badge-type">Remote</div>
+                            </div>
+                        </div>
+
+                        <div class="info-badge-box">
+                            <div class="badge-icon-wrap" style="color: #ef4444;"><i class="fa-regular fa-id-badge"></i></div>
+                            <div>
+                                <div class="info-badge-label">Experience Required</div>
+                                <div class="info-badge-value" id="badge-experience">2-4 Years</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Job Description -->
+                    <div class="content-section">
+                        <div class="section-header-row">
+                            <i class="fa-regular fa-file-lines" style="color: #3b82f6;"></i> Job Description
+                        </div>
+                        <p class="content-paragraph" id="detail-job-description">
+                            Join our dynamic creative team to design and build stunning, intuitive web application user interfaces.
+                        </p>
+                    </div>
+
+                    <!-- About Company -->
+                    <div class="content-section">
+                        <div class="section-header-row">
+                            <i class="fa-solid fa-building" style="color: #3b82f6;"></i> About Company
+                        </div>
+                        <p class="content-paragraph" id="detail-company-about">
+                            A forward-thinking company.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Right Column (Required Skills + Match & Gap Analysis) -->
+                <div>
+                    
+                    <!-- Required Skills -->
+                    <div class="side-card">
+                        <div class="side-card-title">
+                            <i class="fa-solid fa-toolbox" style="color: #3b82f6;"></i> Required Skills
+                        </div>
+                        <div class="skills-tag-wrap" id="required-skills-container">
+                            <span class="skill-tag-pill"><i class="fa-solid fa-circle-minus"></i> HTML5</span>
+                            <span class="skill-tag-pill"><i class="fa-solid fa-circle-minus"></i> CSS3</span>
+                            <span class="skill-tag-pill"><i class="fa-solid fa-circle-minus"></i> Bootstrap 5</span>
+                            <span class="skill-tag-pill"><i class="fa-solid fa-circle-minus"></i> Vue/React</span>
+                        </div>
+                    </div>
+
+                    <!-- Match & Gap Analysis -->
+                    <div class="side-card">
+                        <div class="side-card-title">
+                            <i class="fa-solid fa-chart-simple" style="color: #3b82f6;"></i> Match & Gap Analysis
+                        </div>
+
+                        <div class="match-score-ring-box">
+                            <div class="score-circle-ring" id="match-score-circle">0%</div>
+                            <p class="score-hint-text">
+                                <i class="fa-solid fa-circle-info" style="margin-right: 4px;"></i> Consider adding these missing skills to your profile to stand out!
+                            </p>
+                        </div>
+
+                        <div class="gap-analysis-box">
+                            <div style="font-size: 0.82rem; font-weight: 800; color: #3b82f6; display: flex; align-items: center; gap: 6px; margin-bottom: 10px;">
+                                <i class="fa-solid fa-scale-balanced"></i> Skill Gap Analysis
+                            </div>
+
+                            <div class="gap-progress-header">
+                                <span>Skills Match Progress</span>
+                                <span id="progress-ratio-text">0 / 4</span>
+                            </div>
+                            <div class="gap-progress-bar">
+                                <div class="gap-progress-fill" id="progress-bar-fill" style="width: 0%;"></div>
+                            </div>
+
+                            <div class="gap-counts-row">
+                                <span style="color: #10b981;"><i class="fa-solid fa-circle-check"></i> Matched: <strong id="cnt-matched">0</strong></span>
+                                <span style="color: #ef4444;"><i class="fa-solid fa-circle-exclamation"></i> Gap: <strong id="cnt-gap">4</strong></span>
+                            </div>
+
+                            <!-- Missing Skills Card -->
+                            <div class="warning-gap-card">
+                                <div class="warning-gap-title">
+                                    <i class="fa-solid fa-triangle-exclamation"></i> Missing Skills (Gap):
+                                </div>
+                                <div class="skills-tag-wrap" id="missing-skills-container">
+                                    <span class="tag-yellow-pill">HTML5</span>
+                                    <span class="tag-yellow-pill">CSS3</span>
+                                    <span class="tag-yellow-pill">Bootstrap 5</span>
+                                    <span class="tag-yellow-pill">Vue/React</span>
+                                </div>
+                            </div>
+
+                            <!-- Recommended Skills -->
+                            <div>
+                                <div style="font-size: 0.78rem; font-weight: 800; color: #2563eb; margin-bottom: 4px; display: flex; align-items: center; gap: 6px;">
+                                    <i class="fa-solid fa-wand-magic-sparkles"></i> Recommended Skills
+                                </div>
+                                <p style="font-size: 0.74rem; color: var(--text-muted); margin-bottom: 8px;">
+                                    Acquiring these related skills will make you a much stronger candidate:
+                                </p>
+                                <div class="skills-tag-wrap" id="recommended-skills-container">
+                                    <span class="tag-blue-pill">TypeScript</span>
+                                    <span class="tag-blue-pill">Tailwind CSS</span>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+    </main>
+
+    <!-- =========================================================
+         DIRECT RECRUITER CHAT MODAL
+         ========================================================= -->
+    <div class="modal-overlay" id="modal-recruiter-chat" style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.5); backdrop-filter: blur(5px); z-index: 1000; display: none; align-items: center; justify-content: center; padding: 20px;">
+        <div style="background: var(--bg-card); border: 1px solid var(--border-card); border-radius: 16px; max-width: 440px; width: 100%; padding: 22px; box-shadow: 0 20px 45px rgba(0,0,0,0.2);">
+            
+            <!-- Header -->
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; padding-bottom: 12px; border-bottom: 1px solid var(--border-card);">
+                <div style="display: flex; align-items: center; gap: 8px; font-size: 1.1rem; font-weight: 800; color: var(--text-main);">
+                    <i class="fa-regular fa-comment-dots" style="color: #2563eb;"></i>
+                    <span>Chat with <span id="chat-company-title">InnovateX Labs</span></span>
+                </div>
+                <button onclick="closeRecruiterChatModal()" style="background: none; border: none; font-size: 1.3rem; cursor: pointer; color: var(--text-muted); line-height: 1;">&times;</button>
+            </div>
+
+            <!-- Message Area -->
+            <div id="job-chat-stream" style="min-height: 220px; max-height: 300px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; padding: 8px 0; margin-bottom: 14px;">
+                <div style="max-width: 85%; align-self: flex-start; background: var(--bg-body); border: 1px solid var(--border-card); padding: 10px 14px; border-radius: 12px; font-size: 0.84rem; line-height: 1.4; color: var(--text-main);">
+                    Hello! We are currently hiring for this role. Feel free to ask about our interview stages, tech stack, or work flexibility!
+                </div>
+            </div>
+
+            <!-- Input Row -->
+            <div style="display: flex; align-items: center; gap: 8px;">
+                <input type="text" id="job-chat-input" placeholder="Type a message to recruiter..." style="flex: 1; padding: 11px 14px; border: 1px solid var(--border-card); border-radius: 8px; font-size: 0.86rem; outline: none; background: var(--bg-card); color: var(--text-main);" onkeypress="if(event.key === 'Enter') sendJobChatSeekerMsg()">
+                <button onclick="sendJobChatSeekerMsg()" style="width: 42px; height: 42px; border-radius: 8px; background: linear-gradient(135deg, #2563eb, #06b6d4); color: #fff; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 1rem; box-shadow: 0 4px 12px rgba(37,99,235,0.3);">
+                    <i class="fa-solid fa-paper-plane"></i>
+                </button>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/supabase-config.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/db.js"></script>
+    <script>
+        let currentJob = null;
+        let currentSeekerName = 'BVCITS';
+        let currentSeekerEmail = 'seeker@smartjob.com';
+
+        function getQueryParams() {
+            const params = new URLSearchParams(window.location.search);
+            return {
+                id: params.get('id'),
+                email: params.get('session_email'),
+                name: params.get('session_name'),
+                role: params.get('session_role')
+            };
+        }
+
+        function loadJobDetails() {
+            const q = getQueryParams();
+            const user = window.auth?.getCurrentUser();
+
+            if (q.name) currentSeekerName = decodeURIComponent(q.name);
+            else if (user) currentSeekerName = user.fullName || user.email.split('@')[0];
+
+            if (q.email) currentSeekerEmail = decodeURIComponent(q.email);
+            else if (user) currentSeekerEmail = user.email;
+
+            // Sync back button
+            const backLink = document.getElementById('btn-back-jobs');
+            if (backLink) {
+                backLink.href = `search-vacancies.html?session_email=${encodeURIComponent(currentSeekerEmail)}&session_name=${encodeURIComponent(currentSeekerName)}&session_role=seeker`;
+            }
+
+            // Find Job
+            const allJobs = window.db?.getJobs() || [];
+            const jobId = q.id;
+
+            if (jobId) {
+                currentJob = allJobs.find(j => j.id === jobId);
+            }
+
+            // Default fallback if opened directly
+            if (!currentJob) {
+                currentJob = allJobs[0] || {
+                    id: 'job_default',
+                    title: 'Frontend UI/UX Architect',
+                    company: 'InnovateX Labs',
+                    location: 'Remote',
+                    salary: '₹15 - ₹22 LPA',
+                    type: 'Remote',
+                    experience: '2-4 Years',
+                    skills: ['HTML5', 'CSS3', 'Bootstrap 5', 'Vue/React'],
+                    description: 'Join our dynamic creative team to design and build stunning, intuitive web application user interfaces.',
+                    about: 'A forward-thinking company.'
+                };
+            }
+
+            // Render Header & Badges
+            document.getElementById('detail-job-title').textContent = currentJob.title;
+            document.getElementById('detail-company-name').textContent = currentJob.company || 'InnovateX Labs';
+            document.getElementById('badge-location').textContent = currentJob.location || 'Remote';
+            document.getElementById('badge-salary').textContent = currentJob.salary || '₹15 - ₹22 LPA';
+            document.getElementById('badge-type').textContent = currentJob.type || 'Remote';
+            document.getElementById('badge-experience').textContent = currentJob.experience || '2-4 Years';
+            document.getElementById('detail-job-description').textContent = currentJob.description || 'Join our dynamic creative team to design and build stunning web application user interfaces.';
+            document.getElementById('detail-company-about').textContent = currentJob.about || `A forward-thinking leader in modern digital products and engineering solutions.`;
+
+            // Check if already applied
+            const allApps = JSON.parse(localStorage.getItem('smarthire_applications') || '[]');
+            const hasApplied = allApps.some(a => a.jobId === currentJob.id && a.applicantEmail?.toLowerCase() === currentSeekerEmail.toLowerCase());
+            if (hasApplied) {
+                const btn = document.getElementById('btn-apply-action');
+                btn.className = 'btn-apply-hero applied';
+                btn.innerHTML = `<i class="fa-solid fa-check"></i> Applied`;
+            }
+
+            // Sync Save / Bookmark button state
+            syncJobDetailsSaveState();
+
+            // Render Skills & Gap Analysis
+            renderSkillAnalysis(currentJob);
+        }
+
+        function syncJobDetailsSaveState() {
+            if (!currentJob) return;
+            const saved = JSON.parse(localStorage.getItem('smartjob_saved_jobs') || '[]');
+            const isSaved = saved.includes(String(currentJob.id));
+
+            const btn = document.getElementById('btn-save-job-detail');
+            const icon = document.getElementById('detail-save-icon');
+            const text = document.getElementById('detail-save-text');
+
+            if (isSaved) {
+                if (btn) btn.style.background = '#fef3c7';
+                if (icon) icon.className = 'fa-solid fa-bookmark';
+                if (text) text.textContent = 'Saved';
+            } else {
+                if (btn) btn.style.background = 'transparent';
+                if (icon) icon.className = 'fa-regular fa-bookmark';
+                if (text) text.textContent = 'Save Job';
+            }
+        }
+
+        async function handleToggleSaveJobDetails() {
+            if (!currentJob) return;
+            const idStr = String(currentJob.id);
+            const saved = window.db ? window.db.getSavedJobs() : JSON.parse(localStorage.getItem('smartjob_saved_jobs') || '[]');
+
+            if (saved.includes(idStr)) {
+                if (window.db && typeof window.db.removeSavedJobCloud === 'function') {
+                    await window.db.removeSavedJobCloud(idStr, currentSeekerEmail);
+                } else {
+                    const filtered = saved.filter(id => id !== idStr);
+                    localStorage.setItem('smartjob_saved_jobs', JSON.stringify(filtered));
+                }
+                showToast('Removed from Saved Jobs.', 'info');
+            } else {
+                if (window.db && typeof window.db.saveJobCloud === 'function') {
+                    await window.db.saveJobCloud(idStr, currentJob, currentSeekerEmail);
+                } else {
+                    saved.push(idStr);
+                    localStorage.setItem('smartjob_saved_jobs', JSON.stringify(saved));
+                }
+                showToast('Job saved & stored in Supabase database!', 'success');
+            }
+
+            syncJobDetailsSaveState();
+        }
+
+        function renderSkillAnalysis(job) {
+            let required = [];
+            if (Array.isArray(job.skills)) required = job.skills;
+            else if (typeof job.skills === 'string') required = job.skills.split(',').map(s => s.trim()).filter(Boolean);
+
+            if (required.length === 0) {
+                required = ['HTML5', 'CSS3', 'Bootstrap 5', 'Vue/React'];
+            }
+
+            // User skills
+            const userSkills = ['React', 'JavaScript', 'Node.js']; // from seeker profile
+
+            const matched = required.filter(r => userSkills.some(u => u.toLowerCase() === r.toLowerCase()));
+            const missing = required.filter(r => !userSkills.some(u => u.toLowerCase() === r.toLowerCase()));
+
+            const score = required.length > 0 ? Math.round((matched.length / required.length) * 100) : 0;
+
+            // Required skills pills
+            const reqContainer = document.getElementById('required-skills-container');
+            reqContainer.innerHTML = '';
+            required.forEach(s => {
+                const isMatched = matched.includes(s);
+                const pill = document.createElement('span');
+                pill.className = `skill-tag-pill ${isMatched ? 'skill-tag-matched' : ''}`;
+                pill.innerHTML = `<i class="fa-solid fa-${isMatched ? 'circle-check' : 'circle-minus'}"></i> ${s}`;
+                reqContainer.appendChild(pill);
+            });
+
+            // Match Score Circle
+            const scoreCircle = document.getElementById('match-score-circle');
+            scoreCircle.textContent = `${score}%`;
+            if (score >= 60) scoreCircle.className = 'score-circle-ring good';
+            else scoreCircle.className = 'score-circle-ring';
+
+            // Progress Bar
+            document.getElementById('progress-ratio-text').textContent = `${matched.length} / ${required.length}`;
+            const fill = document.getElementById('progress-bar-fill');
+            fill.style.width = `${score}%`;
+            fill.style.background = score >= 60 ? '#10b981' : '#ef4444';
+
+            document.getElementById('cnt-matched').textContent = matched.length;
+            document.getElementById('cnt-gap').textContent = missing.length;
+
+            // Missing Skills
+            const missingContainer = document.getElementById('missing-skills-container');
+            missingContainer.innerHTML = '';
+            if (missing.length === 0) {
+                missingContainer.innerHTML = `<span style="font-size: 0.78rem; color: #10b981; font-weight: 700;">No skill gaps detected! Your profile is a 100% match.</span>`;
+            } else {
+                missing.forEach(s => {
+                    const tag = document.createElement('span');
+                    tag.className = 'tag-yellow-pill';
+                    tag.textContent = s;
+                    missingContainer.appendChild(tag);
+                });
+            }
+
+            // Recommended Skills
+            const recContainer = document.getElementById('recommended-skills-container');
+            recContainer.innerHTML = '';
+            const recSkills = ['TypeScript', 'Tailwind CSS', 'Next.js'];
+            recSkills.forEach(s => {
+                const tag = document.createElement('span');
+                tag.className = 'tag-blue-pill';
+                tag.textContent = s;
+                recContainer.appendChild(tag);
+            });
+        }
+
+        function handleApplyAction() {
+            if (!currentJob) return;
+            window.location.href = `apply-jobs.html?jobId=${encodeURIComponent(currentJob.id)}&session_email=${encodeURIComponent(currentSeekerEmail)}&session_name=${encodeURIComponent(currentSeekerName)}&session_role=seeker`;
+        }
+
+        function openJobDetailsRecruiterChat() {
+            const compTitle = currentJob ? (currentJob.company || 'Employer Recruiter') : 'Employer Recruiter';
+            document.getElementById('chat-company-title').textContent = compTitle;
+            document.getElementById('modal-recruiter-chat').style.display = 'flex';
+            setTimeout(() => document.getElementById('job-chat-input')?.focus(), 150);
+        }
+
+        function closeRecruiterChatModal() {
+            document.getElementById('modal-recruiter-chat').style.display = 'none';
+        }
+
+        function sendJobChatSeekerMsg() {
+            const input = document.getElementById('job-chat-input');
+            const text = input?.value.trim();
+            if (!text) return;
+
+            const stream = document.getElementById('job-chat-stream');
+
+            const seekerMsg = document.createElement('div');
+            seekerMsg.style.cssText = 'max-width: 85%; align-self: flex-end; background: linear-gradient(135deg, #2563eb, #06b6d4); color: #fff; padding: 10px 14px; border-radius: 12px; font-size: 0.84rem; line-height: 1.4;';
+            seekerMsg.textContent = text;
+            stream.appendChild(seekerMsg);
+
+            // Save real message
+            const allChats = JSON.parse(localStorage.getItem('smarthire_chat_db') || '{}');
+            const compName = currentJob ? (currentJob.company || 'Employer') : 'Employer';
+            const chatKey = `${currentSeekerEmail}_${compName}`;
+            if (!allChats[chatKey]) allChats[chatKey] = [];
+            allChats[chatKey].push({
+                sender: 'seeker',
+                text: text,
+                time: new Date().toISOString()
+            });
+            localStorage.setItem('smarthire_chat_db', JSON.stringify(allChats));
+
+            input.value = '';
+            stream.scrollTop = stream.scrollHeight;
+        }
+
+        function showToast(message, type = 'info') {
+            const container = document.getElementById('toast-container');
+            if (!container) return;
+            const toast = document.createElement('div');
+            toast.className = 'portal-toast';
+            let icon = type === 'success' ? 'fa-solid fa-circle-check' : 'fa-solid fa-circle-info';
+            toast.innerHTML = `<i class="${icon}" style="color: ${type === 'success' ? '#10b981' : '#38bdf8'};"></i> <span>${message}</span>`;
+            container.appendChild(toast);
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transform = 'translateY(20px)';
+                toast.style.transition = 'all 0.3s ease';
+                setTimeout(() => toast.remove(), 300);
+            }, 3500);
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            loadJobDetails();
+
+            // Theme Toggle
+            const themeBtn = document.getElementById('btn-theme-toggle');
+            const themeIcon = document.getElementById('theme-icon');
+            themeBtn?.addEventListener('click', () => {
+                const currentTheme = document.documentElement.getAttribute('data-theme');
+                if (currentTheme === 'dark') {
+                    document.documentElement.removeAttribute('data-theme');
+                    themeIcon.className = 'fa-regular fa-sun';
+                } else {
+                    document.documentElement.setAttribute('data-theme', 'dark');
+                    themeIcon.className = 'fa-solid fa-moon';
+                }
+            });
+
+            // Logout
+            document.getElementById('btn-portal-logout')?.addEventListener('click', () => {
+                window.auth?.logout();
+            });
+        });
+    </script>
+</body>
+</html>

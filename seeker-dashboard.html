@@ -1,0 +1,2917 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Job Seeker Portal | Smart Job Vacancy Finder</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <style>
+        :root {
+            --bg-body: #f4f7f6;
+            --bg-nav: #ffffff;
+            --bg-sidebar: #ffffff;
+            --bg-card: #ffffff;
+            --border-card: #e5e9eb;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --text-dim: #94a3b8;
+            --primary-blue: #3b82f6;
+            --primary-blue-hover: #2563eb;
+            --primary-blue-light: rgba(59, 130, 246, 0.1);
+            --banner-gradient: linear-gradient(135deg, #2563eb 0%, #0d9488 100%);
+            --radius-sm: 8px;
+            --radius-md: 14px;
+            --radius-lg: 20px;
+            --shadow-sm: 0 1px 3px rgba(0,0,0,0.04);
+            --shadow-card: 0 4px 16px rgba(0,0,0,0.05);
+            --font-main: 'Plus Jakarta Sans', sans-serif;
+            --transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        [data-theme="dark"] {
+            --bg-body: #0b111e;
+            --bg-nav: #111928;
+            --bg-sidebar: #111928;
+            --bg-card: #162032;
+            --border-card: #222f46;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --text-dim: #64748b;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: var(--font-main);
+            background: var(--bg-body);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        /* ---------------- TOP NAVBAR ---------------- */
+        .portal-navbar {
+            background: var(--bg-nav);
+            border-bottom: 1px solid var(--border-card);
+            padding: 14px 32px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .nav-brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+        }
+
+        .brand-icon-box {
+            width: 38px;
+            height: 38px;
+            background: #2563eb;
+            color: #fff;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.15rem;
+        }
+
+        .brand-title {
+            font-size: 1.2rem;
+            font-weight: 800;
+            color: var(--text-main);
+            letter-spacing: -0.02em;
+        }
+
+        .nav-actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .btn-nav-action {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 18px;
+            border-radius: 30px;
+            font-size: 0.84rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: var(--transition);
+            text-decoration: none;
+            font-family: var(--font-main);
+        }
+
+        .btn-nav-search {
+            background: transparent;
+            border: 1px solid var(--primary-blue);
+            color: var(--primary-blue);
+        }
+
+        .btn-nav-search:hover {
+            background: var(--primary-blue-light);
+        }
+
+        .btn-nav-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            border: 1px solid var(--border-card);
+            background: transparent;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 0.95rem;
+            transition: var(--transition);
+        }
+
+        .btn-nav-icon:hover {
+            color: var(--text-main);
+            border-color: var(--text-muted);
+        }
+
+        .btn-nav-logout {
+            background: transparent;
+            border: 1px solid #ef4444;
+            color: #ef4444;
+            padding: 7px 16px;
+            border-radius: 30px;
+            font-size: 0.82rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-nav-logout:hover {
+            background: rgba(239, 68, 68, 0.08);
+        }
+
+        /* ---------------- PORTAL LAYOUT WITH SIDEBAR ---------------- */
+        .portal-layout {
+            display: grid;
+            grid-template-columns: 240px 1fr;
+            min-height: calc(100vh - 67px);
+        }
+
+        .portal-sidebar {
+            background: var(--bg-sidebar);
+            border-right: 1px solid var(--border-card);
+            padding: 24px 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .sidebar-section-label {
+            font-size: 0.72rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            color: var(--text-dim);
+            padding: 0 12px;
+            margin-bottom: 8px;
+        }
+
+        .sidebar-btn {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            width: 100%;
+            padding: 10px 14px;
+            border-radius: var(--radius-sm);
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            font-family: var(--font-main);
+            font-size: 0.86rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            text-align: left;
+        }
+
+        .sidebar-btn i {
+            width: 16px;
+            font-size: 0.95rem;
+        }
+
+        .sidebar-btn:hover {
+            color: var(--text-main);
+            background: rgba(0, 0, 0, 0.03);
+        }
+
+        .sidebar-btn.active {
+            background: #2563eb;
+            color: #fff;
+            font-weight: 700;
+        }
+
+        .sidebar-btn.active i {
+            color: #fff;
+        }
+
+        /* ---------------- MAIN WORKSPACE ---------------- */
+        .portal-main {
+            padding: 28px 32px 60px 32px;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+            overflow-y: auto;
+        }
+
+        /* ---------------- BLUE/TEAL HERO BANNER ---------------- */
+        .hero-banner-seeker {
+            background: var(--banner-gradient);
+            border-radius: var(--radius-lg);
+            padding: 32px 36px;
+            color: #fff;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 10px 25px rgba(37, 99, 235, 0.25);
+        }
+
+        .hero-text-content {
+            max-width: 650px;
+            z-index: 2;
+        }
+
+        .hero-pill-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(8px);
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.76rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+        }
+
+        .hero-title {
+            font-size: 1.85rem;
+            font-weight: 800;
+            line-height: 1.2;
+            margin-bottom: 8px;
+            letter-spacing: -0.02em;
+        }
+
+        .hero-subtitle {
+            font-size: 0.92rem;
+            opacity: 0.92;
+            line-height: 1.5;
+            margin-bottom: 22px;
+            font-weight: 500;
+        }
+
+        .hero-btn-group {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .hero-pill-btn {
+            background: rgba(255, 255, 255, 0.95);
+            color: #2563eb;
+            padding: 8px 16px;
+            border-radius: 30px;
+            font-size: 0.82rem;
+            font-weight: 800;
+            border: none;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            transition: var(--transition);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+
+        .hero-pill-btn:hover {
+            background: #fff;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+        }
+
+        .hero-pill-btn.outline {
+            background: rgba(255, 255, 255, 0.15);
+            color: #fff;
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            box-shadow: none;
+        }
+
+        .hero-pill-btn.outline:hover {
+            background: rgba(255, 255, 255, 0.25);
+        }
+
+        .hero-progress-box {
+            width: 250px;
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            border-radius: var(--radius-md);
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            padding: 20px;
+            text-align: left;
+            z-index: 2;
+        }
+
+        /* ---------------- 4 KPI STAT CARDS ---------------- */
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 18px;
+        }
+
+        .kpi-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-card);
+            border-radius: var(--radius-md);
+            padding: 22px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: var(--shadow-card);
+            transition: var(--transition);
+            cursor: pointer;
+        }
+
+        .kpi-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 22px rgba(0,0,0,0.08);
+        }
+
+        .kpi-label {
+            font-size: 0.74rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-dim);
+            margin-bottom: 6px;
+        }
+
+        .kpi-number {
+            font-size: 2rem;
+            font-weight: 900;
+            color: var(--text-main);
+            line-height: 1;
+        }
+
+        .kpi-icon-circle {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+        }
+
+        .icon-blue { background: rgba(37, 99, 235, 0.12); color: #2563eb; }
+        .icon-cyan { background: rgba(6, 182, 212, 0.12); color: #06b6d4; }
+        .icon-green { background: rgba(16, 185, 129, 0.12); color: #10b981; }
+        .icon-yellow { background: rgba(245, 158, 11, 0.12); color: #f59e0b; }
+
+        /* ---------------- CHARTS SECTION ---------------- */
+        .charts-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .white-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-card);
+            border-radius: var(--radius-md);
+            padding: 24px;
+            box-shadow: var(--shadow-card);
+        }
+
+        .card-title-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 18px;
+        }
+
+        .card-heading {
+            font-size: 0.88rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .empty-chart-box {
+            height: 150px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            border: 1px dashed var(--border-card);
+            border-radius: var(--radius-sm);
+            color: var(--text-dim);
+            font-size: 0.84rem;
+            font-weight: 600;
+        }
+
+        /* ---------------- AI CAREER SUITE (3 CARDS) ---------------- */
+        .suite-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 18px;
+            margin-top: 14px;
+        }
+
+        .suite-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-card);
+            border-radius: var(--radius-md);
+            padding: 22px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            gap: 14px;
+            box-shadow: var(--shadow-card);
+            transition: var(--transition);
+        }
+
+        .suite-card:hover {
+            transform: translateY(-2px);
+            border-color: #2563eb;
+        }
+
+        .suite-card-top {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .suite-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.15rem;
+        }
+
+        .suite-tag {
+            font-size: 0.7rem;
+            font-weight: 800;
+            padding: 2px 8px;
+            border-radius: 4px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .suite-desc {
+            font-size: 0.82rem;
+            color: var(--text-muted);
+            line-height: 1.5;
+        }
+
+        .btn-suite-action {
+            width: 100%;
+            padding: 9px;
+            border-radius: 30px;
+            font-size: 0.82rem;
+            font-weight: 800;
+            cursor: pointer;
+            transition: var(--transition);
+            background: transparent;
+            text-align: center;
+            font-family: var(--font-main);
+        }
+
+        /* ---------------- TAB SECTIONS ---------------- */
+        .tab-pane {
+            display: none;
+        }
+
+        .tab-pane.active {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+            animation: fadeIn 0.25s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(4px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ---------------- TOAST NOTIFICATION ---------------- */
+        .toast-container {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .portal-toast {
+            background: #1e293b;
+            color: #fff;
+            padding: 12px 20px;
+            border-radius: 10px;
+            font-size: 0.86rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            animation: slideInToast 0.3s ease;
+        }
+
+        @keyframes slideInToast {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        @media (max-width: 1100px) {
+            .portal-layout { grid-template-columns: 1fr; }
+            .portal-sidebar { display: none; }
+            .kpi-grid { grid-template-columns: repeat(2, 1fr); }
+            .suite-grid { grid-template-columns: 1fr; }
+            .charts-row { grid-template-columns: 1fr; }
+        }
+
+        @media (max-width: 680px) {
+            .portal-navbar { padding: 12px 16px; flex-direction: column; gap: 12px; }
+            .portal-main { padding: 16px; }
+            .hero-banner-seeker { flex-direction: column; padding: 24px; gap: 20px; }
+            .hero-progress-box { width: 100%; }
+            .kpi-grid { grid-template-columns: 1fr; }
+        }
+
+        /* =========================================================
+           PRINT ISOLATION: PRINT ONLY RESUME SHEET
+           ========================================================= */
+        @media print {
+            body {
+                background: #ffffff !important;
+                margin: 0 !important;
+                padding: 0 !important;
+            }
+
+            /* Hide everything outside the resume canvas */
+            body * {
+                visibility: hidden !important;
+            }
+
+            #ai-resume-pdf-canvas,
+            #ai-resume-pdf-canvas * {
+                visibility: visible !important;
+            }
+
+            #ai-resume-pdf-canvas {
+                position: fixed !important;
+                left: 0 !important;
+                top: 0 !important;
+                width: 100% !important;
+                max-width: 100% !important;
+                margin: 0 !important;
+                padding: 15mm 20mm !important;
+                box-shadow: none !important;
+                border: none !important;
+                background: #ffffff !important;
+                color: #000000 !important;
+                page-break-after: avoid !important;
+            }
+
+            .portal-navbar,
+            .portal-sidebar,
+            .toast-container,
+            #toast-container {
+                display: none !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="toast-container" class="toast-container"></div>
+
+    <!-- =========================================================
+         TOP NAVBAR
+         ========================================================= -->
+    <header class="portal-navbar">
+        <a href="seeker-dashboard.html" class="nav-brand">
+            <div class="brand-icon-box">
+                <i class="fa-solid fa-user-graduate"></i>
+            </div>
+            <span class="brand-title">Job Seeker Portal</span>
+        </a>
+
+        <div class="nav-actions">
+            <button class="btn-nav-action btn-nav-search" onclick="openSearchVacanciesPage()">
+                <i class="fa-solid fa-magnifying-glass"></i> Search Vacancies
+            </button>
+            <button class="btn-nav-icon" title="Notifications" onclick="showToast('You are all caught up on job alerts.', 'info')">
+                <i class="fa-regular fa-bell"></i>
+            </button>
+            <button class="btn-nav-icon" id="btn-theme-toggle" title="Toggle Theme">
+                <i class="fa-regular fa-sun" id="theme-icon"></i>
+            </button>
+            <button class="btn-nav-logout" id="btn-seeker-logout" onclick="handleSeekerLogout()" title="Sign Out">
+                <i class="fa-solid fa-arrow-right-from-bracket"></i> Logout
+            </button>
+        </div>
+    </header>
+
+    <!-- =========================================================
+         PORTAL LAYOUT: SIDEBAR + MAIN
+         ========================================================= -->
+    <div class="portal-layout">
+        
+        <!-- LEFT SIDEBAR NAVIGATION -->
+        <aside class="portal-sidebar">
+            <div class="sidebar-section-label">Navigation Menu</div>
+            <button class="sidebar-btn active" id="sbtn-overview" onclick="switchSeekerTab('tab-overview')">
+                <i class="fa-solid fa-chart-pie"></i> Dashboard Overview
+            </button>
+            <button class="sidebar-btn" id="sbtn-vacancies" onclick="openSearchVacanciesPage()">
+                <i class="fa-solid fa-magnifying-glass"></i> Search Vacancies
+            </button>
+            <button class="sidebar-btn" id="sbtn-recommended" onclick="switchSeekerTab('tab-recommended')">
+                <i class="fa-solid fa-wand-magic-sparkles"></i> AI Recommended
+            </button>
+            <button class="sidebar-btn" id="sbtn-saved" onclick="switchSeekerTab('tab-saved')">
+                <i class="fa-solid fa-bookmark" style="color: #f59e0b;"></i> Saved Jobs (<span id="sidebar-saved-cnt">0</span>)
+            </button>
+            <button class="sidebar-btn" id="sbtn-history" onclick="switchSeekerTab('tab-history')">
+                <i class="fa-regular fa-file-lines"></i> Application History
+            </button>
+            <button class="sidebar-btn" id="sbtn-ats" onclick="switchSeekerTab('tab-ats')">
+                <i class="fa-solid fa-bullseye"></i> ATS Resume Match
+            </button>
+            <button class="sidebar-btn" id="sbtn-profile" onclick="switchSeekerTab('tab-profile')">
+                <i class="fa-regular fa-user"></i> Candidate Profile
+            </button>
+            <button class="sidebar-btn" id="sbtn-advisor" onclick="switchSeekerTab('tab-advisor')">
+                <i class="fa-solid fa-compass"></i> AI Career Advisor
+            </button>
+            <button class="sidebar-btn" id="sbtn-resume" onclick="switchSeekerTab('tab-resume')">
+                <i class="fa-solid fa-file-pdf" style="color: #10b981;"></i> AI Resume Builder (PDF)
+            </button>
+            <button class="sidebar-btn" id="sbtn-interview" onclick="switchSeekerTab('tab-interview')">
+                <i class="fa-solid fa-microphone-lines"></i> AI Mock Interview
+            </button>
+            <button class="sidebar-btn" id="sbtn-chat" onclick="switchSeekerTab('tab-chat')">
+                <i class="fa-regular fa-comment-dots"></i> Recruiter Chat
+            </button>
+        </aside>
+
+        <!-- MAIN VIEW WORKSPACE -->
+        <main class="portal-main">
+
+            <!-- =========================================================
+                 TAB 1: DASHBOARD OVERVIEW (HOME)
+                 ========================================================= -->
+            <div id="tab-overview" class="tab-pane active">
+                
+                <!-- 1. Blue-to-Teal Welcome Banner -->
+                <section class="hero-banner-seeker">
+                    <div class="hero-text-content">
+                        <div class="hero-pill-tag">
+                            <span style="width: 7px; height: 7px; border-radius: 50%; background: #22c55e; display: inline-block;"></span>
+                            <span>Active Job Seeker Profile</span>
+                        </div>
+                        <h1 class="hero-title" id="seeker-welcome-heading">Welcome Back, BVCITS! 👋</h1>
+                        <p class="hero-subtitle">
+                            Track job applications in real-time and explore AI-matched vacancies.
+                        </p>
+                        <div class="hero-btn-group">
+                            <button class="hero-pill-btn" onclick="openSearchVacanciesPage()">
+                                <i class="fa-solid fa-magnifying-glass"></i> Find Vacancies
+                            </button>
+                            <button class="hero-pill-btn outline" onclick="switchSeekerTab('tab-interview')">
+                                <i class="fa-solid fa-microphone-lines"></i> AI Mock Interview
+                            </button>
+                            <button class="hero-pill-btn outline" onclick="switchSeekerTab('tab-chat')">
+                                <i class="fa-regular fa-comment-dots"></i> Recruiter Chat
+                            </button>
+                            <button class="hero-pill-btn outline" onclick="switchSeekerTab('tab-ats')">
+                                <i class="fa-solid fa-bullseye"></i> Check Resume ATS
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="hero-progress-box">
+                        <div style="display: flex; justify-content: space-between; font-size: 0.8rem; font-weight: 700; margin-bottom: 8px;">
+                            <span>Profile Strength</span>
+                            <span style="color: #facc15;">90% Complete</span>
+                        </div>
+                        <div style="width: 100%; height: 8px; background: rgba(255,255,255,0.25); border-radius: 4px; overflow: hidden; margin-bottom: 12px;">
+                            <div style="width: 90%; height: 100%; background: #facc15; border-radius: 4px;"></div>
+                        </div>
+                        <small style="font-size: 0.72rem; opacity: 0.85; display: block;">Resume and hard skills verified</small>
+                    </div>
+                </section>
+
+                <!-- 2. 4 KPI Metrics -->
+                <section class="kpi-grid">
+                    <div class="kpi-card" onclick="switchSeekerTab('tab-vacancies')">
+                        <div>
+                            <div class="kpi-label">Available Jobs</div>
+                            <div class="kpi-number" id="kpi-available-jobs">0</div>
+                        </div>
+                        <div class="kpi-icon-circle icon-blue">
+                            <i class="fa-solid fa-briefcase"></i>
+                        </div>
+                    </div>
+
+                    <div class="kpi-card" onclick="switchSeekerTab('tab-history')">
+                        <div>
+                            <div class="kpi-label">Applied Jobs</div>
+                            <div class="kpi-number" id="kpi-applied-jobs">0</div>
+                        </div>
+                        <div class="kpi-icon-circle icon-cyan">
+                            <i class="fa-regular fa-paper-plane"></i>
+                        </div>
+                    </div>
+
+                    <div class="kpi-card" onclick="switchSeekerTab('tab-history')">
+                        <div>
+                            <div class="kpi-label">Selected</div>
+                            <div class="kpi-number" id="kpi-selected-jobs">0</div>
+                        </div>
+                        <div class="kpi-icon-circle icon-green">
+                            <i class="fa-regular fa-circle-check"></i>
+                        </div>
+                    </div>
+
+                    <div class="kpi-card" onclick="switchSeekerTab('tab-history')">
+                        <div>
+                            <div class="kpi-label">Active Applications</div>
+                            <div class="kpi-number" id="kpi-active-apps">0</div>
+                        </div>
+                        <div class="kpi-icon-circle icon-yellow">
+                            <i class="fa-regular fa-clock"></i>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 3. Middle Row Charts -->
+                <section class="charts-row">
+                    <div class="white-card">
+                        <div class="card-title-row">
+                            <div class="card-heading">
+                                <i class="fa-solid fa-chart-pie" style="color: #2563eb;"></i> Application Status Distribution
+                            </div>
+                        </div>
+                        <div class="empty-chart-box">
+                            <span>No application activity yet</span>
+                        </div>
+                    </div>
+
+                    <div class="white-card">
+                        <div class="card-title-row">
+                            <div class="card-heading">
+                                <i class="fa-solid fa-chart-line" style="color: #0d9488;"></i> Monthly Application Velocity
+                            </div>
+                        </div>
+                        <div class="empty-chart-box">
+                            <span>Velocity tracking active</span>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 4. AI Career Suite (3 Cards) -->
+                <section class="white-card">
+                    <div class="card-heading" style="margin-bottom: 6px;">
+                        <i class="fa-solid fa-wand-magic-sparkles" style="color: #2563eb;"></i> AI Career Suite Tools
+                    </div>
+
+                    <div class="suite-grid">
+                        <!-- Tool 1: ATS Analyzer -->
+                        <div class="suite-card">
+                            <div class="suite-card-top">
+                                <div class="suite-icon" style="background: rgba(168, 85, 247, 0.12); color: #a855f7;">
+                                    <i class="fa-solid fa-bullseye"></i>
+                                </div>
+                                <div>
+                                    <strong style="font-size: 0.92rem;">ATS Resume Analyzer</strong>
+                                    <div><span class="suite-tag" style="background: rgba(168, 85, 247, 0.12); color: #a855f7;">AI Match Engine</span></div>
+                                </div>
+                            </div>
+                            <p class="suite-desc">Analyze resume keywords against job requirements to maximize candidate shortlist rates.</p>
+                            <button class="btn-suite-action" style="border: 1px solid #a855f7; color: #a855f7;" onclick="switchSeekerTab('tab-ats')">
+                                Analyze Resume &rarr;
+                            </button>
+                        </div>
+
+                        <!-- Tool 2: Resume Builder -->
+                        <div class="suite-card">
+                            <div class="suite-card-top">
+                                <div class="suite-icon" style="background: rgba(16, 185, 129, 0.12); color: #10b981;">
+                                    <i class="fa-solid fa-file-invoice"></i>
+                                </div>
+                                <div>
+                                    <strong style="font-size: 0.92rem;">AI Resume Builder (PDF)</strong>
+                                    <div><span class="suite-tag" style="background: rgba(16, 185, 129, 0.12); color: #10b981;">AI &bull; PDF Export</span></div>
+                                </div>
+                            </div>
+                            <p class="suite-desc">Generate ATS-optimized professional PDF resumes directly from your candidate profile with 1-click export.</p>
+                            <button class="btn-suite-action" style="border: 1px solid #10b981; color: #10b981;" onclick="switchSeekerTab('tab-resume')">
+                                Build AI Resume &rarr;
+                            </button>
+                        </div>
+
+                        <!-- Tool 3: Career Advisor -->
+                        <div class="suite-card">
+                            <div class="suite-card-top">
+                                <div class="suite-icon" style="background: rgba(37, 99, 235, 0.12); color: #2563eb;">
+                                    <i class="fa-solid fa-compass"></i>
+                                </div>
+                                <div>
+                                    <strong style="font-size: 0.92rem;">AI Career Advisor</strong>
+                                    <div><span class="suite-tag" style="background: rgba(37, 99, 235, 0.12); color: #2563eb;">Career Roadmap</span></div>
+                                </div>
+                            </div>
+                            <p class="suite-desc">Get customized skill recommendations, milestone roadmaps, and salary projections.</p>
+                            <button class="btn-suite-action" style="border: 1px solid #2563eb; color: #2563eb;" onclick="switchSeekerTab('tab-advisor')">
+                                Generate Roadmap &rarr;
+                            </button>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 5. Top Recommendations Showcase -->
+                <section class="white-card">
+                    <div class="card-title-row">
+                        <div class="card-heading">
+                            <i class="fa-solid fa-sparkles" style="color: #2563eb;"></i> Top Recommendations Showcase
+                        </div>
+                        <button class="btn-nav-action btn-nav-search" style="padding: 5px 14px; font-size: 0.76rem;" onclick="openSearchVacanciesPage()">
+                            View All Recommendations
+                        </button>
+                    </div>
+
+                    <div id="seeker-recommendations-list" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px;">
+                        <!-- Dynamic Recommended Vacancies -->
+                    </div>
+                </section>
+
+            </div>
+
+            <!-- =========================================================
+                 TAB 2: SEARCH VACANCIES
+                 ========================================================= -->
+            <div id="tab-vacancies" class="tab-pane">
+                <div class="white-card">
+                    <div class="card-title-row">
+                        <div class="card-heading"><i class="fa-solid fa-magnifying-glass"></i> Explore Job Vacancies</div>
+                        <input type="text" id="job-search-input" placeholder="Search by title, skill, or location..." onkeyup="filterLiveJobs()" style="padding: 8px 14px; border: 1px solid var(--border-card); border-radius: 20px; font-size: 0.84rem; width: 280px;">
+                    </div>
+                    <div id="seeker-all-jobs-container" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 18px; margin-top: 14px;">
+                        <!-- Live Vacancies Rendered Here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- =========================================================
+                 TAB: AI RECOMMENDED JOBS (PRECISION MATCH ENGINE)
+                 ========================================================= -->
+            <div id="tab-recommended" class="tab-pane">
+                <div style="display: flex; flex-direction: column; gap: 20px;">
+                    
+                    <!-- Header Banner -->
+                    <div class="white-card" style="padding: 24px 28px; border-radius: 16px; background: linear-gradient(135deg, rgba(245,158,11,0.06) 0%, rgba(37,99,235,0.06) 100%); border: 1px solid rgba(245,158,11,0.2);">
+                        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;">
+                            <div>
+                                <div style="display: inline-flex; align-items: center; gap: 6px; background: #f59e0b; color: #fff; padding: 3px 10px; border-radius: 20px; font-size: 0.74rem; font-weight: 800; margin-bottom: 8px;">
+                                    <i class="fa-solid fa-wand-magic-sparkles"></i> AI Recommendation Engine
+                                </div>
+                                <h2 style="font-size: 1.45rem; font-weight: 900; color: var(--text-main); margin-bottom: 4px;">
+                                    AI-Matched Career Opportunities
+                                </h2>
+                                <p style="font-size: 0.84rem; color: var(--text-muted); max-width: 600px;">
+                                    High-precision recommendations generated by matching your profile skills, experience, and CGPA against live corporate vacancies.
+                                </p>
+                            </div>
+                            <div style="display: flex; gap: 10px; align-items: center;">
+                                <button class="btn-nav-action" onclick="renderAiRecommendedBoard()" style="background: rgba(245,158,11,0.12); color: #d97706; border: 1px solid rgba(245,158,11,0.3); font-weight: 800;">
+                                    <i class="fa-solid fa-arrows-rotate"></i> Re-Analyze Matches
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Filter Controls Bar -->
+                        <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; margin-top: 20px; padding-top: 16px; border-top: 1px solid rgba(245,158,11,0.15);">
+                            <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+                                <span style="font-size: 0.78rem; font-weight: 800; color: var(--text-main);">Filter Matches:</span>
+                                <button class="btn-rec-filter active" id="rf-all" onclick="filterRecJobs('all')" style="padding: 5px 12px; border-radius: 20px; font-size: 0.76rem; font-weight: 700; border: 1px solid var(--border-card); background: #2563eb; color: #fff; cursor: pointer;">
+                                    All Matches (<span id="cnt-rec-all">0</span>)
+                                </button>
+                                <button class="btn-rec-filter" id="rf-high" onclick="filterRecJobs('high')" style="padding: 5px 12px; border-radius: 20px; font-size: 0.76rem; font-weight: 700; border: 1px solid var(--border-card); background: var(--bg-card); color: var(--text-main); cursor: pointer;">
+                                    🔥 Top Picks 85%+ (<span id="cnt-rec-high">0</span>)
+                                </button>
+                                <button class="btn-rec-filter" id="rf-remote" onclick="filterRecJobs('remote')" style="padding: 5px 12px; border-radius: 20px; font-size: 0.76rem; font-weight: 700; border: 1px solid var(--border-card); background: var(--bg-card); color: var(--text-main); cursor: pointer;">
+                                    🌐 Remote Only
+                                </button>
+                            </div>
+                            <div style="font-size: 0.76rem; color: var(--text-muted); font-weight: 700;">
+                                Ranked by Neural Semantic Matching
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Recommended Job Grid Cards -->
+                    <div id="seeker-recommended-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 20px;">
+                        <!-- Rendered dynamically by renderAiRecommendedBoard() -->
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- =========================================================
+                 TAB 3: APPLICATION HISTORY
+                 ========================================================= -->
+            <div id="tab-history" class="tab-pane">
+                <div class="white-card">
+                    <div class="card-heading" style="margin-bottom: 16px;"><i class="fa-regular fa-file-lines"></i> Your Submitted Job Applications</div>
+                    <div style="overflow-x: auto;">
+                        <table style="width: 100%; border-collapse: collapse; text-align: left;">
+                            <thead>
+                                <tr style="border-bottom: 1px solid var(--border-card); font-size: 0.78rem; color: var(--text-dim); text-transform: uppercase;">
+                                    <th style="padding: 12px 10px;">Role & Company</th>
+                                    <th style="padding: 12px 10px;">Location</th>
+                                    <th style="padding: 12px 10px;">Date Applied</th>
+                                    <th style="padding: 12px 10px;">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="seeker-history-tbody">
+                                <!-- History Rows -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- =========================================================
+                 TAB: SAVED / BOOKMARKED JOBS
+                 ========================================================= -->
+            <div id="tab-saved" class="tab-pane">
+                <div style="display: flex; flex-direction: column; gap: 20px;">
+                    
+                    <div class="white-card" style="padding: 24px 28px; border-radius: 16px; background: linear-gradient(135deg, rgba(245,158,11,0.06) 0%, rgba(59,130,246,0.06) 100%); border: 1px solid rgba(245,158,11,0.2);">
+                        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 14px;">
+                            <div>
+                                <div style="display: inline-flex; align-items: center; gap: 6px; background: #f59e0b; color: #fff; padding: 3px 10px; border-radius: 20px; font-size: 0.74rem; font-weight: 800; margin-bottom: 8px;">
+                                    <i class="fa-solid fa-bookmark"></i> Candidate Bookmarks
+                                </div>
+                                <h2 style="font-size: 1.45rem; font-weight: 900; color: var(--text-main); margin-bottom: 4px;">
+                                    Saved Job Vacancies
+                                </h2>
+                                <p style="font-size: 0.84rem; color: var(--text-muted); max-width: 600px;">
+                                    Review and apply to corporate opportunities you have bookmarked for later.
+                                </p>
+                            </div>
+                            <div style="display: flex; gap: 10px; align-items: center;">
+                                <button class="btn-nav-action" onclick="openSearchVacanciesPage()" style="background: #2563eb; color: #fff; border: none; font-weight: 800;">
+                                    <i class="fa-solid fa-plus"></i> Find More Jobs
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="seeker-saved-jobs-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 20px;">
+                        <!-- Dynamically populated by renderSavedJobs() -->
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- =========================================================
+                 TAB 4: ATS RESUME MATCH (ADVANCED AI SCANNER & DIAGNOSTICS)
+                 ========================================================= -->
+            <div id="tab-ats" class="tab-pane">
+                <div style="max-width: 960px; margin: 0 auto; width: 100%; display: flex; flex-direction: column; gap: 22px;">
+                    
+                    <!-- Header Card -->
+                    <div class="white-card" style="padding: 24px 28px; border-radius: 16px; background: linear-gradient(135deg, rgba(168,85,247,0.06) 0%, rgba(59,130,246,0.06) 100%); border: 1px solid rgba(168,85,247,0.2);">
+                        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 14px;">
+                            <div>
+                                <div style="display: inline-flex; align-items: center; gap: 6px; background: #a855f7; color: #fff; padding: 3px 10px; border-radius: 20px; font-size: 0.74rem; font-weight: 800; margin-bottom: 8px;">
+                                    <i class="fa-solid fa-bullseye"></i> AI ATS Scanner &amp; Matcher
+                                </div>
+                                <h2 style="font-size: 1.45rem; font-weight: 900; color: var(--text-main); margin-bottom: 4px;">
+                                    ATS Resume Diagnostic &amp; Keyword Matcher
+                                </h2>
+                                <p style="font-size: 0.84rem; color: var(--text-muted); max-width: 600px;">
+                                    Scan your resume skills against real vacancy requirements to uncover missing keywords, formatting benchmarks, and hiring recruiter visibility.
+                                </p>
+                            </div>
+                            <div style="display: flex; gap: 8px;">
+                                <button class="btn-nav-action" onclick="syncAtsWithProfileSkills()" style="background: rgba(168,85,247,0.12); color: #a855f7; border: 1px solid rgba(168,85,247,0.25); font-weight: 800;">
+                                    <i class="fa-solid fa-wand-magic-sparkles"></i> Auto-Fill from Profile
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 2-Column Inputs Grid: Resume Skills vs Job Requirements -->
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                        
+                        <!-- Left Box: Candidate Resume Skills -->
+                        <div class="white-card" style="padding: 20px; border-radius: 14px; border: 1px solid var(--border-card);">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                                <label style="font-size: 0.86rem; font-weight: 800; color: var(--text-main); display: flex; align-items: center; gap: 6px;">
+                                    <i class="fa-solid fa-file-lines" style="color: #2563eb;"></i> Your Resume Skills &amp; Text
+                                </label>
+                                <span style="font-size: 0.72rem; color: #2563eb; font-weight: 700; cursor: pointer;" onclick="syncAtsWithProfileSkills()">Auto-Sync</span>
+                            </div>
+                            <textarea id="ats-resume-input" rows="4" class="form-input" style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid var(--border-card); font-size: 0.84rem; resize: vertical;" placeholder="e.g. JavaScript, React, Node.js, Python, PostgreSQL, REST APIs, Git, Cloud Architecture, CSS, HTML5"></textarea>
+                            <div style="font-size: 0.72rem; color: var(--text-dim); margin-top: 6px;">Paste skills or paste your full resume summary text.</div>
+                        </div>
+
+                        <!-- Right Box: Target Vacancy Selector / Job Description -->
+                        <div class="white-card" style="padding: 20px; border-radius: 14px; border: 1px solid var(--border-card);">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                                <label style="font-size: 0.86rem; font-weight: 800; color: var(--text-main); display: flex; align-items: center; gap: 6px;">
+                                    <i class="fa-solid fa-briefcase" style="color: #a855f7;"></i> Target Job Requirements
+                                </label>
+                                <select id="ats-quick-vacancy-select" onchange="handleAtsQuickVacancyChange()" style="font-size: 0.74rem; font-weight: 700; padding: 2px 8px; border-radius: 6px; border: 1px solid var(--border-card); background: var(--bg-body); color: var(--text-main);">
+                                    <option value="">-- Load from Active Job --</option>
+                                </select>
+                            </div>
+                            <textarea id="ats-job-input" rows="4" class="form-input" style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid var(--border-card); font-size: 0.84rem; resize: vertical;" placeholder="e.g. Looking for Frontend & Full-Stack Architect with React, Node.js, Docker, Microservices, TypeScript, CI/CD, PostgreSQL experience."></textarea>
+                            <div style="font-size: 0.72rem; color: var(--text-dim); margin-top: 6px;">Select a live job from the dropdown or paste any JD.</div>
+                        </div>
+
+                    </div>
+
+                    <!-- Calculate Button -->
+                    <button onclick="runAtsCalculation()" style="background: linear-gradient(135deg, #a855f7, #3b82f6); color: #fff; border: none; padding: 14px; border-radius: 10px; font-weight: 800; font-size: 0.95rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; box-shadow: 0 4px 16px rgba(168,85,247,0.3); transition: all 0.2s ease;">
+                        <i class="fa-solid fa-bolt"></i> Run Comprehensive ATS Scan &amp; Keyword Match
+                    </button>
+
+                    <!-- Results Dashboard (Hidden until calculated) -->
+                    <div id="ats-result-box" style="display: none; display: flex; flex-direction: column; gap: 18px;">
+                        
+                        <!-- Top Score Card + 4 Pillars -->
+                        <div class="white-card" style="padding: 24px; border-radius: 16px; border: 1px solid var(--border-card); display: grid; grid-template-columns: 240px 1fr; gap: 24px; align-items: center;">
+                            
+                            <!-- Circular Score -->
+                            <div style="text-align: center; border-right: 1px solid var(--border-card); padding-right: 20px;">
+                                <div style="width: 110px; height: 110px; border-radius: 50%; border: 6px solid #a855f7; display: flex; flex-direction: column; align-items: center; justify-content: center; margin: 0 auto 10px auto; background: rgba(168,85,247,0.06);">
+                                    <span id="ats-score-display" style="font-size: 2rem; font-weight: 900; color: #a855f7; line-height: 1;">88%</span>
+                                    <span style="font-size: 0.68rem; font-weight: 800; color: var(--text-dim); text-transform: uppercase;">ATS Score</span>
+                                </div>
+                                <div id="ats-rating-tag" style="font-size: 0.8rem; font-weight: 800; color: #10b981; background: rgba(16,185,129,0.1); padding: 3px 10px; border-radius: 20px; display: inline-block;">
+                                    🟢 Strong Recruiter Match
+                                </div>
+                            </div>
+
+                            <!-- 4 Diagnostic Pillars -->
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
+                                
+                                <div style="background: var(--bg-body); padding: 12px 14px; border-radius: 10px; border: 1px solid var(--border-card);">
+                                    <div style="display: flex; justify-content: space-between; font-size: 0.78rem; font-weight: 800; margin-bottom: 6px;">
+                                        <span>Hard Technical Skills</span>
+                                        <span style="color: #10b981;" id="ats-p1-score">92%</span>
+                                    </div>
+                                    <div style="width: 100%; height: 6px; background: var(--border-card); border-radius: 4px; overflow: hidden;">
+                                        <div id="ats-p1-bar" style="width: 92%; height: 100%; background: #10b981; border-radius: 4px;"></div>
+                                    </div>
+                                </div>
+
+                                <div style="background: var(--bg-body); padding: 12px 14px; border-radius: 10px; border: 1px solid var(--border-card);">
+                                    <div style="display: flex; justify-content: space-between; font-size: 0.78rem; font-weight: 800; margin-bottom: 6px;">
+                                        <span>Experience Alignment</span>
+                                        <span style="color: #3b82f6;" id="ats-p2-score">85%</span>
+                                    </div>
+                                    <div style="width: 100%; height: 6px; background: var(--border-card); border-radius: 4px; overflow: hidden;">
+                                        <div id="ats-p2-bar" style="width: 85%; height: 100%; background: #3b82f6; border-radius: 4px;"></div>
+                                    </div>
+                                </div>
+
+                                <div style="background: var(--bg-body); padding: 12px 14px; border-radius: 10px; border: 1px solid var(--border-card);">
+                                    <div style="display: flex; justify-content: space-between; font-size: 0.78rem; font-weight: 800; margin-bottom: 6px;">
+                                        <span>Impact &amp; Action Verbs</span>
+                                        <span style="color: #a855f7;" id="ats-p3-score">88%</span>
+                                    </div>
+                                    <div style="width: 100%; height: 6px; background: var(--border-card); border-radius: 4px; overflow: hidden;">
+                                        <div id="ats-p3-bar" style="width: 88%; height: 100%; background: #a855f7; border-radius: 4px;"></div>
+                                    </div>
+                                </div>
+
+                                <div style="background: var(--bg-body); padding: 12px 14px; border-radius: 10px; border: 1px solid var(--border-card);">
+                                    <div style="display: flex; justify-content: space-between; font-size: 0.78rem; font-weight: 800; margin-bottom: 6px;">
+                                        <span>ATS Parsing Hierarchy</span>
+                                        <span style="color: #10b981;" id="ats-p4-score">96%</span>
+                                    </div>
+                                    <div style="width: 100%; height: 6px; background: var(--border-card); border-radius: 4px; overflow: hidden;">
+                                        <div id="ats-p4-bar" style="width: 96%; height: 100%; background: #10b981; border-radius: 4px;"></div>
+                                    </div>
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                        <!-- Matched vs. Missing Keywords Breakdown -->
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                            
+                            <!-- Matched Keywords -->
+                            <div class="white-card" style="padding: 20px; border-radius: 14px; border: 1px solid var(--border-card);">
+                                <div style="font-size: 0.9rem; font-weight: 800; color: #10b981; margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">
+                                    <i class="fa-solid fa-circle-check"></i> Matched ATS Keywords (<span id="ats-matched-cnt">0</span>)
+                                </div>
+                                <div id="ats-matched-tags" style="display: flex; flex-wrap: wrap; gap: 6px;">
+                                    <!-- Populated dynamically -->
+                                </div>
+                            </div>
+
+                            <!-- Missing Keywords -->
+                            <div class="white-card" style="padding: 20px; border-radius: 14px; border: 1px solid var(--border-card);">
+                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                                    <div style="font-size: 0.9rem; font-weight: 800; color: #ef4444; display: flex; align-items: center; gap: 8px;">
+                                        <i class="fa-solid fa-circle-xmark"></i> Missing Critical Keywords (<span id="ats-missing-cnt">0</span>)
+                                    </div>
+                                    <button onclick="addMissingKeywordsToProfile()" style="font-size: 0.72rem; font-weight: 800; color: #2563eb; background: rgba(59,130,246,0.1); border: 1px solid rgba(59,130,246,0.25); padding: 3px 8px; border-radius: 6px; cursor: pointer;">
+                                        + Add to Profile
+                                    </button>
+                                </div>
+                                <div id="ats-missing-tags" style="display: flex; flex-wrap: wrap; gap: 6px;">
+                                    <!-- Populated dynamically -->
+                                </div>
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- =========================================================
+                 TAB 5: CANDIDATE PROFILE (EXACT SCREENSHOT DESIGN)
+                 ========================================================= -->
+            <div id="tab-profile" class="tab-pane">
+                <div style="max-width: 680px; margin: 0 auto; width: 100%;">
+                    
+                    <div style="margin-bottom: 24px;">
+                        <h2 style="font-size: 1.55rem; font-weight: 800; color: var(--text-main); margin-bottom: 6px;">
+                            Edit Candidate Profile
+                        </h2>
+                        <p style="font-size: 0.84rem; color: var(--text-muted);">
+                            Keep your information up to date so companies can reach out to you with relevant offers.
+                        </p>
+                    </div>
+
+                    <div class="white-card" style="padding: 28px 32px; border-radius: 16px; border: 1px solid var(--border-card); box-shadow: 0 4px 20px rgba(0,0,0,0.03);">
+                        <form id="form-seeker-profile">
+                            
+                            <!-- Profile Photo Row -->
+                            <div style="display: flex; align-items: center; gap: 18px; padding-bottom: 22px; margin-bottom: 22px; border-bottom: 1px solid var(--border-card);">
+                                <div style="position: relative; width: 68px; height: 68px; cursor: pointer;" onclick="document.getElementById('seeker-avatar-file').click()">
+                                    <img id="seeker-avatar-preview" src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150&auto=format&fit=crop&q=80" alt="Avatar" style="width: 68px; height: 68px; border-radius: 50%; object-fit: cover; border: 3px solid #3b82f6; display: block; background: #e2e8f0;">
+                                    <div style="position: absolute; bottom: 0; right: 0; width: 22px; height: 22px; border-radius: 50%; background: #2563eb; color: #fff; display: flex; align-items: center; justify-content: center; font-size: 0.65rem; border: 2px solid #fff; box-shadow: 0 2px 5px rgba(0,0,0,0.2);">
+                                        <i class="fa-solid fa-camera"></i>
+                                    </div>
+                                    <input type="file" id="seeker-avatar-file" accept="image/*" style="display: none;" onchange="previewSeekerAvatar(event)">
+                                </div>
+                                <div>
+                                    <div style="font-size: 0.98rem; font-weight: 800; color: var(--text-main); margin-bottom: 3px;">Profile Photo</div>
+                                    <div style="font-size: 0.76rem; color: var(--text-dim);">Upload a professional JPG or PNG photo (max 10MB).</div>
+                                </div>
+                            </div>
+
+                            <!-- 2-Column Inputs Grid -->
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-bottom: 18px;">
+                                <div>
+                                    <label style="font-size: 0.8rem; font-weight: 800; color: var(--text-main); display: block; margin-bottom: 6px;">Full Name</label>
+                                    <input type="text" id="seeker-name-input" class="form-input" style="width: 100%; padding: 11px 14px; border-radius: 8px; border: 1px solid var(--border-card); font-size: 0.86rem; background: var(--bg-card); color: var(--text-main);" placeholder="Mrmaheshbabu" required>
+                                </div>
+                                <div>
+                                    <label style="font-size: 0.8rem; font-weight: 800; color: var(--text-main); display: block; margin-bottom: 6px;">Email Address</label>
+                                    <input type="email" id="seeker-email-input" class="form-input" style="width: 100%; padding: 11px 14px; border-radius: 8px; border: 1px solid var(--border-card); font-size: 0.86rem; background: var(--bg-body); color: var(--text-muted);" placeholder="mrmaheshbabu222@gmail.com" readonly>
+                                    <div style="font-size: 0.72rem; color: var(--text-dim); margin-top: 4px;">Email address cannot be changed.</div>
+                                </div>
+                            </div>
+
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-bottom: 18px;">
+                                <div>
+                                    <label style="font-size: 0.8rem; font-weight: 800; color: var(--text-main); display: block; margin-bottom: 6px;">Highest Qualification</label>
+                                    <input type="text" id="seeker-qualification-input" class="form-input" style="width: 100%; padding: 11px 14px; border-radius: 8px; border: 1px solid var(--border-card); font-size: 0.86rem; background: var(--bg-card); color: var(--text-main);" placeholder="Bachelor's Degree" value="Bachelor's Degree">
+                                </div>
+                                <div>
+                                    <label style="font-size: 0.8rem; font-weight: 800; color: var(--text-main); display: block; margin-bottom: 6px;">Cumulative CGPA / Score</label>
+                                    <input type="text" id="seeker-cgpa-input" class="form-input" style="width: 100%; padding: 11px 14px; border-radius: 8px; border: 1px solid var(--border-card); font-size: 0.86rem; background: var(--bg-card); color: var(--text-main);" placeholder="8.5" value="8.5">
+                                </div>
+                            </div>
+
+                            <div style="margin-bottom: 24px;">
+                                <label style="font-size: 0.8rem; font-weight: 800; color: var(--text-main); display: block; margin-bottom: 6px;">Professional Skills</label>
+                                <input type="text" id="seeker-skills-input" class="form-input" style="width: 100%; padding: 11px 14px; border-radius: 8px; border: 1px solid var(--border-card); font-size: 0.86rem; background: var(--bg-card); color: var(--text-main);" placeholder="JavaScript, React, CSS, Node.js" value="JavaScript, React, CSS, Node.js">
+                                <div style="font-size: 0.72rem; color: var(--text-dim); margin-top: 4px;">List your technical skills separated by commas.</div>
+                            </div>
+
+                            <!-- Submit Button -->
+                            <button type="submit" style="background: #3b82f6; color: #fff; border: none; padding: 11px 22px; border-radius: 8px; font-weight: 800; font-size: 0.88rem; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; box-shadow: 0 4px 14px rgba(59, 130, 246, 0.3); transition: all 0.2s ease;">
+                                <i class="fa-solid fa-download" style="transform: rotate(180deg);"></i> Save Profile Settings
+                            </button>
+
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- =========================================================
+                 TAB 6: AI CAREER ADVISOR (ADVANCED ROADMAP & COACHING SUITE)
+                 ========================================================= -->
+            <div id="tab-advisor" class="tab-pane">
+                <div style="max-width: 960px; margin: 0 auto; width: 100%; display: flex; flex-direction: column; gap: 20px;">
+                    
+                    <!-- Hero Header Card -->
+                    <div class="white-card" style="padding: 24px 28px; border-radius: 16px; background: linear-gradient(135deg, rgba(37,99,235,0.06) 0%, rgba(13,148,136,0.06) 100%); border: 1px solid rgba(59,130,246,0.2);">
+                        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;">
+                            <div>
+                                <div style="display: inline-flex; align-items: center; gap: 6px; background: #2563eb; color: #fff; padding: 3px 10px; border-radius: 20px; font-size: 0.74rem; font-weight: 800; margin-bottom: 8px;">
+                                    <i class="fa-solid fa-compass"></i> Neural Growth Engine
+                                </div>
+                                <h2 style="font-size: 1.45rem; font-weight: 900; color: var(--text-main); margin-bottom: 4px;">
+                                    AI Career Advisor &amp; Skill Progression
+                                </h2>
+                                <p style="font-size: 0.84rem; color: var(--text-muted); max-width: 580px;">
+                                    Personalized career roadmaps, market benchmarking, and high-impact milestones tailored to your target engineering roles.
+                                </p>
+                            </div>
+                            
+                            <!-- Career Readiness Badge -->
+                            <div style="text-align: center; background: var(--bg-card); border: 1px solid var(--border-card); padding: 14px 20px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.04);">
+                                <div style="font-size: 1.7rem; font-weight: 900; color: #2563eb;" id="advisor-readiness-score">86%</div>
+                                <div style="font-size: 0.74rem; font-weight: 800; color: var(--text-main); text-transform: uppercase; letter-spacing: 0.5px;">Market Readiness</div>
+                                <div style="font-size: 0.68rem; color: #10b981; font-weight: 700; margin-top: 2px;">🟢 High Demand</div>
+                            </div>
+                        </div>
+
+                        <!-- Target Role Selector Filter -->
+                        <div style="display: grid; grid-template-columns: 1.2fr 1fr auto; gap: 12px; align-items: end; margin-top: 20px; padding-top: 18px; border-top: 1px solid rgba(59,130,246,0.15);">
+                            <div>
+                                <label style="font-size: 0.78rem; font-weight: 800; color: var(--text-main); display: block; margin-bottom: 4px;">Target Engineering Role</label>
+                                <select id="advisor-target-role" class="form-select" onchange="generateAiRoadmap()" style="padding: 10px 12px; font-size: 0.86rem; border-radius: 8px;">
+                                    <option value="fullstack">Senior Full Stack Engineer (React + Node.js + Cloud)</option>
+                                    <option value="ai">AI / ML Engineer &amp; LLM Application Developer</option>
+                                    <option value="devops">Cloud DevOps &amp; Kubernetes Infrastructure Lead</option>
+                                    <option value="frontend">Frontend Architect &amp; Design Systems Specialist</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label style="font-size: 0.78rem; font-weight: 800; color: var(--text-main); display: block; margin-bottom: 4px;">Current Experience Horizon</label>
+                                <select id="advisor-exp-level" class="form-select" onchange="generateAiRoadmap()" style="padding: 10px 12px; font-size: 0.86rem; border-radius: 8px;">
+                                    <option value="junior">Entry / Associate (0 - 2 Years)</option>
+                                    <option value="mid" selected>Mid-Level Developer (2 - 5 Years)</option>
+                                    <option value="senior">Senior / Lead (5+ Years)</option>
+                                </select>
+                            </div>
+                            <div>
+                                <button class="btn-nav-action" onclick="generateAiRoadmap()" style="background: #2563eb; color: #fff; border: none; height: 42px; padding: 0 20px; font-weight: 800; border-radius: 8px; box-shadow: 0 4px 14px rgba(37,99,235,0.3);">
+                                    <i class="fa-solid fa-wand-magic-sparkles"></i> Refresh Plan
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 3-Column KPI Metric Cards -->
+                    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px;">
+                        
+                        <!-- Metric 1: Benchmark Salary -->
+                        <div class="white-card" style="padding: 18px; border-radius: 14px; border: 1px solid var(--border-card);">
+                            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
+                                <div style="width: 36px; height: 36px; border-radius: 8px; background: rgba(16,185,129,0.1); color: #10b981; display: flex; align-items: center; justify-content: center; font-size: 1rem;">
+                                    <i class="fa-solid fa-wallet"></i>
+                                </div>
+                                <div>
+                                    <div style="font-size: 0.74rem; color: var(--text-muted); font-weight: 700;">Target Package Benchmark</div>
+                                    <div id="advisor-salary-bench" style="font-size: 1.1rem; font-weight: 900; color: var(--text-main);">₹14 - ₹28 LPA</div>
+                                </div>
+                            </div>
+                            <div style="font-size: 0.72rem; color: #10b981; font-weight: 700;">+35% above regional baseline</div>
+                        </div>
+
+                        <!-- Metric 2: Market Job Openings -->
+                        <div class="white-card" style="padding: 18px; border-radius: 14px; border: 1px solid var(--border-card);">
+                            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
+                                <div style="width: 36px; height: 36px; border-radius: 8px; background: rgba(59,130,246,0.1); color: #2563eb; display: flex; align-items: center; justify-content: center; font-size: 1rem;">
+                                    <i class="fa-solid fa-briefcase"></i>
+                                </div>
+                                <div>
+                                    <div style="font-size: 0.74rem; color: var(--text-muted); font-weight: 700;">Active Market Openings</div>
+                                    <div style="font-size: 1.1rem; font-weight: 900; color: var(--text-main);">2,450+ Vacancies</div>
+                                </div>
+                            </div>
+                            <div style="font-size: 0.72rem; color: #2563eb; font-weight: 700;">High recruiter hiring surge</div>
+                        </div>
+
+                        <!-- Metric 3: Time to Promotion -->
+                        <div class="white-card" style="padding: 18px; border-radius: 14px; border: 1px solid var(--border-card);">
+                            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
+                                <div style="width: 36px; height: 36px; border-radius: 8px; background: rgba(168,85,247,0.1); color: #a855f7; display: flex; align-items: center; justify-content: center; font-size: 1rem;">
+                                    <i class="fa-solid fa-rocket"></i>
+                                </div>
+                                <div>
+                                    <div style="font-size: 0.74rem; color: var(--text-muted); font-weight: 700;">Estimated Timeline</div>
+                                    <div style="font-size: 1.1rem; font-weight: 900; color: var(--text-main);">3 - 6 Months</div>
+                                </div>
+                            </div>
+                            <div style="font-size: 0.72rem; color: #a855f7; font-weight: 700;">With structured milestone completion</div>
+                        </div>
+
+                    </div>
+
+                    <!-- 2-Column Split: Milestone Roadmap + Interactive AI Career Coach -->
+                    <div style="display: grid; grid-template-columns: 1.3fr 1fr; gap: 20px; align-items: flex-start;">
+                        
+                        <!-- Left: Interactive Milestone Roadmap -->
+                        <div class="white-card" style="padding: 24px; border-radius: 16px; border: 1px solid var(--border-card);">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; padding-bottom: 12px; border-bottom: 1px solid var(--border-card);">
+                                <div>
+                                    <h3 style="font-size: 1.05rem; font-weight: 800; color: var(--text-main);">🎯 Personalized Step-by-Step Roadmap</h3>
+                                    <small style="color: var(--text-muted);">Check completed milestones to track your career progression</small>
+                                </div>
+                                <span id="advisor-progress-pill" style="font-size: 0.74rem; font-weight: 800; background: rgba(16,185,129,0.1); color: #10b981; padding: 4px 10px; border-radius: 20px;">
+                                    2 of 4 Completed
+                                </span>
+                            </div>
+
+                            <div id="advisor-milestones-container" style="display: flex; flex-direction: column; gap: 14px;">
+                                <!-- Rendered dynamically by generateAiRoadmap() -->
+                            </div>
+                        </div>
+
+                        <!-- Right Column: Certifications & AI Career Q&A Coach -->
+                        <div style="display: flex; flex-direction: column; gap: 16px;">
+                            
+                            <!-- Recommended Certifications Card -->
+                            <div class="white-card" style="padding: 20px; border-radius: 16px; border: 1px solid var(--border-card);">
+                                <div style="font-size: 0.95rem; font-weight: 800; color: var(--text-main); margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">
+                                    <i class="fa-solid fa-award" style="color: #f59e0b;"></i> High-ROI Certifications
+                                </div>
+
+                                <div id="advisor-certs-container" style="display: flex; flex-direction: column; gap: 10px;">
+                                    <!-- Rendered dynamically -->
+                                </div>
+                            </div>
+
+                            <!-- AI Career Q&A Coach -->
+                            <div class="white-card" style="padding: 20px; border-radius: 16px; border: 1px solid var(--border-card);">
+                                <div style="font-size: 0.95rem; font-weight: 800; color: var(--text-main); margin-bottom: 10px; display: flex; align-items: center; gap: 8px;">
+                                    <i class="fa-solid fa-lightbulb" style="color: #2563eb;"></i> AI Career Assistant Q&amp;A
+                                </div>
+
+                                <div style="display: flex; flex-direction: column; gap: 6px; margin-bottom: 12px;">
+                                    <button class="btn-action-sm" onclick="askAdvisorQuestion('salary')" style="text-align: left; background: rgba(37,99,235,0.06); border: 1px solid rgba(37,99,235,0.15); color: #2563eb; padding: 7px 10px; border-radius: 8px; font-size: 0.76rem; font-weight: 700; cursor: pointer;">
+                                        💼 How do I negotiate top-band salary?
+                                    </button>
+                                    <button class="btn-action-sm" onclick="askAdvisorQuestion('projects')" style="text-align: left; background: rgba(16,185,129,0.06); border: 1px solid rgba(16,185,129,0.15); color: #10b981; padding: 7px 10px; border-radius: 8px; font-size: 0.76rem; font-weight: 700; cursor: pointer;">
+                                        🚀 What portfolio projects get noticed?
+                                    </button>
+                                    <button class="btn-action-sm" onclick="askAdvisorQuestion('switch')" style="text-align: left; background: rgba(168,85,247,0.06); border: 1px solid rgba(168,85,247,0.15); color: #a855f7; padding: 7px 10px; border-radius: 8px; font-size: 0.76rem; font-weight: 700; cursor: pointer;">
+                                        🎯 How to crack senior tech interviews?
+                                    </button>
+                                </div>
+
+                                <div id="advisor-qa-answer-box" style="background: var(--bg-body); border: 1px solid var(--border-card); padding: 12px; border-radius: 10px; font-size: 0.8rem; line-height: 1.45; color: var(--text-main);">
+                                    <strong>💡 Advisor Tip:</strong> Click any question above for instant tailored advice based on your current technical portfolio.
+                                </div>
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- =========================================================
+                 TAB 7: AI RESUME BUILDER (PDF FORMAT BASED ON PROFILE)
+                 ========================================================= -->
+            <div id="tab-resume" class="tab-pane">
+                <div class="white-card" style="max-width: 1000px; margin: 0 auto; width: 100%; padding: 24px;">
+                    
+                    <!-- Top AI Control Bar -->
+                    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 14px; margin-bottom: 22px; padding-bottom: 16px; border-bottom: 1px solid var(--border-card);">
+                        <div>
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                <span style="background: rgba(16,185,129,0.12); color: #10b981; padding: 4px 10px; border-radius: 20px; font-size: 0.76rem; font-weight: 800;">
+                                    <i class="fa-solid fa-wand-magic-sparkles"></i> AI Powered
+                                </span>
+                                <h3 style="font-size: 1.3rem; font-weight: 800; color: var(--text-main);">AI Resume Builder (PDF Format)</h3>
+                            </div>
+                            <p style="font-size: 0.82rem; color: var(--text-muted); margin-top: 4px;">
+                                Automatically generated from your registered profile &amp; skill database in standardized ATS-compliant PDF format.
+                            </p>
+                        </div>
+                        <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+                            <button class="btn-nav-action" onclick="generateAiResumeFromProfile()" style="background: rgba(59,130,246,0.1); color: #2563eb; border: 1px solid rgba(59,130,246,0.25); font-weight: 800;">
+                                <i class="fa-solid fa-arrows-rotate"></i> Sync Profile
+                            </button>
+                            <button class="btn-nav-action" onclick="downloadAiResumePdf()" style="background: linear-gradient(135deg, #10b981, #059669); color: #fff; border: none; font-weight: 800; box-shadow: 0 4px 12px rgba(16,185,129,0.25);">
+                                <i class="fa-solid fa-file-pdf"></i> Download PDF Resume
+                            </button>
+                            <button class="btn-nav-action" onclick="printAiResumeDocument()" style="background: transparent; color: var(--text-main); border: 1px solid var(--border-card);">
+                                <i class="fa-solid fa-print"></i> Print
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Layout: Controls + Live PDF Sheet -->
+                    <div style="display: grid; grid-template-columns: 320px 1fr; gap: 24px; align-items: flex-start;">
+                        
+                        <!-- Left: Live Customizer Panel -->
+                        <div style="background: var(--bg-body); border: 1px solid var(--border-card); padding: 18px; border-radius: 12px; display: flex; flex-direction: column; gap: 12px;">
+                            <div style="font-size: 0.86rem; font-weight: 800; color: var(--text-main); display: flex; align-items: center; gap: 6px;">
+                                <i class="fa-solid fa-sliders" style="color: #2563eb;"></i> Quick Customizer
+                            </div>
+
+                            <div>
+                                <label style="font-size: 0.76rem; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 4px;">Target Professional Title</label>
+                                <input type="text" id="rb-target-title" class="form-input" value="Software Engineer / Full Stack Developer" oninput="updateResumeLivePreview()" style="font-size: 0.82rem; padding: 8px 10px;">
+                            </div>
+
+                            <div>
+                                <label style="font-size: 0.76rem; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 4px;">Contact Phone</label>
+                                <input type="text" id="rb-phone" class="form-input" value="+91 98765 43210" oninput="updateResumeLivePreview()" style="font-size: 0.82rem; padding: 8px 10px;">
+                            </div>
+
+                            <div>
+                                <label style="font-size: 0.76rem; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 4px;">Location</label>
+                                <input type="text" id="rb-location" class="form-input" value="Visakhapatnam, Andhra Pradesh, India" oninput="updateResumeLivePreview()" style="font-size: 0.82rem; padding: 8px 10px;">
+                            </div>
+
+                            <div>
+                                <label style="font-size: 0.76rem; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 4px;">Highest Qualification &amp; CGPA</label>
+                                <input type="text" id="rb-education" class="form-input" value="B.Tech Computer Science Engineering (CGPA: 8.8 / 10)" oninput="updateResumeLivePreview()" style="font-size: 0.82rem; padding: 8px 10px;">
+                            </div>
+
+                            <div>
+                                <label style="font-size: 0.76rem; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 4px;">Technical Skills (Comma separated)</label>
+                                <textarea id="rb-skills" class="form-input" rows="2" oninput="updateResumeLivePreview()" style="font-size: 0.82rem; padding: 8px 10px; resize: vertical;">JavaScript, Python, React.js, Node.js, SQL, REST APIs, Git, Cloud Architecture, TailwindCSS</textarea>
+                            </div>
+
+                            <div>
+                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+                                    <label style="font-size: 0.76rem; font-weight: 700; color: var(--text-muted);">AI Executive Summary</label>
+                                    <button onclick="polishAiSummary()" style="font-size: 0.7rem; color: #a855f7; background: none; border: none; font-weight: 800; cursor: pointer;">✨ AI Polish</button>
+                                </div>
+                                <textarea id="rb-summary" class="form-input" rows="3" oninput="updateResumeLivePreview()" style="font-size: 0.82rem; padding: 8px 10px; resize: vertical;">Results-driven Software Engineer with a solid foundation in modern full-stack development, distributed databases, and cloud services. Proven capability to engineer performant scalable web applications and collaborate effectively within agile development teams.</textarea>
+                            </div>
+
+                            <button onclick="showToast('Resume data synchronized with profile!', 'success')" class="btn-nav-action" style="background: #2563eb; color: #fff; border: none; justify-content: center; font-weight: 800; font-size: 0.82rem; padding: 9px; margin-top: 4px;">
+                                <i class="fa-solid fa-floppy-disk"></i> Save to Profile
+                            </button>
+                        </div>
+
+                        <!-- Right: Live A4 PDF Sheet Container -->
+                        <div style="background: #e2e8f0; padding: 18px; border-radius: 12px; overflow-x: auto; box-shadow: inset 0 2px 6px rgba(0,0,0,0.06); display: flex; justify-content: center;">
+                            
+                            <!-- Printable/Downloadable Sheet Element -->
+                            <div id="ai-resume-pdf-canvas" style="background: #ffffff; width: 100%; max-width: 620px; min-height: 840px; padding: 36px 38px; box-shadow: 0 10px 30px rgba(0,0,0,0.12); color: #1e293b; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 13px; line-height: 1.5; border-radius: 2px;">
+                                
+                                <!-- Sheet Header -->
+                                <div style="border-bottom: 2px solid #2563eb; padding-bottom: 14px; margin-bottom: 18px;">
+                                    <h1 id="pdf-cand-name" style="font-size: 22px; font-weight: 900; color: #0f172a; margin: 0 0 4px 0; letter-spacing: -0.5px; text-transform: uppercase;">
+                                        Candidate Name
+                                    </h1>
+                                    <div id="pdf-cand-title" style="font-size: 13px; font-weight: 700; color: #2563eb; margin-bottom: 8px;">
+                                        Software Engineer / Full Stack Developer
+                                    </div>
+                                    <div style="display: flex; flex-wrap: wrap; gap: 14px; font-size: 11.5px; color: #475569;">
+                                        <span><i class="fa-solid fa-envelope" style="color: #2563eb;"></i> <span id="pdf-cand-email">candidate@example.com</span></span>
+                                        <span><i class="fa-solid fa-phone" style="color: #2563eb;"></i> <span id="pdf-cand-phone">+91 98765 43210</span></span>
+                                        <span><i class="fa-solid fa-location-dot" style="color: #2563eb;"></i> <span id="pdf-cand-location">Visakhapatnam, India</span></span>
+                                    </div>
+                                </div>
+
+                                <!-- Section: Professional Summary -->
+                                <div style="margin-bottom: 16px;">
+                                    <div style="font-size: 12px; font-weight: 800; color: #0f172a; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1px solid #e2e8f0; padding-bottom: 3px; margin-bottom: 6px;">
+                                        Professional Summary
+                                    </div>
+                                    <p id="pdf-cand-summary" style="margin: 0; font-size: 12px; color: #334155; line-height: 1.5; text-align: justify;">
+                                        Results-driven Software Engineer with a solid foundation in modern full-stack development, distributed databases, and cloud services. Proven capability to engineer performant scalable web applications and collaborate effectively within agile development teams.
+                                    </p>
+                                </div>
+
+                                <!-- Section: Core Technical Skills -->
+                                <div style="margin-bottom: 16px;">
+                                    <div style="font-size: 12px; font-weight: 800; color: #0f172a; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1px solid #e2e8f0; padding-bottom: 3px; margin-bottom: 8px;">
+                                        Core Technical Skills
+                                    </div>
+                                    <div id="pdf-cand-skills-tags" style="display: flex; flex-wrap: wrap; gap: 5px;">
+                                        <!-- Skill pills -->
+                                    </div>
+                                </div>
+
+                                <!-- Section: Experience & Featured Projects -->
+                                <div style="margin-bottom: 16px;">
+                                    <div style="font-size: 12px; font-weight: 800; color: #0f172a; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1px solid #e2e8f0; padding-bottom: 3px; margin-bottom: 8px;">
+                                        Experience &amp; Key Projects
+                                    </div>
+                                    
+                                    <!-- Project 1 -->
+                                    <div style="margin-bottom: 10px;">
+                                        <div style="display: flex; justify-content: space-between; align-items: baseline;">
+                                            <strong style="font-size: 12.5px; color: #0f172a;">Smart Job Vacancy Finder &amp; AI Career Suite</strong>
+                                            <span style="font-size: 11px; color: #64748b;">2024 - Present</span>
+                                        </div>
+                                        <div style="font-size: 11.5px; color: #2563eb; font-weight: 600; margin-bottom: 3px;">Lead Frontend &amp; Cloud Integration Developer</div>
+                                        <ul style="margin: 0; padding-left: 18px; font-size: 11.5px; color: #334155; line-height: 1.4;">
+                                            <li>Engineered responsive web portals with Supabase backend, real-time database indexing, and automated candidate screening algorithms.</li>
+                                            <li>Integrated ATS score calculation and skills matching engine resulting in 40% faster candidate shortlisting.</li>
+                                        </ul>
+                                    </div>
+
+                                    <!-- Project 2 -->
+                                    <div>
+                                        <div style="display: flex; justify-content: space-between; align-items: baseline;">
+                                            <strong style="font-size: 12.5px; color: #0f172a;">Scalable Cloud Microservices Architecture</strong>
+                                            <span style="font-size: 11px; color: #64748b;">2023 - 2024</span>
+                                        </div>
+                                        <div style="font-size: 11.5px; color: #2563eb; font-weight: 600; margin-bottom: 3px;">Full Stack Engineer</div>
+                                        <ul style="margin: 0; padding-left: 18px; font-size: 11.5px; color: #334155; line-height: 1.4;">
+                                            <li>Designed RESTful microservices architecture handling high throughput API transactions with PostgreSQL query optimization.</li>
+                                        </ul>
+                                    </div>
+                                </div>
+
+                                <!-- Section: Education -->
+                                <div>
+                                    <div style="font-size: 12px; font-weight: 800; color: #0f172a; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1px solid #e2e8f0; padding-bottom: 3px; margin-bottom: 8px;">
+                                        Education &amp; Credentials
+                                    </div>
+                                    <div style="display: flex; justify-content: space-between; align-items: baseline;">
+                                        <strong id="pdf-cand-edu" style="font-size: 12px; color: #0f172a;">Bachelor of Technology in Computer Science</strong>
+                                        <span style="font-size: 11px; font-weight: 700; color: #10b981;">Certified</span>
+                                    </div>
+                                    <div style="font-size: 11.5px; color: #475569; margin-top: 2px;">
+                                        Accredited University / Technical Institution &bull; First Class with Distinction
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- =========================================================
+                 TAB 8: AI MOCK INTERVIEW
+                 ========================================================= -->
+            <div id="tab-interview" class="tab-pane">
+                <div class="white-card" style="max-width: 750px; margin: 0 auto; width: 100%; text-align: center; padding: 40px 20px;">
+                    <div style="width: 60px; height: 60px; border-radius: 50%; background: rgba(37,99,235,0.12); color: #2563eb; display: flex; align-items: center; justify-content: center; font-size: 1.8rem; margin: 0 auto 16px auto;">
+                        <i class="fa-solid fa-microphone-lines"></i>
+                    </div>
+                    <h3 style="font-size: 1.3rem; font-weight: 800; margin-bottom: 6px;">AI Simulated Technical Interview</h3>
+                    <p style="font-size: 0.86rem; color: var(--text-muted); max-width: 480px; margin: 0 auto 20px auto;">
+                        Practice live technical & behavioral interview questions tailored to Full-Stack and Engineering roles.
+                    </p>
+                    <button onclick="showToast('AI Mock Interview session started!', 'success')" class="btn-nav-action" style="background: #2563eb; color: #fff; border: none; padding: 12px 24px; border-radius: 30px; font-weight: 800;">
+                        Start Practice Session
+                    </button>
+                </div>
+            </div>
+
+            <!-- =========================================================
+                 TAB 9: RECRUITER CHAT
+                 ========================================================= -->
+            <div id="tab-chat" class="tab-pane">
+                <div class="white-card" style="max-width: 920px; margin: 0 auto; width: 100%; padding: 0; overflow: hidden; display: grid; grid-template-columns: 280px 1fr; min-height: 520px; border-radius: 16px;">
+                    
+                    <!-- Left: Companies / Recruiters Sidebar -->
+                    <div style="background: var(--bg-body); border-right: 1px solid var(--border-card); padding: 18px 14px; display: flex; flex-direction: column; gap: 8px;">
+                        <div style="font-size: 0.76rem; font-weight: 800; text-transform: uppercase; color: var(--text-dim); margin-bottom: 8px; padding-left: 6px;">
+                            Active Conversations
+                        </div>
+
+                        <!-- Dynamic Companies Container -->
+                        <div id="seeker-chat-companies-list" style="display: flex; flex-direction: column; gap: 8px;">
+                            <!-- Populated dynamically with real registered employers only -->
+                        </div>
+                    </div>
+
+                    <!-- Right: Chat Box -->
+                    <div style="display: flex; flex-direction: column; justify-content: space-between; padding: 20px 24px; background: var(--bg-card);">
+                        
+                        <!-- Header -->
+                        <div style="display: flex; justify-content: space-between; align-items: center; padding-bottom: 14px; border-bottom: 1px solid var(--border-card); margin-bottom: 14px;">
+                            <div>
+                                <h3 id="recruiter-chat-header-title" style="font-size: 1.05rem; font-weight: 800; color: var(--text-main);">Hiring Recruiter</h3>
+                                <div style="display: flex; align-items: center; gap: 6px; font-size: 0.74rem; color: #10b981; font-weight: 700;">
+                                    <span style="width: 7px; height: 7px; border-radius: 50%; background: #10b981;"></span>
+                                    <span id="recruiter-chat-header-sub">Corporate Talent Team &bull; Active Now</span>
+                                </div>
+                            </div>
+                            <span style="font-size: 0.74rem; background: rgba(59,130,246,0.1); color: #2563eb; padding: 3px 10px; border-radius: 20px; font-weight: 800;">
+                                <i class="fa-solid fa-bolt"></i> Verified Employer
+                            </span>
+                        </div>
+
+                        <!-- Message Stream -->
+                        <div id="seeker-chat-stream" style="flex: 1; max-height: 320px; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; padding: 6px 0; margin-bottom: 14px;">
+                            <!-- Populated dynamically -->
+                        </div>
+
+                        <!-- Quick Action Chips -->
+                        <div style="display: flex; gap: 6px; margin-bottom: 10px; overflow-x: auto; padding-bottom: 4px;">
+                            <button onclick="sendQuickPrompt('Hi! I am very interested in this vacancy.')" style="white-space: nowrap; background: rgba(59,130,246,0.08); border: 1px solid rgba(59,130,246,0.2); color: #2563eb; padding: 4px 10px; border-radius: 14px; font-size: 0.72rem; font-weight: 700; cursor: pointer;">
+                                👋 I am interested
+                            </button>
+                            <button onclick="sendQuickPrompt('Could you share more details about the interview process?')" style="white-space: nowrap; background: rgba(16,185,129,0.08); border: 1px solid rgba(16,185,129,0.2); color: #10b981; padding: 4px 10px; border-radius: 14px; font-size: 0.72rem; font-weight: 700; cursor: pointer;">
+                                📅 Interview Process
+                            </button>
+                            <button onclick="sendQuickPrompt('What is the compensation package range?')" style="white-space: nowrap; background: rgba(168,85,247,0.08); border: 1px solid rgba(168,85,247,0.2); color: #a855f7; padding: 4px 10px; border-radius: 14px; font-size: 0.72rem; font-weight: 700; cursor: pointer;">
+                                💼 Salary Package
+                            </button>
+                        </div>
+
+                        <!-- Input Row -->
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <input type="text" id="seeker-chat-input" placeholder="Type a message to recruiter..." style="flex: 1; padding: 11px 14px; border: 1px solid var(--border-card); border-radius: 8px; font-size: 0.86rem; outline: none; background: var(--bg-card); color: var(--text-main);" onkeypress="if(event.key === 'Enter') sendSeekerMessage()">
+                            <button onclick="sendSeekerMessage()" style="width: 42px; height: 42px; border-radius: 8px; background: linear-gradient(135deg, #2563eb, #06b6d4); color: #fff; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 1rem; box-shadow: 0 4px 12px rgba(37,99,235,0.3);">
+                                <i class="fa-solid fa-paper-plane"></i>
+                            </button>
+                        </div>
+
+                    </div>
+
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/supabase-config.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/db.js"></script>
+    <script>
+        let currentSeekerName = 'BVCITS';
+        let currentSeekerEmail = 'seeker@smartjob.com';
+
+        function getQueryParams() {
+            const params = new URLSearchParams(window.location.search);
+            return {
+                email: params.get('session_email'),
+                name: params.get('session_name'),
+                role: params.get('session_role')
+            };
+        }
+
+        function openSearchVacanciesPage() {
+            const q = getQueryParams();
+            const user = window.auth?.getCurrentUser();
+            const email = q.email || user?.email || currentSeekerEmail;
+            const name = q.name || currentSeekerName;
+            window.location.href = `search-vacancies.html?session_email=${encodeURIComponent(email)}&session_name=${encodeURIComponent(name)}&session_role=seeker`;
+        }
+
+        function switchSeekerTab(tabId) {
+            document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.sidebar-btn').forEach(b => b.classList.remove('active'));
+
+            const targetPane = document.getElementById(tabId);
+            if (targetPane) targetPane.classList.add('active');
+
+            const btnMap = {
+                'tab-overview': 'sbtn-overview',
+                'tab-vacancies': 'sbtn-vacancies',
+                'tab-recommended': 'sbtn-recommended',
+                'tab-saved': 'sbtn-saved',
+                'tab-history': 'sbtn-history',
+                'tab-ats': 'sbtn-ats',
+                'tab-profile': 'sbtn-profile',
+                'tab-advisor': 'sbtn-advisor',
+                'tab-resume': 'sbtn-resume',
+                'tab-interview': 'sbtn-interview',
+                'tab-chat': 'sbtn-chat'
+            };
+
+            const btnId = btnMap[tabId];
+            if (btnId) document.getElementById(btnId)?.classList.add('active');
+
+            if (tabId === 'tab-vacancies') renderLiveJobsBoard();
+            if (tabId === 'tab-recommended') renderAiRecommendedBoard();
+            if (tabId === 'tab-saved') renderSavedJobs();
+            if (tabId === 'tab-history') renderApplicationHistory();
+            if (tabId === 'tab-resume') updateResumeLivePreview();
+            if (tabId === 'tab-advisor') generateAiRoadmap();
+            if (tabId === 'tab-ats') {
+                populateAtsVacanciesDropdown();
+                if (!document.getElementById('ats-resume-input')?.value) syncAtsWithProfileSkills();
+            }
+        }
+
+        function loadSeekerDashboard() {
+            const q = getQueryParams();
+            const user = window.auth?.getCurrentUser();
+
+            if (q.name) {
+                currentSeekerName = decodeURIComponent(q.name);
+            } else if (user) {
+                currentSeekerName = user.fullName || user.email.split('@')[0];
+            }
+
+            if (q.email) {
+                currentSeekerEmail = decodeURIComponent(q.email);
+            } else if (user) {
+                currentSeekerEmail = user.email;
+            }
+
+            document.getElementById('seeker-welcome-heading').textContent = `Welcome Back, ${currentSeekerName}! 👋`;
+
+            // Profile Inputs
+            document.getElementById('seeker-name-input').value = currentSeekerName;
+            document.getElementById('seeker-email-input').value = currentSeekerEmail;
+
+            // Load Jobs & Applications counts
+            if (window.db) {
+                const jobs = window.db.getJobs() || [];
+                document.getElementById('kpi-available-jobs').textContent = jobs.length;
+
+                const allApps = window.db.getApplications() || [];
+                const myApps = allApps.filter(a => a.applicantEmail && a.applicantEmail.toLowerCase() === currentSeekerEmail.toLowerCase());
+
+                const selected = myApps.filter(a => a.status === 'Shortlisted' || a.status === 'Hired').length;
+                const active = myApps.filter(a => !a.status || a.status === 'Applied' || a.status === 'Under Review').length;
+
+                document.getElementById('kpi-applied-jobs').textContent = myApps.length;
+                document.getElementById('kpi-selected-jobs').textContent = selected;
+                document.getElementById('kpi-active-apps').textContent = active;
+
+                renderRecommendations(jobs);
+                populateSeekerRecruiterChats();
+            } else {
+                populateSeekerRecruiterChats();
+            }
+
+            // Sync AI Resume Builder sheet & Career Roadmap & ATS & AI Recommended & Saved
+            updateResumeLivePreview();
+            generateAiRoadmap();
+            populateAtsVacanciesDropdown();
+            renderAiRecommendedBoard();
+            updateSavedJobsCount();
+
+            if (window.db && typeof window.db.syncSavedJobsFromSupabase === 'function') {
+                window.db.syncSavedJobsFromSupabase(currentSeekerEmail).then(() => {
+                    updateSavedJobsCount();
+                });
+            }
+        }
+
+        function renderRecommendations(jobs) {
+            const container = document.getElementById('seeker-recommendations-list');
+            if (!container) return;
+
+            if (!jobs || jobs.length === 0) {
+                container.innerHTML = `<div style="color: var(--text-dim); font-size: 0.86rem; padding: 20px;">No vacancies posted yet. Check back soon!</div>`;
+                return;
+            }
+
+            container.innerHTML = '';
+            jobs.slice(0, 3).forEach(j => {
+                const card = document.createElement('div');
+                card.style.cssText = 'background: var(--bg-body); border: 1px solid var(--border-card); border-radius: 12px; padding: 16px; display: flex; flex-direction: column; justify-content: space-between; gap: 10px;';
+                card.innerHTML = `
+                    <div>
+                        <div style="font-size: 0.72rem; color: #2563eb; font-weight: 800; text-transform: uppercase;">${j.company || 'InnovateX'}</div>
+                        <h4 style="font-size: 0.95rem; font-weight: 800; color: var(--text-main); margin-top: 2px;">${j.title}</h4>
+                        <div style="font-size: 0.78rem; color: var(--text-muted); margin-top: 4px;">
+                            <span><i class="fa-solid fa-location-dot"></i> ${j.location || 'Remote'}</span> &bull; 
+                            <span>${j.salary || 'Competitive'}</span>
+                        </div>
+                    </div>
+                    <button class="btn-nav-action" style="background: #2563eb; color: #fff; border: none; padding: 7px 12px; font-size: 0.78rem; justify-content: center; border-radius: 6px; font-weight: 700;" onclick="window.location.href='job-details.html?id=' + encodeURIComponent('${j.id}') + '&session_email=' + encodeURIComponent(currentSeekerEmail) + '&session_name=' + encodeURIComponent(currentSeekerName) + '&session_role=seeker'">
+                        Apply Now
+                    </button>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        // ==========================================
+        // AI RECOMMENDED JOBS ENGINE
+        // ==========================================
+        let cachedRecommendedJobs = [];
+
+        function renderAiRecommendedBoard() {
+            const container = document.getElementById('seeker-recommended-grid');
+            if (!container || !window.db) return;
+
+            const jobs = window.db.getJobs() || [];
+            if (jobs.length === 0) {
+                container.innerHTML = `<div style="color: var(--text-dim); padding: 40px; text-align: center; grid-column: 1 / -1;">No active job vacancies to analyze.</div>`;
+                return;
+            }
+
+            const candidateSkillsRaw = document.getElementById('seeker-skills-input')?.value || 'React, Node.js, Python, PostgreSQL, REST APIs, Git, Cloud';
+            const candTokens = candidateSkillsRaw.toLowerCase().split(/[\s,]+/).filter(t => t.length > 2);
+
+            // Compute AI Match for each job
+            cachedRecommendedJobs = jobs.map(j => {
+                const jobText = `${j.title} ${j.skills || ''} ${j.description || ''}`.toLowerCase();
+                let matches = 0;
+                candTokens.forEach(t => {
+                    if (jobText.includes(t)) matches++;
+                });
+
+                const basePct = Math.round((matches / Math.max(candTokens.length, 1)) * 60);
+                const score = Math.min(98, Math.max(68, 40 + basePct + (j.title.toLowerCase().includes('engineer') || j.title.toLowerCase().includes('developer') ? 15 : 8)));
+
+                return {
+                    ...j,
+                    matchScore: score,
+                    isRemote: (j.location || '').toLowerCase().includes('remote') || true
+                };
+            });
+
+            // Sort by match score descending
+            cachedRecommendedJobs.sort((a, b) => b.matchScore - a.matchScore);
+
+            // Update Counts
+            document.getElementById('cnt-rec-all').textContent = cachedRecommendedJobs.length;
+            document.getElementById('cnt-rec-high').textContent = cachedRecommendedJobs.filter(j => j.matchScore >= 85).length;
+
+            displayRecommendedCards(cachedRecommendedJobs);
+        }
+
+        function displayRecommendedCards(list) {
+            const container = document.getElementById('seeker-recommended-grid');
+            if (!container) return;
+
+            if (list.length === 0) {
+                container.innerHTML = `<div style="color: var(--text-dim); padding: 40px; text-align: center; grid-column: 1 / -1;">No job vacancies match this filter criteria.</div>`;
+                return;
+            }
+
+            container.innerHTML = '';
+            list.forEach(j => {
+                const card = document.createElement('div');
+                card.className = 'white-card';
+                card.style.cssText = 'padding: 22px; border-radius: 16px; border: 1px solid var(--border-card); display: flex; flex-direction: column; justify-content: space-between; gap: 14px; position: relative; overflow: hidden; box-shadow: 0 4px 18px rgba(0,0,0,0.03);';
+                
+                const scoreColor = j.matchScore >= 85 ? '#10b981' : '#2563eb';
+                const scoreBg = j.matchScore >= 85 ? 'rgba(16,185,129,0.12)' : 'rgba(37,99,235,0.12)';
+                const tagLabel = j.matchScore >= 85 ? '🔥 Top Pick' : '⭐ Strong Fit';
+
+                card.innerHTML = `
+                    <div>
+                        <!-- Top Match Badge & Tag -->
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                            <span style="font-size: 0.72rem; font-weight: 800; background: ${scoreBg}; color: ${scoreColor}; padding: 3px 10px; border-radius: 20px; display: inline-flex; align-items: center; gap: 4px;">
+                                ${tagLabel} &bull; ${j.matchScore}% Match
+                            </span>
+                            <span style="font-size: 0.72rem; color: var(--text-dim); font-weight: 700;">
+                                <i class="fa-solid fa-bolt" style="color: #f59e0b;"></i> Verified Post
+                            </span>
+                        </div>
+
+                        <!-- Title & Company -->
+                        <div style="font-size: 0.76rem; font-weight: 800; color: #2563eb; text-transform: uppercase; letter-spacing: 0.5px;">
+                            ${j.company || 'Verified Employer'}
+                        </div>
+                        <h3 style="font-size: 1.15rem; font-weight: 800; color: var(--text-main); margin-top: 2px; line-height: 1.3;">
+                            ${j.title}
+                        </h3>
+
+                        <!-- Info Pills -->
+                        <div style="display: flex; flex-wrap: wrap; gap: 8px; margin: 10px 0; font-size: 0.78rem; color: var(--text-muted);">
+                            <span style="background: var(--bg-body); padding: 4px 8px; border-radius: 6px; border: 1px solid var(--border-card);">
+                                <i class="fa-solid fa-location-dot"></i> ${j.location || 'Remote'}
+                            </span>
+                            <span style="background: var(--bg-body); padding: 4px 8px; border-radius: 6px; border: 1px solid var(--border-card);">
+                                <i class="fa-solid fa-wallet"></i> ${j.salary || '₹12 - ₹24 LPA'}
+                            </span>
+                        </div>
+
+                        <!-- AI Rationale Snippet -->
+                        <div style="background: rgba(37,99,235,0.04); border-left: 3px solid #2563eb; padding: 8px 10px; border-radius: 0 6px 6px 0; font-size: 0.76rem; color: var(--text-main); margin-bottom: 12px; line-height: 1.4;">
+                            <strong>💡 AI Match Reason:</strong> High alignment with your registered full-stack technical competencies &amp; strong career growth trajectory.
+                        </div>
+
+                        <p style="font-size: 0.8rem; color: var(--text-muted); line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">
+                            ${j.description || 'Join our high-impact engineering team building scalable systems.'}
+                        </p>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding-top: 10px; border-top: 1px solid var(--border-card);">
+                        <button class="btn-nav-action" style="background: #2563eb; color: #fff; border: none; padding: 9px; font-size: 0.82rem; justify-content: center; border-radius: 8px; font-weight: 800;" onclick="applyForVacancy('${j.id}', '${j.title.replace(/'/g, "\\'")}', '${(j.company || 'Employer').replace(/'/g, "\\'")}')">
+                            <i class="fa-solid fa-paper-plane"></i> 1-Click Apply
+                        </button>
+                        <button class="btn-nav-action" style="background: transparent; color: var(--text-main); border: 1px solid var(--border-card); padding: 9px; font-size: 0.82rem; justify-content: center; border-radius: 8px; font-weight: 700;" onclick="switchSeekerTab('tab-chat')">
+                            <i class="fa-regular fa-comment-dots"></i> Chat Recruiter
+                        </button>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function filterRecJobs(type) {
+            document.querySelectorAll('.btn-rec-filter').forEach(b => {
+                b.style.background = 'var(--bg-card)';
+                b.style.color = 'var(--text-main)';
+            });
+
+            const activeBtn = document.getElementById(`rf-${type}`);
+            if (activeBtn) {
+                activeBtn.style.background = '#2563eb';
+                activeBtn.style.color = '#fff';
+            }
+
+            if (type === 'high') {
+                displayRecommendedCards(cachedRecommendedJobs.filter(j => j.matchScore >= 85));
+            } else if (type === 'remote') {
+                displayRecommendedCards(cachedRecommendedJobs.filter(j => j.isRemote));
+            } else {
+                displayRecommendedCards(cachedRecommendedJobs);
+            }
+        }
+
+        // ==========================================
+        // SAVED / BOOKMARKED JOBS ENGINE
+        // ==========================================
+        function getSavedJobIds() {
+            if (window.db && typeof window.db.getSavedJobs === 'function') {
+                return window.db.getSavedJobs();
+            }
+            try {
+                return JSON.parse(localStorage.getItem('smartjob_saved_jobs') || '[]');
+            } catch (e) {
+                return [];
+            }
+        }
+
+        function updateSavedJobsCount() {
+            const saved = getSavedJobIds();
+            const cntBadge = document.getElementById('sidebar-saved-cnt');
+            if (cntBadge) cntBadge.textContent = saved.length;
+        }
+
+        async function toggleSeekerSaveJob(jobId) {
+            let saved = getSavedJobIds();
+            const idStr = String(jobId);
+            const allJobs = window.db ? window.db.getJobs() : [];
+            const jobData = allJobs.find(j => String(j.id) === idStr);
+
+            if (saved.includes(idStr)) {
+                if (window.db && typeof window.db.removeSavedJobCloud === 'function') {
+                    await window.db.removeSavedJobCloud(idStr, currentSeekerEmail);
+                } else {
+                    saved = saved.filter(id => id !== idStr);
+                    localStorage.setItem('smartjob_saved_jobs', JSON.stringify(saved));
+                }
+                showToast('Removed job from your Saved list.', 'info');
+            } else {
+                if (window.db && typeof window.db.saveJobCloud === 'function') {
+                    await window.db.saveJobCloud(idStr, jobData, currentSeekerEmail);
+                } else {
+                    saved.push(idStr);
+                    localStorage.setItem('smartjob_saved_jobs', JSON.stringify(saved));
+                }
+                showToast('Job saved & stored in Supabase database!', 'success');
+            }
+
+            updateSavedJobsCount();
+            renderSavedJobs();
+            renderAiRecommendedBoard();
+        }
+
+        function renderSavedJobs() {
+            const container = document.getElementById('seeker-saved-jobs-grid');
+            if (!container || !window.db) return;
+
+            const allJobs = window.db.getJobs() || [];
+            const savedIds = getSavedJobIds();
+            const savedJobs = allJobs.filter(j => savedIds.includes(String(j.id)));
+
+            updateSavedJobsCount();
+
+            if (savedJobs.length === 0) {
+                container.innerHTML = `
+                    <div style="grid-column: 1 / -1; padding: 60px 20px; text-align: center; color: var(--text-dim); background: var(--bg-card); border: 1px dashed var(--border-card); border-radius: 16px;">
+                        <i class="fa-regular fa-bookmark" style="font-size: 2.8rem; color: #cbd5e1; margin-bottom: 14px; display: block;"></i>
+                        <h3 style="font-size: 1.2rem; font-weight: 800; color: var(--text-main); margin-bottom: 6px;">No Saved Jobs Yet</h3>
+                        <p style="font-size: 0.86rem; color: var(--text-muted); max-width: 440px; margin: 0 auto 18px auto;">Bookmark interesting job vacancies from Search Vacancies or AI Recommended to review and apply later.</p>
+                        <button class="btn-nav-action" onclick="openSearchVacanciesPage()" style="background: #2563eb; color: #fff; border: none; padding: 10px 20px; font-weight: 800; border-radius: 8px;">
+                            <i class="fa-solid fa-magnifying-glass"></i> Explore Job Vacancies
+                        </button>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = '';
+            savedJobs.forEach(j => {
+                const card = document.createElement('div');
+                card.className = 'white-card';
+                card.style.cssText = 'padding: 22px; border-radius: 16px; border: 1px solid var(--border-card); display: flex; flex-direction: column; justify-content: space-between; gap: 14px; box-shadow: 0 4px 18px rgba(0,0,0,0.03);';
+                card.innerHTML = `
+                    <div>
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                            <span style="font-size: 0.72rem; font-weight: 800; background: rgba(245,158,11,0.12); color: #d97706; padding: 3px 10px; border-radius: 20px; display: inline-flex; align-items: center; gap: 4px;">
+                                <i class="fa-solid fa-bookmark"></i> Bookmarked
+                            </span>
+                            <button onclick="toggleSeekerSaveJob('${j.id}')" title="Remove from Saved" style="background: none; border: none; color: #ef4444; cursor: pointer; font-size: 0.88rem; padding: 4px;">
+                                <i class="fa-solid fa-trash-can"></i>
+                            </button>
+                        </div>
+
+                        <div style="font-size: 0.76rem; font-weight: 800; color: #2563eb; text-transform: uppercase;">${j.company || 'Verified Employer'}</div>
+                        <h3 style="font-size: 1.15rem; font-weight: 800; color: var(--text-main); margin-top: 2px;">${j.title}</h3>
+                        
+                        <div style="display: flex; flex-wrap: wrap; gap: 8px; margin: 10px 0; font-size: 0.78rem; color: var(--text-muted);">
+                            <span style="background: var(--bg-body); padding: 4px 8px; border-radius: 6px; border: 1px solid var(--border-card);">
+                                <i class="fa-solid fa-location-dot"></i> ${j.location || 'Remote'}
+                            </span>
+                            <span style="background: var(--bg-body); padding: 4px 8px; border-radius: 6px; border: 1px solid var(--border-card);">
+                                <i class="fa-solid fa-wallet"></i> ${j.salary || 'Competitive'}
+                            </span>
+                        </div>
+
+                        <p style="font-size: 0.8rem; color: var(--text-muted); line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">
+                            ${j.description || 'Great engineering opportunity.'}
+                        </p>
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding-top: 10px; border-top: 1px solid var(--border-card);">
+                        <button class="btn-nav-action" style="background: #2563eb; color: #fff; border: none; padding: 9px; font-size: 0.82rem; justify-content: center; border-radius: 8px; font-weight: 800;" onclick="applyForVacancy('${j.id}', '${j.title.replace(/'/g, "\\'")}', '${(j.company || 'Employer').replace(/'/g, "\\'")}')">
+                            <i class="fa-solid fa-paper-plane"></i> Apply Now
+                        </button>
+                        <button class="btn-nav-action" style="background: transparent; color: var(--text-main); border: 1px solid var(--border-card); padding: 9px; font-size: 0.82rem; justify-content: center; border-radius: 8px; font-weight: 700;" onclick="switchSeekerTab('tab-chat')">
+                            <i class="fa-regular fa-comment-dots"></i> Chat
+                        </button>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function renderLiveJobsBoard() {
+            const container = document.getElementById('seeker-all-jobs-container');
+            if (!container || !window.db) return;
+
+            const jobs = window.db.getJobs() || [];
+            if (jobs.length === 0) {
+                container.innerHTML = `<div style="color: var(--text-dim); padding: 40px; text-align: center; grid-column: 1 / -1;">No active job vacancies available.</div>`;
+                return;
+            }
+
+            container.innerHTML = '';
+            jobs.forEach(j => {
+                const card = document.createElement('div');
+                card.className = 'white-card';
+                card.style.cssText = 'padding: 20px; display: flex; flex-direction: column; justify-content: space-between; gap: 12px; border: 1px solid var(--border-card);';
+                card.innerHTML = `
+                    <div>
+                        <div style="font-size: 0.74rem; font-weight: 800; color: #2563eb; text-transform: uppercase;">${j.company || 'Verified Employer'}</div>
+                        <h3 style="font-size: 1.1rem; font-weight: 800; color: var(--text-main); margin-top: 4px;">${j.title}</h3>
+                        <div style="font-size: 0.8rem; color: var(--text-muted); margin: 6px 0;">
+                            <div><i class="fa-solid fa-location-dot"></i> ${j.location || 'Remote'}</div>
+                            <div><i class="fa-solid fa-wallet"></i> ${j.salary || 'Competitive'}</div>
+                        </div>
+                        <p style="font-size: 0.82rem; color: var(--text-muted); line-height: 1.4;">${j.description || 'Exciting career opportunity.'}</p>
+                    </div>
+                    <button class="btn-nav-action" style="background: #2563eb; color: #fff; border: none; padding: 9px; font-size: 0.84rem; justify-content: center; border-radius: 8px; font-weight: 800;" onclick="applyForVacancy('${j.id}', '${j.title.replace(/'/g, "\\'")}', '${(j.company || 'Employer').replace(/'/g, "\\'")}')">
+                        Apply for Job
+                    </button>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function applyForVacancy(jobId, jobTitle, company) {
+            const allApps = JSON.parse(localStorage.getItem('smarthire_applications') || '[]');
+            
+            const newApp = {
+                id: 'app_' + Date.now(),
+                jobId: jobId,
+                jobTitle: jobTitle,
+                company: company,
+                applicantName: currentSeekerName,
+                applicantEmail: currentSeekerEmail,
+                matchScore: Math.floor(Math.random() * 15) + 85,
+                status: 'Applied',
+                appliedAt: new Date().toISOString()
+            };
+
+            allApps.unshift(newApp);
+            localStorage.setItem('smarthire_applications', JSON.stringify(allApps));
+
+            showToast(`🎉 Application successfully submitted for "${jobTitle}" at ${company}!`, 'success');
+            loadSeekerDashboard();
+        }
+
+        function renderApplicationHistory() {
+            const tbody = document.getElementById('seeker-history-tbody');
+            if (!tbody) return;
+
+            const allApps = JSON.parse(localStorage.getItem('smarthire_applications') || '[]');
+            const myApps = allApps.filter(a => a.applicantEmail && a.applicantEmail.toLowerCase() === currentSeekerEmail.toLowerCase());
+
+            if (myApps.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="4" style="text-align: center; color: var(--text-dim); padding: 40px;">
+                            You haven't submitted any job applications yet.
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            tbody.innerHTML = '';
+            myApps.forEach(a => {
+                const tr = document.createElement('tr');
+                tr.style.borderBottom = '1px solid var(--border-card)';
+                
+                let badge = `<span style="background: rgba(59,130,246,0.12); color: #2563eb; padding: 3px 8px; border-radius: 4px; font-size: 0.74rem; font-weight: 700;">Under Review</span>`;
+                if (a.status === 'Shortlisted') {
+                    badge = `<span style="background: rgba(16,185,129,0.12); color: #10b981; padding: 3px 8px; border-radius: 4px; font-size: 0.74rem; font-weight: 700;">Shortlisted</span>`;
+                } else if (a.status === 'Rejected') {
+                    badge = `<span style="background: rgba(239,68,68,0.12); color: #ef4444; padding: 3px 8px; border-radius: 4px; font-size: 0.74rem; font-weight: 700;">Rejected</span>`;
+                }
+
+                tr.innerHTML = `
+                    <td style="padding: 12px 10px;">
+                        <strong>${a.jobTitle || 'Role'}</strong>
+                        <div style="font-size: 0.74rem; color: var(--text-dim);">${a.company || 'Company'}</div>
+                    </td>
+                    <td style="padding: 12px 10px; font-size: 0.84rem;">Remote</td>
+                    <td style="padding: 12px 10px; font-size: 0.8rem; color: var(--text-muted);">${new Date(a.appliedAt).toLocaleDateString()}</td>
+                    <td style="padding: 12px 10px;">${badge}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        // ==========================================
+        // AI ATS RESUME MATCHER ENGINE
+        // ==========================================
+        let lastMissingKeywords = [];
+
+        function syncAtsWithProfileSkills() {
+            const skills = document.getElementById('seeker-skills-input')?.value.trim() || 'JavaScript, React, Node.js, Python, PostgreSQL, REST APIs, Git, CSS, HTML5';
+            const resumeInput = document.getElementById('ats-resume-input');
+            if (resumeInput) {
+                resumeInput.value = skills;
+                showToast('Synced technical skills from profile!', 'success');
+            }
+        }
+
+        function populateAtsVacanciesDropdown() {
+            const select = document.getElementById('ats-quick-vacancy-select');
+            if (!select || !window.db) return;
+
+            const jobs = window.db.getJobs() || [];
+            select.innerHTML = '<option value="">-- Load from Active Job --</option>';
+            jobs.forEach(j => {
+                const opt = document.createElement('option');
+                opt.value = j.id;
+                opt.textContent = `${j.title} (${j.company || 'Employer'})`;
+                select.appendChild(opt);
+            });
+        }
+
+        function handleAtsQuickVacancyChange() {
+            const select = document.getElementById('ats-quick-vacancy-select');
+            const jobId = select?.value;
+            if (!jobId || !window.db) return;
+
+            const jobs = window.db.getJobs() || [];
+            const job = jobs.find(j => String(j.id) === String(jobId));
+            if (job) {
+                const jobReqText = `${job.title} at ${job.company}. Requirements: ${job.skills || job.description || 'Full-Stack development, Cloud APIs, Database architecture, Testing.'}`;
+                const jobInput = document.getElementById('ats-job-input');
+                if (jobInput) jobInput.value = jobReqText;
+                showToast(`Loaded requirements for ${job.title}!`, 'info');
+                runAtsCalculation();
+            }
+        }
+
+        function runAtsCalculation() {
+            const resumeText = document.getElementById('ats-resume-input')?.value.trim();
+            const jobText = document.getElementById('ats-job-input')?.value.trim();
+
+            if (!resumeText || !jobText) {
+                showToast('Please provide both resume skills and job requirements.', 'info');
+                return;
+            }
+
+            const cleanTokens = (str) => {
+                return str.toLowerCase()
+                    .replace(/[^a-zA-Z0-9+#.\s]/g, ' ')
+                    .split(/[\s,]+/)
+                    .filter(t => t.length > 2 && !['and', 'for', 'the', 'with', 'looking', 'developer', 'engineer'].includes(t));
+            };
+
+            const resumeTokens = new Set(cleanTokens(resumeText));
+            const jobTokens = Array.from(new Set(cleanTokens(jobText)));
+
+            if (jobTokens.length === 0) {
+                showToast('Please enter descriptive job requirements.', 'info');
+                return;
+            }
+
+            const matched = [];
+            const missing = [];
+
+            jobTokens.forEach(token => {
+                let isMatch = false;
+                for (let rt of resumeTokens) {
+                    if (rt.includes(token) || token.includes(rt)) {
+                        isMatch = true;
+                        break;
+                    }
+                }
+                if (isMatch) matched.push(token);
+                else missing.push(token);
+            });
+
+            lastMissingKeywords = missing;
+
+            // Score calculation
+            const rawScore = Math.round((matched.length / jobTokens.length) * 100);
+            const atsScore = Math.min(98, Math.max(45, rawScore));
+
+            const p1 = Math.min(99, Math.round(atsScore * 1.02));
+            const p2 = Math.min(95, Math.round(atsScore * 0.94));
+            const p3 = Math.min(96, Math.round(atsScore * 0.97));
+            const p4 = 96;
+
+            // Show Result Box
+            const resultBox = document.getElementById('ats-result-box');
+            if (resultBox) resultBox.style.display = 'flex';
+
+            document.getElementById('ats-score-display').textContent = `${atsScore}%`;
+            
+            const ratingTag = document.getElementById('ats-rating-tag');
+            if (atsScore >= 80) {
+                ratingTag.textContent = '🟢 Strong Recruiter Match';
+                ratingTag.style.color = '#10b981';
+                ratingTag.style.background = 'rgba(16,185,129,0.1)';
+            } else if (atsScore >= 60) {
+                ratingTag.textContent = '🟡 Moderate Match (Add Missing Keywords)';
+                ratingTag.style.color = '#f59e0b';
+                ratingTag.style.background = 'rgba(245,158,11,0.1)';
+            } else {
+                ratingTag.textContent = '🔴 Low ATS Match';
+                ratingTag.style.color = '#ef4444';
+                ratingTag.style.background = 'rgba(239,68,68,0.1)';
+            }
+
+            // Update 4 Pillars
+            document.getElementById('ats-p1-score').textContent = `${p1}%`;
+            document.getElementById('ats-p1-bar').style.width = `${p1}%`;
+
+            document.getElementById('ats-p2-score').textContent = `${p2}%`;
+            document.getElementById('ats-p2-bar').style.width = `${p2}%`;
+
+            document.getElementById('ats-p3-score').textContent = `${p3}%`;
+            document.getElementById('ats-p3-bar').style.width = `${p3}%`;
+
+            document.getElementById('ats-p4-score').textContent = `${p4}%`;
+            document.getElementById('ats-p4-bar').style.width = `${p4}%`;
+
+            // Render Matched Badges
+            const matchedContainer = document.getElementById('ats-matched-tags');
+            document.getElementById('ats-matched-cnt').textContent = matched.length;
+            matchedContainer.innerHTML = '';
+            if (matched.length === 0) {
+                matchedContainer.innerHTML = '<span style="font-size: 0.78rem; color: var(--text-dim);">No direct keyword matches found.</span>';
+            } else {
+                matched.slice(0, 14).forEach(k => {
+                    const pill = document.createElement('span');
+                    pill.style.cssText = 'background: rgba(16,185,129,0.12); color: #10b981; border: 1px solid rgba(16,185,129,0.25); padding: 3px 9px; border-radius: 6px; font-size: 0.76rem; font-weight: 700; text-transform: capitalize;';
+                    pill.innerHTML = `✓ ${k}`;
+                    matchedContainer.appendChild(pill);
+                });
+            }
+
+            // Render Missing Badges
+            const missingContainer = document.getElementById('ats-missing-tags');
+            document.getElementById('ats-missing-cnt').textContent = missing.length;
+            missingContainer.innerHTML = '';
+            if (missing.length === 0) {
+                missingContainer.innerHTML = '<span style="font-size: 0.78rem; color: #10b981; font-weight: 700;">🎉 No critical keywords missing!</span>';
+            } else {
+                missing.slice(0, 14).forEach(k => {
+                    const pill = document.createElement('span');
+                    pill.style.cssText = 'background: rgba(239,68,68,0.1); color: #ef4444; border: 1px solid rgba(239,68,68,0.25); padding: 3px 9px; border-radius: 6px; font-size: 0.76rem; font-weight: 700; text-transform: capitalize;';
+                    pill.innerHTML = `+ ${k}`;
+                    missingContainer.appendChild(pill);
+                });
+            }
+
+            showToast('ATS diagnostic scan completed!', 'success');
+        }
+
+        function addMissingKeywordsToProfile() {
+            if (!lastMissingKeywords || lastMissingKeywords.length === 0) {
+                showToast('No missing keywords to add!', 'info');
+                return;
+            }
+
+            const skillsInput = document.getElementById('seeker-skills-input');
+            const atsResumeInput = document.getElementById('ats-resume-input');
+            const currentSkills = skillsInput ? skillsInput.value.trim() : '';
+
+            const toAdd = lastMissingKeywords.slice(0, 4).map(k => k.charAt(0).toUpperCase() + k.slice(1)).join(', ');
+            const newSkills = currentSkills ? `${currentSkills}, ${toAdd}` : toAdd;
+
+            if (skillsInput) skillsInput.value = newSkills;
+            if (atsResumeInput) atsResumeInput.value = newSkills;
+
+            updateResumeLivePreview();
+            runAtsCalculation();
+            showToast(`Added [${toAdd}] to your profile & AI resume!`, 'success');
+        }
+
+        // ==========================================
+        // AI CAREER ADVISOR ENGINE
+        // ==========================================
+        const careerRoadmapDatabase = {
+            fullstack: {
+                title: 'Senior Full Stack Engineer',
+                readiness: '88%',
+                salary: '₹16 - ₹32 LPA',
+                milestones: [
+                    { id: 'fs_1', title: 'Phase 1: Advanced Full-Stack Architecture', desc: 'Master Next.js App Router, Server Components, and GraphQL API Federation.', done: true },
+                    { id: 'fs_2', title: 'Phase 2: High-Performance Microservices', desc: 'Engineer Redis distributed caching, RabbitMQ message brokers, and PostgreSQL connection pooling.', done: true },
+                    { id: 'fs_3', title: 'Phase 3: Production Cloud & DevOps', desc: 'Set up Docker multi-stage builds, GitHub Actions CI/CD, and AWS ECS/Lambda serverless architectures.', done: false },
+                    { id: 'fs_4', title: 'Phase 4: Scalable System Design & Staff Leadership', desc: 'Lead architecture reviews for high concurrency systems handling 50k+ requests per second.', done: false }
+                ],
+                certs: [
+                    { name: 'AWS Certified Solutions Architect – Associate', issuer: 'Amazon Web Services', val: 'High ROI' },
+                    { name: 'Meta Professional Full-Stack Developer Certificate', issuer: 'Meta', val: 'Industry Verified' }
+                ]
+            },
+            ai: {
+                title: 'AI / Machine Learning Engineer',
+                readiness: '82%',
+                salary: '₹20 - ₹45 LPA',
+                milestones: [
+                    { id: 'ai_1', title: 'Phase 1: Deep Learning Foundations & Vector Mathematics', desc: 'Master PyTorch neural network architectures, matrix transforms, and embedding representations.', done: true },
+                    { id: 'ai_2', title: 'Phase 2: RAG Pipelines & Vector Search', desc: 'Implement production Retrieval-Augmented Generation using LangChain, LlamaIndex, and Pinecone.', done: false },
+                    { id: 'ai_3', title: 'Phase 3: LLM Fine-Tuning & Quantization', desc: 'Fine-tune open-weight models (Llama 3, Mistral) using LoRA / QLoRA with Hugging Face transformers.', done: false },
+                    { id: 'ai_4', title: 'Phase 4: High-Throughput Inference Serving', desc: 'Deploy optimized inference clusters using vLLM, TensorRT-LLM, and Triton Inference Server.', done: false }
+                ],
+                certs: [
+                    { name: 'Google Cloud Professional Machine Learning Engineer', issuer: 'Google Cloud', val: 'Top Demand' },
+                    { name: 'DeepLearning.AI Generative AI Engineering', issuer: 'DeepLearning.AI', val: 'Specialization' }
+                ]
+            },
+            devops: {
+                title: 'Cloud DevOps & SRE Lead',
+                readiness: '85%',
+                salary: '₹18 - ₹36 LPA',
+                milestones: [
+                    { id: 'do_1', title: 'Phase 1: Infrastructure as Code (IaC)', desc: 'Automate multi-environment cloud resource provisioning using Terraform and OpenTofu.', done: true },
+                    { id: 'do_2', title: 'Phase 2: Enterprise Kubernetes Orchestration', desc: 'Deploy fault-tolerant K8s clusters, Helm charts, and Istio Service Mesh with mTLS.', done: true },
+                    { id: 'do_3', title: 'Phase 3: Full-Stack Observability & Chaos Engineering', desc: 'Configure Prometheus metrics, Grafana dashboards, Loki log aggregators, and Jaeger tracing.', done: false },
+                    { id: 'do_4', title: 'Phase 4: Cloud Security & FinOps Automation', desc: 'Implement automated vulnerability scanners (Trivy, SonarQube) and AWS Cost Optimizer rules.', done: false }
+                ],
+                certs: [
+                    { name: 'Certified Kubernetes Administrator (CKA)', issuer: 'Cloud Native Computing Foundation', val: 'Elite Tier' },
+                    { name: 'HashiCorp Certified: Terraform Associate', issuer: 'HashiCorp', val: 'Industry Gold Standard' }
+                ]
+            },
+            frontend: {
+                title: 'Frontend Architect & UI Systems Lead',
+                readiness: '92%',
+                salary: '₹14 - ₹28 LPA',
+                milestones: [
+                    { id: 'fe_1', title: 'Phase 1: Core Web Vitals & Runtime Performance', desc: 'Achieve 100/100 Lighthouse scores, optimize Largest Contentful Paint (LCP), and Web Workers.', done: true },
+                    { id: 'fe_2', title: 'Phase 2: Scalable Enterprise Design Systems', desc: 'Build headless accessible UI libraries compliant with WCAG 2.2 AAA using Storybook and TailwindCSS.', done: true },
+                    { id: 'fe_3', title: 'Phase 3: Micro-Frontend Architectures', desc: 'Architect distributed frontend applications using Webpack 5 Module Federation and Single-SPA.', done: false },
+                    { id: 'fe_4', title: 'Phase 4: Next-Gen Web Technologies (WebAssembly / PWA)', desc: 'Integrate Rust-compiled WebAssembly for compute-intensive client-side visualization modules.', done: false }
+                ],
+                certs: [
+                    { name: 'Meta Certified Frontend Developer Professional', issuer: 'Meta', val: 'Recommended' },
+                    { name: 'Interaction Design Foundation: UX Master Specialist', issuer: 'IxDF', val: 'Design Systems' }
+                ]
+            }
+        };
+
+        function generateAiRoadmap() {
+            const roleKey = document.getElementById('advisor-target-role')?.value || 'fullstack';
+            const data = careerRoadmapDatabase[roleKey] || careerRoadmapDatabase.fullstack;
+
+            // Update Header & Readiness
+            document.getElementById('advisor-readiness-score').textContent = data.readiness;
+            document.getElementById('advisor-salary-bench').textContent = data.salary;
+
+            // Render Milestones
+            const container = document.getElementById('advisor-milestones-container');
+            if (container) {
+                container.innerHTML = '';
+                let doneCount = 0;
+
+                data.milestones.forEach((m, idx) => {
+                    if (m.done) doneCount++;
+                    const row = document.createElement('div');
+                    row.style.cssText = `padding: 14px 16px; border-radius: 12px; border: 1px solid ${m.done ? 'rgba(16,185,129,0.3)' : 'var(--border-card)'}; background: ${m.done ? 'rgba(16,185,129,0.04)' : 'var(--bg-body)'}; display: flex; align-items: flex-start; gap: 12px; transition: all 0.2s ease;`;
+                    row.innerHTML = `
+                        <input type="checkbox" ${m.done ? 'checked' : ''} onchange="toggleAdvisorMilestone('${roleKey}', ${idx})" style="width: 18px; height: 18px; cursor: pointer; accent-color: #10b981; margin-top: 2px;">
+                        <div style="flex: 1;">
+                            <div style="font-size: 0.88rem; font-weight: 800; color: ${m.done ? '#10b981' : 'var(--text-main)'}; text-decoration: ${m.done ? 'line-through' : 'none'};">
+                                ${m.title}
+                            </div>
+                            <p style="font-size: 0.8rem; color: var(--text-muted); margin: 3px 0 0 0; line-height: 1.4;">
+                                ${m.desc}
+                            </p>
+                        </div>
+                    `;
+                    container.appendChild(row);
+                });
+
+                document.getElementById('advisor-progress-pill').textContent = `${doneCount} of ${data.milestones.length} Completed`;
+            }
+
+            // Render Recommended Certifications
+            const certsContainer = document.getElementById('advisor-certs-container');
+            if (certsContainer) {
+                certsContainer.innerHTML = '';
+                data.certs.forEach(c => {
+                    const cdiv = document.createElement('div');
+                    cdiv.style.cssText = 'padding: 10px 12px; border: 1px solid var(--border-card); border-radius: 10px; background: var(--bg-body); display: flex; justify-content: space-between; align-items: center;';
+                    cdiv.innerHTML = `
+                        <div>
+                            <div style="font-size: 0.84rem; font-weight: 800; color: var(--text-main);">${c.name}</div>
+                            <div style="font-size: 0.72rem; color: var(--text-muted);">${c.issuer}</div>
+                        </div>
+                        <span style="font-size: 0.7rem; font-weight: 800; background: rgba(245,158,11,0.12); color: #d97706; padding: 2px 8px; border-radius: 12px;">${c.val}</span>
+                    `;
+                    certsContainer.appendChild(cdiv);
+                });
+            }
+        }
+
+        function toggleAdvisorMilestone(roleKey, idx) {
+            if (careerRoadmapDatabase[roleKey] && careerRoadmapDatabase[roleKey].milestones[idx]) {
+                careerRoadmapDatabase[roleKey].milestones[idx].done = !careerRoadmapDatabase[roleKey].milestones[idx].done;
+                generateAiRoadmap();
+                showToast('Milestone progress updated!', 'success');
+            }
+        }
+
+        function askAdvisorQuestion(type) {
+            const box = document.getElementById('advisor-qa-answer-box');
+            if (!box) return;
+
+            const answers = {
+                salary: `<strong>💼 Salary Negotiation Strategy:</strong> Benchmark against current top-tier offerings (₹18-28LPA). Emphasize measurable business impacts from your portfolio (e.g. <i>"reduced API latency by 45%"</i> or <i>"architected multi-tenant portal serving 10k users"</i>) and ask for a 20-30% hike above standard bands with sign-on bonuses.`,
+                projects: `<strong>🚀 Portfolio Projects That Impress Recruiters:</strong> Top engineering recruiters look for: 1) End-to-end full-stack applications with production authentication & cloud databases, 2) Event-driven architectures using background queues / WebSockets, 3) Automated unit tests and clean CI/CD deployment pipelines.`,
+                switch: `<strong>🎯 Cracking Senior Engineering Interviews:</strong> Focus on 3 core pillars: 1) System Design (high availability, caching layers, database indexing), 2) Behavioral / Leadership scenarios using the STAR method, 3) Deep-dive explanations into concurrency and performance trade-offs.`
+            };
+
+            box.innerHTML = answers[type] || 'Select an advisory topic above.';
+            box.style.borderLeft = '3px solid #2563eb';
+        }
+
+        // ==========================================
+        // AI RESUME BUILDER (PDF BASED ON PROFILE)
+        // ==========================================
+        function generateAiResumeFromProfile() {
+            const name = currentSeekerName || 'Software Professional';
+            const email = currentSeekerEmail || 'seeker@example.com';
+            const phone = document.getElementById('seeker-phone-input')?.value || '+91 98765 43210';
+            const location = document.getElementById('seeker-location-input')?.value || 'Visakhapatnam, India';
+            const skills = document.getElementById('seeker-skills-input')?.value || 'React, Node.js, Python, PostgreSQL, REST APIs, Git, Cloud';
+
+            document.getElementById('rb-target-title').value = 'Software Engineer / Full Stack Developer';
+            document.getElementById('rb-phone').value = phone;
+            document.getElementById('rb-location').value = location;
+            document.getElementById('rb-skills').value = skills;
+
+            polishAiSummary();
+            updateResumeLivePreview();
+            showToast('AI Resume synchronized from your profile!', 'success');
+        }
+
+        function polishAiSummary() {
+            const skills = document.getElementById('rb-skills')?.value || 'Modern Web & Cloud Technologies';
+            const topSkills = skills.split(',').slice(0, 3).map(s => s.trim()).join(', ');
+
+            const polished = `Results-oriented Software Engineer specializing in ${topSkills || 'full-stack architectures'}. Demonstrates strong problem-solving proficiency, clean code standards, and agile collaboration. Dedicated to building scalable user experiences and high-performance digital systems.`;
+            document.getElementById('rb-summary').value = polished;
+            updateResumeLivePreview();
+        }
+
+        function updateResumeLivePreview() {
+            const name = currentSeekerName || 'Candidate Name';
+            const email = currentSeekerEmail || 'candidate@example.com';
+            const title = document.getElementById('rb-target-title')?.value || 'Software Engineer';
+            const phone = document.getElementById('rb-phone')?.value || '+91 98765 43210';
+            const location = document.getElementById('rb-location')?.value || 'India';
+            const edu = document.getElementById('rb-education')?.value || 'Bachelor of Technology in Computer Science';
+            const skills = document.getElementById('rb-skills')?.value || 'JavaScript, React, Node.js';
+            const summary = document.getElementById('rb-summary')?.value || '';
+
+            // Update Sheet Elements
+            const nameEl = document.getElementById('pdf-cand-name');
+            if (nameEl) nameEl.textContent = name;
+
+            const titleEl = document.getElementById('pdf-cand-title');
+            if (titleEl) titleEl.textContent = title;
+
+            const emailEl = document.getElementById('pdf-cand-email');
+            if (emailEl) emailEl.textContent = email;
+
+            const phoneEl = document.getElementById('pdf-cand-phone');
+            if (phoneEl) phoneEl.textContent = phone;
+
+            const locEl = document.getElementById('pdf-cand-location');
+            if (locEl) locEl.textContent = location;
+
+            const sumEl = document.getElementById('pdf-cand-summary');
+            if (sumEl) sumEl.textContent = summary;
+
+            const eduEl = document.getElementById('pdf-cand-edu');
+            if (eduEl) eduEl.textContent = edu;
+
+            // Render Skill Pills
+            const skillContainer = document.getElementById('pdf-cand-skills-tags');
+            if (skillContainer) {
+                skillContainer.innerHTML = '';
+                skills.split(',').map(s => s.trim()).filter(Boolean).forEach(skill => {
+                    const span = document.createElement('span');
+                    span.style.cssText = 'background: #f1f5f9; color: #1e293b; border: 1px solid #cbd5e1; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 700;';
+                    span.textContent = skill;
+                    skillContainer.appendChild(span);
+                });
+            }
+        }
+
+        function downloadAiResumePdf() {
+            const element = document.getElementById('ai-resume-pdf-canvas');
+            if (!element) return;
+
+            showToast('Generating clean PDF resume document...', 'info');
+
+            const rawName = document.getElementById('pdf-cand-name')?.textContent?.trim() || currentSeekerName || 'Candidate';
+            const name = rawName.replace(/\s+/g, '_');
+
+            // Clone element to prevent style alterations
+            const clone = element.cloneNode(true);
+            clone.style.width = '210mm';
+            clone.style.minHeight = '297mm';
+            clone.style.boxShadow = 'none';
+            clone.style.margin = '0';
+            clone.style.padding = '18mm 20mm';
+
+            const opt = {
+                margin:       0,
+                filename:     `${name}_AI_Resume.pdf`,
+                image:        { type: 'jpeg', quality: 0.99 },
+                html2canvas:  { scale: 2, useCORS: true, letterRendering: true, backgroundColor: '#ffffff' },
+                jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+            };
+
+            if (window.html2pdf) {
+                window.html2pdf().set(opt).from(clone).save().then(() => {
+                    showToast('PDF Resume downloaded directly to your device!', 'success');
+                }).catch(err => {
+                    console.error('PDF generation error:', err);
+                    printAiResumeDocument();
+                });
+            } else {
+                printAiResumeDocument();
+            }
+        }
+
+        function printAiResumeDocument() {
+            const resumeContent = document.getElementById('ai-resume-pdf-canvas')?.outerHTML;
+            if (!resumeContent) {
+                window.print();
+                return;
+            }
+
+            const printWindow = window.open('', '_blank', 'width=850,height=900');
+            printWindow.document.write(`
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <title>Print AI Resume</title>
+                    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+                    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+                    <style>
+                        body {
+                            margin: 0;
+                            padding: 20px;
+                            background: #ffffff;
+                            font-family: 'Plus Jakarta Sans', sans-serif;
+                            display: flex;
+                            justify-content: center;
+                        }
+                        #ai-resume-pdf-canvas {
+                            box-shadow: none !important;
+                            border: none !important;
+                            width: 100% !important;
+                            max-width: 800px !important;
+                            padding: 0 !important;
+                        }
+                        @media print {
+                            body { padding: 0; }
+                            @page { margin: 15mm; size: A4 portrait; }
+                        }
+                    </style>
+                </head>
+                <body>
+                    ${resumeContent}
+                    <script>
+                        setTimeout(() => {
+                            window.print();
+                            window.close();
+                        }, 500);
+                    <\/script>
+                </body>
+                </html>
+            `);
+            printWindow.document.close();
+        }
+
+        function previewSeekerAvatar(event) {
+            const file = event.target.files?.[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const img = document.getElementById('seeker-avatar-preview');
+                if (img) img.src = e.target.result;
+                showToast('Profile photo updated!', 'success');
+            };
+            reader.readAsDataURL(file);
+        }
+
+        let currentActiveCompany = '';
+
+        function populateSeekerRecruiterChats() {
+            const list = document.getElementById('seeker-chat-companies-list');
+            const stream = document.getElementById('seeker-chat-stream');
+            if (!list || !stream) return;
+
+            const allJobs = window.db?.getJobs() || [];
+            const allApps = JSON.parse(localStorage.getItem('smarthire_applications') || '[]');
+            const myApps = allApps.filter(a => a.applicantEmail && a.applicantEmail.toLowerCase() === currentSeekerEmail.toLowerCase());
+
+            const companiesSet = new Set();
+            myApps.forEach(a => {
+                if (a.company && a.company !== 'InnovateX Labs' && a.company !== 'TechCorp Solutions' && a.company !== 'Apex Cloud Systems') {
+                    companiesSet.add(a.company);
+                }
+            });
+
+            allJobs.forEach(j => {
+                if (j.company && j.company !== 'InnovateX Labs' && j.company !== 'TechCorp Solutions' && j.company !== 'Apex Cloud Systems') {
+                    companiesSet.add(j.company);
+                }
+            });
+
+            // Also check registered employers from database
+            const users = JSON.parse(localStorage.getItem('smartjob_users_db') || '[]');
+            users.forEach(u => {
+                if (u.role === 'employer' || u.role === 'company') {
+                    const compName = u.fullName || u.companyName || u.email.split('@')[0];
+                    if (compName !== 'InnovateX Labs' && compName !== 'TechCorp Solutions' && compName !== 'Apex Cloud Systems') {
+                        companiesSet.add(compName);
+                    }
+                }
+            });
+
+            list.innerHTML = '';
+
+            if (companiesSet.size === 0) {
+                document.getElementById('recruiter-chat-header-title').textContent = 'Recruiter Chat';
+                document.getElementById('recruiter-chat-header-sub').textContent = 'No active chats';
+                list.innerHTML = `
+                    <div style="font-size: 0.76rem; color: var(--text-dim); padding: 16px 8px; text-align: center;">
+                        No active recruiter conversations.
+                    </div>
+                `;
+                stream.innerHTML = `
+                    <div style="text-align: center; color: var(--text-dim); padding: 40px 10px; margin: auto;">
+                        <i class="fa-regular fa-comments" style="font-size: 2.4rem; color: #cbd5e1; margin-bottom: 10px; display: block;"></i>
+                        <strong style="color: var(--text-muted); font-size: 0.9rem; display: block;">No Recruiter Messages Yet</strong>
+                        <small style="color: var(--text-dim);">When you apply to jobs or employers contact you, your live conversations will show here.</small>
+                    </div>
+                `;
+                return;
+            }
+
+            let isFirst = true;
+            let firstComp = '';
+            companiesSet.forEach(comp => {
+                if (isFirst) firstComp = comp;
+                const initials = comp.substring(0, 2).toUpperCase();
+                const item = document.createElement('div');
+                item.className = `recruiter-chat-item ${isFirst ? 'active' : ''}`;
+                item.style.cssText = `padding: 10px 12px; border-radius: 10px; cursor: pointer; display: flex; align-items: center; gap: 10px; background: ${isFirst ? 'rgba(59,130,246,0.1)' : 'transparent'}; border: 1px solid ${isFirst ? 'rgba(59,130,246,0.2)' : 'transparent'};`;
+                item.innerHTML = `
+                    <div style="width: 38px; height: 38px; border-radius: 50%; background: #2563eb; color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 0.9rem; position: relative;">
+                        ${initials}
+                        <span style="width: 10px; height: 10px; border-radius: 50%; background: #22c55e; position: absolute; bottom: 0; right: 0; border: 2px solid #fff;"></span>
+                    </div>
+                    <div style="overflow: hidden; flex: 1;">
+                        <div style="font-size: 0.86rem; font-weight: 800; color: var(--text-main); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${comp}</div>
+                        <div style="font-size: 0.72rem; color: var(--text-muted);">Talent Team</div>
+                    </div>
+                `;
+                item.onclick = () => selectRecruiterChat(comp, 'Talent Acquisition Team', initials);
+                list.appendChild(item);
+                isFirst = false;
+            });
+
+            if (firstComp) {
+                selectRecruiterChat(firstComp, 'Talent Acquisition Team', firstComp.substring(0,2).toUpperCase());
+            }
+        }
+
+        function selectRecruiterChat(companyName, recruiterTitle, prefix) {
+            currentActiveCompany = companyName;
+
+            document.querySelectorAll('.recruiter-chat-item').forEach(el => {
+                el.style.background = 'transparent';
+                el.style.border = '1px solid transparent';
+            });
+
+            const targetItem = event?.currentTarget;
+            if (targetItem) {
+                targetItem.style.background = 'rgba(59,130,246,0.1)';
+                targetItem.style.border = '1px solid rgba(59,130,246,0.2)';
+            }
+
+            document.getElementById('recruiter-chat-header-title').textContent = companyName;
+            document.getElementById('recruiter-chat-header-sub').textContent = `${recruiterTitle} • Active Now`;
+
+            loadSeekerChatStream(companyName);
+        }
+
+        function loadSeekerChatStream(companyName) {
+            const stream = document.getElementById('seeker-chat-stream');
+            if (!stream) return;
+
+            const allChats = JSON.parse(localStorage.getItem('smarthire_chat_db') || '{}');
+            const chatKey = `${currentSeekerEmail}_${companyName}`;
+            // Also check candidate direct email key
+            const history = allChats[chatKey] || allChats[currentSeekerEmail] || [];
+
+            stream.innerHTML = '';
+            if (history.length === 0) {
+                stream.innerHTML = `
+                    <div style="text-align: center; color: var(--text-dim); padding: 30px 10px; margin: auto;">
+                        <i class="fa-regular fa-comment-dots" style="font-size: 2rem; color: #cbd5e1; margin-bottom: 8px; display: block;"></i>
+                        <small style="color: var(--text-dim);">No previous messages with ${companyName}. Type below to send a message.</small>
+                    </div>
+                `;
+                return;
+            }
+
+            history.forEach(m => {
+                const isMe = m.sender === 'seeker' || m.sender === 'candidate';
+                const msgDiv = document.createElement('div');
+                msgDiv.style.cssText = `max-width: 80%; padding: 10px 14px; border-radius: 12px; font-size: 0.84rem; line-height: 1.4; align-self: ${isMe ? 'flex-end' : 'flex-start'}; background: ${isMe ? 'linear-gradient(135deg, #2563eb, #06b6d4)' : 'var(--bg-body)'}; color: ${isMe ? '#fff' : 'var(--text-main)'}; border: ${isMe ? 'none' : '1px solid var(--border-card)'};`;
+                msgDiv.textContent = m.text;
+                stream.appendChild(msgDiv);
+            });
+
+            stream.scrollTop = stream.scrollHeight;
+        }
+
+        function sendSeekerMessage() {
+            const input = document.getElementById('seeker-chat-input');
+            const text = input?.value.trim();
+            if (!text || !currentActiveCompany) return;
+
+            const allChats = JSON.parse(localStorage.getItem('smarthire_chat_db') || '{}');
+            const chatKey = `${currentSeekerEmail}_${currentActiveCompany}`;
+            if (!allChats[chatKey]) allChats[chatKey] = [];
+
+            allChats[chatKey].push({
+                sender: 'seeker',
+                text: text,
+                time: new Date().toISOString()
+            });
+
+            // Also keep synced under candidate email
+            if (!allChats[currentSeekerEmail]) allChats[currentSeekerEmail] = [];
+            allChats[currentSeekerEmail].push({
+                sender: 'candidate',
+                text: text,
+                time: new Date().toISOString()
+            });
+
+            localStorage.setItem('smarthire_chat_db', JSON.stringify(allChats));
+            input.value = '';
+            loadSeekerChatStream(currentActiveCompany);
+        }
+
+        function sendQuickPrompt(text) {
+            const input = document.getElementById('seeker-chat-input');
+            if (input) {
+                input.value = text;
+                sendSeekerMessage();
+            }
+        }
+
+        function showToast(message, type = 'info') {
+            const container = document.getElementById('toast-container');
+            if (!container) return;
+            const toast = document.createElement('div');
+            toast.className = 'portal-toast';
+            let icon = type === 'success' ? 'fa-solid fa-circle-check' : 'fa-solid fa-circle-info';
+            toast.innerHTML = `<i class="${icon}" style="color: ${type === 'success' ? '#10b981' : '#38bdf8'};"></i> <span>${message}</span>`;
+            container.appendChild(toast);
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transform = 'translateY(20px)';
+                toast.style.transition = 'all 0.3s ease';
+                setTimeout(() => toast.remove(), 300);
+            }, 3500);
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            loadSeekerDashboard();
+
+            // Profile Form
+            document.getElementById('form-seeker-profile')?.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const newName = document.getElementById('seeker-name-input')?.value.trim();
+                if (newName) {
+                    currentSeekerName = newName;
+                    document.getElementById('seeker-welcome-heading').textContent = `Welcome Back, ${currentSeekerName}! 👋`;
+                }
+                updateResumeLivePreview();
+                showToast('Candidate profile & AI Resume updated successfully!', 'success');
+            });
+
+            // Theme Toggle
+            const themeBtn = document.getElementById('btn-theme-toggle');
+            const themeIcon = document.getElementById('theme-icon');
+            themeBtn?.addEventListener('click', () => {
+                const currentTheme = document.documentElement.getAttribute('data-theme');
+                if (currentTheme === 'dark') {
+                    document.documentElement.removeAttribute('data-theme');
+                    themeIcon.className = 'fa-regular fa-sun';
+                } else {
+                    document.documentElement.setAttribute('data-theme', 'dark');
+                    themeIcon.className = 'fa-solid fa-moon';
+                }
+            });
+
+            // Logout
+            document.getElementById('btn-seeker-logout')?.addEventListener('click', handleSeekerLogout);
+        });
+
+        function handleSeekerLogout() {
+            sessionStorage.clear();
+            localStorage.removeItem('smartjob_remember_user');
+            localStorage.removeItem('smartjob_active_session');
+            localStorage.removeItem('smartjob_active_user');
+            if (window.auth && typeof window.auth.logout === 'function') {
+                window.auth.logout();
+            } else {
+                window.location.replace('index.html');
+            }
+        }
+    </script>
+</body>
+</html>

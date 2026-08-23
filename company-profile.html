@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Company Profile | Smart Job Vacancy Finder</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --bg-body: #f4f7f6;
+            --bg-nav: #ffffff;
+            --bg-card: #ffffff;
+            --border-card: #e5e9eb;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --text-dim: #94a3b8;
+            --primary-green: #34a87a;
+            --primary-green-hover: #2b8c65;
+            --primary-green-light: rgba(52, 168, 122, 0.1);
+            --radius-sm: 8px;
+            --radius-md: 14px;
+            --radius-lg: 20px;
+            --shadow-sm: 0 1px 3px rgba(0,0,0,0.04);
+            --shadow-card: 0 4px 16px rgba(0,0,0,0.05);
+            --font-main: 'Plus Jakarta Sans', sans-serif;
+            --transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        [data-theme="dark"] {
+            --bg-body: #0b111e;
+            --bg-nav: #111928;
+            --bg-card: #162032;
+            --border-card: #222f46;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --text-dim: #64748b;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: var(--font-main);
+            background: var(--bg-body);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        /* ---------------- TOP NAVBAR ---------------- */
+        .portal-navbar {
+            background: var(--bg-nav);
+            border-bottom: 1px solid var(--border-card);
+            padding: 14px 36px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .nav-brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+        }
+
+        .brand-icon-box {
+            width: 38px;
+            height: 38px;
+            background: var(--primary-green);
+            color: #fff;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.15rem;
+        }
+
+        .brand-title {
+            font-size: 1.2rem;
+            font-weight: 800;
+            color: var(--text-main);
+            letter-spacing: -0.02em;
+        }
+
+        .nav-actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .btn-nav-action {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 18px;
+            border-radius: 30px;
+            font-size: 0.84rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: var(--transition);
+            text-decoration: none;
+            font-family: var(--font-main);
+        }
+
+        .btn-nav-dash {
+            background: transparent;
+            border: 1px solid var(--primary-green);
+            color: var(--primary-green);
+        }
+
+        .btn-nav-dash:hover {
+            background: var(--primary-green-light);
+        }
+
+        .btn-nav-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            border: 1px solid var(--border-card);
+            background: transparent;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 0.95rem;
+            transition: var(--transition);
+        }
+
+        .btn-nav-icon:hover {
+            color: var(--text-main);
+            border-color: var(--text-muted);
+        }
+
+        .btn-nav-logout {
+            background: transparent;
+            border: 1px solid #ef4444;
+            color: #ef4444;
+            padding: 7px 16px;
+            border-radius: 30px;
+            font-size: 0.82rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-nav-logout:hover {
+            background: rgba(239, 68, 68, 0.08);
+        }
+
+        /* ---------------- MAIN CONTAINER ---------------- */
+        .portal-content {
+            max-width: 1240px;
+            width: 100%;
+            margin: 0 auto;
+            padding: 32px 24px 60px 24px;
+            display: grid;
+            grid-template-columns: 1.35fr 1fr;
+            gap: 28px;
+            align-items: start;
+        }
+
+        .white-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-card);
+            border-radius: var(--radius-md);
+            padding: 32px;
+            box-shadow: var(--shadow-card);
+        }
+
+        /* ---------------- PROFILE CARD HEADER ---------------- */
+        .profile-avatar-header {
+            text-align: center;
+            margin-bottom: 24px;
+        }
+
+        .avatar-icon-large {
+            width: 68px;
+            height: 68px;
+            border-radius: 16px;
+            background: rgba(52, 168, 122, 0.12);
+            color: var(--primary-green);
+            font-size: 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 12px auto;
+        }
+
+        .profile-company-title {
+            font-size: 1.45rem;
+            font-weight: 800;
+            color: var(--primary-green);
+            margin-bottom: 4px;
+        }
+
+        .profile-industry-subtitle {
+            font-size: 0.84rem;
+            color: var(--text-muted);
+            font-weight: 600;
+        }
+
+        .card-divider {
+            height: 1px;
+            background: var(--border-card);
+            margin: 20px 0 24px 0;
+        }
+
+        /* ---------------- FORM STYLING ---------------- */
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 0.82rem;
+            font-weight: 700;
+            color: var(--text-main);
+            margin-bottom: 6px;
+        }
+
+        .form-input, .form-textarea {
+            width: 100%;
+            padding: 11px 14px;
+            border: 1px solid var(--border-card);
+            border-radius: var(--radius-sm);
+            background: var(--bg-card);
+            color: var(--text-main);
+            font-family: var(--font-main);
+            font-size: 0.88rem;
+            outline: none;
+            transition: var(--transition);
+        }
+
+        .form-input:focus, .form-textarea:focus {
+            border-color: var(--primary-green);
+            box-shadow: 0 0 0 3px var(--primary-green-light);
+        }
+
+        .form-input[readonly] {
+            background: rgba(0, 0, 0, 0.02);
+            color: var(--text-muted);
+            cursor: not-allowed;
+        }
+
+        .form-helper {
+            font-size: 0.72rem;
+            color: var(--text-dim);
+            margin-top: 4px;
+            display: block;
+        }
+
+        .btn-save-profile {
+            width: 100%;
+            background: #2ea374;
+            color: #fff;
+            border: none;
+            padding: 13px;
+            border-radius: 8px;
+            font-weight: 800;
+            font-size: 0.95rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            box-shadow: 0 4px 14px rgba(46,163,116,0.3);
+            transition: var(--transition);
+            margin-top: 10px;
+        }
+
+        .btn-save-profile:hover {
+            background: var(--primary-green-hover);
+            transform: translateY(-1px);
+        }
+
+        /* ---------------- RIGHT CARD: ACTIVE VACANCIES ---------------- */
+        .vacancies-card-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.1rem;
+            font-weight: 800;
+            color: var(--text-main);
+            margin-bottom: 4px;
+        }
+
+        .vacancies-card-sub {
+            font-size: 0.82rem;
+            color: var(--text-muted);
+            margin-bottom: 16px;
+        }
+
+        .empty-vacancies-box {
+            padding: 60px 20px;
+            text-align: center;
+            color: var(--text-muted);
+        }
+
+        .empty-vacancies-icon {
+            font-size: 2.4rem;
+            color: var(--text-dim);
+            margin-bottom: 12px;
+            display: block;
+        }
+
+        /* ---------------- TOAST NOTIFICATION ---------------- */
+        .toast-container {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .portal-toast {
+            background: #1e293b;
+            color: #fff;
+            padding: 12px 20px;
+            border-radius: 10px;
+            font-size: 0.86rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            animation: slideInToast 0.3s ease;
+        }
+
+        @keyframes slideInToast {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        @media (max-width: 900px) {
+            .portal-content { grid-template-columns: 1fr; }
+            .form-row { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <div id="toast-container" class="toast-container"></div>
+
+    <!-- =========================================================
+         TOP NAVBAR
+         ========================================================= -->
+    <header class="portal-navbar">
+        <a href="company-profile.html" class="nav-brand">
+            <div class="brand-icon-box">
+                <i class="fa-solid fa-building"></i>
+            </div>
+            <span class="brand-title">Company Profile</span>
+        </a>
+
+        <div class="nav-actions">
+            <a href="company-dashboard.html" class="btn-nav-action btn-nav-dash" id="btn-back-dashboard">
+                <i class="fa-solid fa-house"></i> Dashboard
+            </a>
+            <button class="btn-nav-icon" title="Notifications" onclick="showToast('No new notifications.', 'info')">
+                <i class="fa-regular fa-bell"></i>
+            </button>
+            <button class="btn-nav-icon" id="btn-theme-toggle" title="Toggle Theme">
+                <i class="fa-regular fa-sun" id="theme-icon"></i>
+            </button>
+            <button class="btn-nav-logout" id="btn-company-logout" title="Sign Out">
+                Logout
+            </button>
+        </div>
+    </header>
+
+    <!-- =========================================================
+         MAIN CONTENT WORKSPACE
+         ========================================================= -->
+    <main class="portal-content">
+        
+        <!-- Left Column: Company Profile Form -->
+        <section class="white-card">
+            <div class="profile-avatar-header">
+                <div class="avatar-icon-large">
+                    <i class="fa-solid fa-building"></i>
+                </div>
+                <h2 class="profile-company-title" id="display-company-name">Mrmaheshbabu Tech</h2>
+                <div class="profile-industry-subtitle" id="display-industry">Technology</div>
+            </div>
+
+            <div class="card-divider"></div>
+
+            <form id="form-company-profile">
+                <!-- Row 1: Company Name + Corporate Email -->
+                <div class="form-row">
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <label class="form-label">Company Name</label>
+                        <input type="text" id="input-company-name" class="form-input" value="Mrmaheshbabu Tech" required>
+                    </div>
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <label class="form-label">Corporate Email</label>
+                        <input type="email" id="input-company-email" class="form-input" value="mrmaheshbabu222@gmail.com" readonly>
+                        <small class="form-helper">Email address cannot be changed.</small>
+                    </div>
+                </div>
+
+                <!-- Row 2: Contact Phone + Headquarters Location -->
+                <div class="form-row">
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <label class="form-label">Contact Phone</label>
+                        <input type="text" id="input-company-phone" class="form-input" value="+91 9999988888" placeholder="+91 9999988888">
+                    </div>
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <label class="form-label">Headquarters Location</label>
+                        <input type="text" id="input-company-location" class="form-input" value="Bangalore" placeholder="Bangalore / Visakhapatnam">
+                    </div>
+                </div>
+
+                <!-- Row 3: Industry Vertical -->
+                <div class="form-group">
+                    <label class="form-label">Industry Vertical</label>
+                    <input type="text" id="input-company-industry" class="form-input" value="Technology" placeholder="e.g. Technology, Finance, Healthcare">
+                </div>
+
+                <!-- Row 4: About Company -->
+                <div class="form-group">
+                    <label class="form-label">About Company</label>
+                    <textarea id="input-company-about" class="form-textarea" rows="4" placeholder="Describe your company vision, culture, and achievements...">A forward-thinking company.</textarea>
+                </div>
+
+                <!-- Save Button -->
+                <button type="submit" class="btn-save-profile">
+                    <i class="fa-solid fa-download"></i> Save Profile Details
+                </button>
+            </form>
+        </section>
+
+        <!-- Right Column: Active Vacancies -->
+        <section class="white-card">
+            <div class="vacancies-card-header">
+                <i class="fa-solid fa-briefcase" style="color: var(--primary-green);"></i> Active Vacancies
+            </div>
+            <p class="vacancies-card-sub">Job openings currently active for this company profile</p>
+            <div class="card-divider" style="margin: 0 0 20px 0;"></div>
+
+            <div id="company-vacancies-list">
+                <div class="empty-vacancies-box">
+                    <i class="fa-regular fa-folder-open empty-vacancies-icon"></i>
+                    <div>No active jobs listed.</div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/supabase-config.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/db.js"></script>
+    <script>
+        function getQueryParams() {
+            const params = new URLSearchParams(window.location.search);
+            return {
+                email: params.get('session_email'),
+                name: params.get('session_name'),
+                role: params.get('session_role')
+            };
+        }
+
+        function loadProfileData() {
+            const q = getQueryParams();
+            const user = window.auth?.getCurrentUser();
+
+            let compName = q.name ? decodeURIComponent(q.name) : (user?.fullName || 'Mrmaheshbabu Tech');
+            let compEmail = q.email ? decodeURIComponent(q.email) : (user?.email || 'mrmaheshbabu222@gmail.com');
+
+            // Try loading saved profile from localStorage
+            const savedProfile = JSON.parse(localStorage.getItem(`company_profile_${compEmail}`) || '{}');
+
+            document.getElementById('display-company-name').textContent = savedProfile.name || compName;
+            document.getElementById('display-industry').textContent = savedProfile.industry || 'Technology';
+
+            document.getElementById('input-company-name').value = savedProfile.name || compName;
+            document.getElementById('input-company-email').value = compEmail;
+            document.getElementById('input-company-phone').value = savedProfile.phone || '+91 9999988888';
+            document.getElementById('input-company-location').value = savedProfile.location || 'Bangalore';
+            document.getElementById('input-company-industry').value = savedProfile.industry || 'Technology';
+            document.getElementById('input-company-about').value = savedProfile.about || 'A forward-thinking company.';
+
+            // Maintain session on Dashboard back link
+            const dashLink = document.getElementById('btn-back-dashboard');
+            if (dashLink) {
+                dashLink.href = `company-dashboard.html?session_email=${encodeURIComponent(compEmail)}&session_name=${encodeURIComponent(compName)}&session_role=company`;
+            }
+
+            // Load Active Vacancies for this company
+            loadCompanyVacancies(compName);
+        }
+
+        function loadCompanyVacancies(companyName) {
+            const listEl = document.getElementById('company-vacancies-list');
+            if (!listEl || !window.db) return;
+
+            const allJobs = window.db.getJobs() || [];
+            const matchingJobs = allJobs.filter(j => j.company && j.company.toLowerCase() === companyName.toLowerCase());
+
+            if (matchingJobs.length === 0) {
+                listEl.innerHTML = `
+                    <div class="empty-vacancies-box">
+                        <i class="fa-regular fa-folder-open empty-vacancies-icon"></i>
+                        <div>No active jobs listed.</div>
+                    </div>
+                `;
+                return;
+            }
+
+            listEl.innerHTML = '';
+            matchingJobs.forEach(j => {
+                const card = document.createElement('div');
+                card.style.cssText = 'padding: 14px; border: 1px solid var(--border-card); border-radius: var(--radius-sm); margin-bottom: 12px; background: rgba(0,0,0,0.01);';
+                card.innerHTML = `
+                    <div style="font-weight: 800; font-size: 0.95rem; color: var(--text-main); margin-bottom: 4px;">${j.title}</div>
+                    <div style="font-size: 0.78rem; color: var(--text-muted); display: flex; gap: 12px;">
+                        <span><i class="fa-solid fa-location-dot"></i> ${j.location || 'Remote'}</span>
+                        <span><i class="fa-solid fa-wallet"></i> ${j.salary || 'Competitive'}</span>
+                    </div>
+                `;
+                listEl.appendChild(card);
+            });
+        }
+
+        // ---------------- TOAST HELPER ----------------
+        function showToast(message, type = 'info') {
+            const container = document.getElementById('toast-container');
+            if (!container) return;
+            const toast = document.createElement('div');
+            toast.className = 'portal-toast';
+            let icon = type === 'success' ? 'fa-solid fa-circle-check' : 'fa-solid fa-circle-info';
+            toast.innerHTML = `<i class="${icon}" style="color: ${type === 'success' ? '#10b981' : '#38bdf8'};"></i> <span>${message}</span>`;
+            container.appendChild(toast);
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transform = 'translateY(20px)';
+                toast.style.transition = 'all 0.3s ease';
+                setTimeout(() => toast.remove(), 300);
+            }, 3500);
+        }
+
+        // ---------------- DOM INITIALIZATION ----------------
+        document.addEventListener('DOMContentLoaded', () => {
+            loadProfileData();
+
+            // Handle Profile Save Form
+            document.getElementById('form-company-profile')?.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const email = document.getElementById('input-company-email').value.trim();
+                const name = document.getElementById('input-company-name').value.trim();
+                const phone = document.getElementById('input-company-phone').value.trim();
+                const location = document.getElementById('input-company-location').value.trim();
+                const industry = document.getElementById('input-company-industry').value.trim();
+                const about = document.getElementById('input-company-about').value.trim();
+
+                const profileData = { name, email, phone, location, industry, about };
+                localStorage.setItem(`company_profile_${email}`, JSON.stringify(profileData));
+
+                document.getElementById('display-company-name').textContent = name;
+                document.getElementById('display-industry').textContent = industry;
+
+                showToast('✅ Company profile details updated successfully!', 'success');
+            });
+
+            // Theme Toggle
+            const themeBtn = document.getElementById('btn-theme-toggle');
+            const themeIcon = document.getElementById('theme-icon');
+            themeBtn?.addEventListener('click', () => {
+                const currentTheme = document.documentElement.getAttribute('data-theme');
+                if (currentTheme === 'dark') {
+                    document.documentElement.removeAttribute('data-theme');
+                    themeIcon.className = 'fa-regular fa-sun';
+                } else {
+                    document.documentElement.setAttribute('data-theme', 'dark');
+                    themeIcon.className = 'fa-solid fa-moon';
+                }
+            });
+
+            // Logout
+            document.getElementById('btn-company-logout')?.addEventListener('click', () => {
+                window.auth?.logout();
+            });
+        });
+    </script>
+</body>
+</html>

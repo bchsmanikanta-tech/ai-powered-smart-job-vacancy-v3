@@ -1,0 +1,837 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Powered Smart Job Vacancy Finder System</title>
+    <meta name="description" content="Discover jobs that match your skills, education, and career goals using intelligent AI-powered recommendations.">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Core & Home Styles -->
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/home.css">
+</head>
+<body>
+    <!-- Background Animated Shapes -->
+    <div class="bg-shape shape-1"></div>
+    <div class="bg-shape shape-2"></div>
+    <div class="bg-shape shape-3"></div>
+    <div class="grid-overlay"></div>
+
+    <!-- Toast Alerts -->
+    <div id="toast-container" class="toast-container"></div>
+
+    <!-- =========================================================
+         1. NAVBAR
+         ========================================================= -->
+    <header class="main-header glass-panel">
+        <div class="nav-container">
+            <a href="index.html" class="brand-logo">
+                <i class="fa-solid fa-bolt-lightning brand-icon"></i>
+                <span>SmartJob <span class="highlight">Finder</span></span>
+            </a>
+
+            <!-- Mobile Menu Toggle -->
+            <button class="mobile-toggle" id="mobile-menu-btn" aria-label="Toggle navigation">
+                <i class="fa-solid fa-bars"></i>
+            </button>
+
+            <!-- Nav Navigation -->
+            <nav class="nav-menu" id="nav-menu">
+                <ul class="nav-links">
+                    <li><a href="#hero" class="active">Home</a></li>
+                    <li><a href="#featured-jobs">Find Jobs</a></li>
+                    <li><a href="#companies">Companies</a></li>
+                    <li><a href="#ai-features">AI Features</a></li>
+                    <li><a href="#how-it-works">How It Works</a></li>
+                </ul>
+
+                <div class="nav-auth" id="nav-auth-section">
+                    <button type="button" class="btn-supabase-status" id="btn-open-supabase-modal">
+                        <span class="status-dot connected" id="supabase-status-dot"></span>
+                        <span id="supabase-status-text">Supabase: Live</span>
+                        <i class="fa-solid fa-database"></i>
+                    </button>
+                    <button class="btn-nav-login" id="nav-btn-login">Login</button>
+                    <button class="btn-primary btn-nav-register" id="nav-btn-register">Register Free</button>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <!-- =========================================================
+             2. HERO SECTION — MOST IMPORTANT (AI Search Focus)
+             ========================================================= -->
+        <section class="hero-section" id="hero">
+            <div class="hero-container">
+                <div class="hero-badge">
+                    <span class="pulse-icon"><i class="fa-solid fa-sparkles"></i></span>
+                    <span>Next-Generation AI Job Matching Engine</span>
+                </div>
+
+                <h1 class="hero-title">
+                    AI-Powered Smart <span class="gradient-text">Job Vacancy Finder</span> System
+                </h1>
+
+                <p class="hero-subtitle">
+                    Discover jobs that match your skills, education, experience, and career goals using intelligent AI-powered recommendations.
+                </p>
+
+                <!-- Main AI Prompt Search Box -->
+                <div class="ai-search-card glass-panel">
+                    <div class="ai-search-input-wrap">
+                        <div class="ai-glow-icon">
+                            <i class="fa-solid fa-robot"></i>
+                        </div>
+                        <input type="text" id="ai-search-prompt" 
+                               placeholder="What job are you looking for? (e.g. Find Python developer jobs in Visakhapatnam for freshers)" 
+                               aria-label="AI Job Search Prompt">
+                    </div>
+
+                    <div class="ai-search-actions">
+                        <button class="btn-primary" id="btn-ai-search">
+                            <i class="fa-solid fa-magnifying-glass"></i>
+                            <span>Find Jobs</span>
+                        </button>
+                        <button class="btn-ai-match" id="btn-ai-match-modal">
+                            <i class="fa-solid fa-wand-magic-sparkles"></i>
+                            <span>Try AI Matching</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Example Prompt Suggestion Chips -->
+                <div class="prompt-chips">
+                    <span class="chips-label"><i class="fa-regular fa-lightbulb"></i> Try prompts:</span>
+                    <button class="chip-item" data-prompt="I completed diploma in computer engineering and I want a frontend developer job in Vizag">"Diploma in computer engineering frontend in Vizag"</button>
+                    <button class="chip-item" data-prompt="Find Python developer jobs in Visakhapatnam for freshers">"Python developer in Visakhapatnam for freshers"</button>
+                    <button class="chip-item" data-prompt="Remote React frontend engineer ₹40,000+">"Remote React frontend ₹40,000+"</button>
+                    <button class="chip-item" data-prompt="AI & Machine Learning freshers Bangalore">"AI & ML freshers in Bangalore"</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- =========================================================
+             3. QUICK JOB SEARCH
+             ========================================================= -->
+        <section class="quick-search-section">
+            <div class="section-container">
+                <div class="quick-search-box glass-panel">
+                    <div class="quick-search-grid">
+                        <div class="search-field">
+                            <label><i class="fa-solid fa-briefcase"></i> Job Title / Skill</label>
+                            <input type="text" id="quick-keyword" placeholder="e.g. Python, React, UI/UX">
+                        </div>
+
+                        <div class="search-field">
+                            <label><i class="fa-solid fa-location-dot"></i> Location</label>
+                            <input type="text" id="quick-location" placeholder="e.g. Visakhapatnam, Remote">
+                        </div>
+
+                        <div class="search-field">
+                            <label><i class="fa-solid fa-user-graduate"></i> Experience</label>
+                            <select id="quick-experience">
+                                <option value="all">Any Experience</option>
+                                <option value="Fresher">🟢 Fresher</option>
+                                <option value="1-2 Yrs">1 - 2 Years</option>
+                                <option value="2-4 Yrs">2 - 4 Years</option>
+                                <option value="5+ Yrs">5+ Years</option>
+                            </select>
+                        </div>
+
+                        <div class="search-field">
+                            <label><i class="fa-solid fa-indian-rupee-sign"></i> Salary Range</label>
+                            <select id="quick-salary">
+                                <option value="all">All Salaries</option>
+                                <option value="20000">₹20,000+ / mo</option>
+                                <option value="40000">₹40,000+ / mo</option>
+                                <option value="60000">₹60,000+ / mo</option>
+                                <option value="80000">₹80,000+ / mo</option>
+                            </select>
+                        </div>
+
+                        <div class="search-field btn-field">
+                            <button class="btn-primary w-full" id="btn-quick-search">
+                                <i class="fa-solid fa-magnifying-glass"></i> Search
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- =========================================================
+             4. AI FEATURES (4 Cards)
+             ========================================================= -->
+        <section class="ai-features-section" id="ai-features">
+            <div class="section-container">
+                <div class="section-header text-center">
+                    <span class="badge badge-accent"><i class="fa-solid fa-microchip"></i> Cutting-Edge Capabilities</span>
+                    <h2 class="section-title">Why SmartHire AI Outperforms Traditional Portals</h2>
+                    <p class="section-desc">Experience intelligent recruitment algorithms designed to eliminate guesswork.</p>
+                </div>
+
+                <div class="features-grid">
+                    <!-- Feature 1 -->
+                    <div class="feature-card glass-panel">
+                        <div class="feature-badge-icon icon-ai">
+                            <i class="fa-solid fa-robot"></i>
+                        </div>
+                        <h3>🤖 AI Job Matching</h3>
+                        <p>Find jobs that match your precise skills, academic background, and real-time industry demands.</p>
+                        <div class="card-metric">95% Matching Accuracy</div>
+                    </div>
+
+                    <!-- Feature 2 -->
+                    <div class="feature-card glass-panel">
+                        <div class="feature-badge-icon icon-resume">
+                            <i class="fa-regular fa-file-lines"></i>
+                        </div>
+                        <h3>📄 AI Resume Analysis</h3>
+                        <p>Analyze your resume in seconds, identify ATS score bottlenecks, and get instant upgrade tips.</p>
+                        <button class="btn-card-action" id="btn-scan-resume-trigger">Scan Resume Free &rarr;</button>
+                    </div>
+
+                    <!-- Feature 3 -->
+                    <div class="feature-card glass-panel">
+                        <div class="feature-badge-icon icon-recom">
+                            <i class="fa-solid fa-bullseye"></i>
+                        </div>
+                        <h3>🎯 Smart Recommendations</h3>
+                        <p>Receive tailored job alerts based on emerging market trends and salary benchmarks.</p>
+                        <div class="card-metric">Personalized Daily Digest</div>
+                    </div>
+
+                    <!-- Feature 4 -->
+                    <div class="feature-card glass-panel">
+                        <div class="feature-badge-icon icon-career">
+                            <i class="fa-solid fa-lightbulb"></i>
+                        </div>
+                        <h3>💡 Career Guidance</h3>
+                        <p>Discover high-growth skills, compensation projections, and roadmap advice for fast promotion.</p>
+                        <div class="card-metric">AI Skill-Gap Analyzer</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- =========================================================
+             5. POPULAR JOB CATEGORIES
+             ========================================================= -->
+        <section class="categories-section" id="categories">
+            <div class="section-container">
+                <div class="section-header text-center">
+                    <span class="badge badge-accent">Trending Domains</span>
+                    <h2 class="section-title">Explore Popular Categories</h2>
+                    <p class="section-desc">Browse thousands of open roles across top technology and engineering sectors.</p>
+                </div>
+
+                <div class="categories-grid">
+                    <div class="category-card glass-panel" data-cat="Software Development">
+                        <div class="cat-icon"><i class="fa-solid fa-code"></i></div>
+                        <h4>💻 Software Development</h4>
+                        <span>1,840+ Open Roles</span>
+                    </div>
+
+                    <div class="category-card glass-panel" data-cat="Web Development">
+                        <div class="cat-icon"><i class="fa-solid fa-globe"></i></div>
+                        <h4>🌐 Web Development</h4>
+                        <span>1,420+ Open Roles</span>
+                    </div>
+
+                    <div class="category-card glass-panel" data-cat="Mobile App Development">
+                        <div class="cat-icon"><i class="fa-solid fa-mobile-screen-button"></i></div>
+                        <h4>📱 Mobile App Development</h4>
+                        <span>890+ Open Roles</span>
+                    </div>
+
+                    <div class="category-card glass-panel" data-cat="AI & Machine Learning">
+                        <div class="cat-icon"><i class="fa-solid fa-brain"></i></div>
+                        <h4>🤖 AI & Machine Learning</h4>
+                        <span>760+ Open Roles</span>
+                    </div>
+
+                    <div class="category-card glass-panel" data-cat="Data Science">
+                        <div class="cat-icon"><i class="fa-solid fa-chart-pie"></i></div>
+                        <h4>📊 Data Science</h4>
+                        <span>650+ Open Roles</span>
+                    </div>
+
+                    <div class="category-card glass-panel" data-cat="Cyber Security">
+                        <div class="cat-icon"><i class="fa-solid fa-shield-halved"></i></div>
+                        <h4>🔐 Cyber Security</h4>
+                        <span>510+ Open Roles</span>
+                    </div>
+
+                    <div class="category-card glass-panel" data-cat="UI/UX Design">
+                        <div class="cat-icon"><i class="fa-solid fa-palette"></i></div>
+                        <h4>🎨 UI/UX Design</h4>
+                        <span>480+ Open Roles</span>
+                    </div>
+
+                    <div class="category-card glass-panel" data-cat="Engineering">
+                        <div class="cat-icon"><i class="fa-solid fa-gears"></i></div>
+                        <h4>⚙️ Engineering</h4>
+                        <span>920+ Open Roles</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- =========================================================
+             6. FEATURED / LATEST JOBS
+             ========================================================= -->
+        <section class="jobs-section" id="featured-jobs">
+            <div class="section-container">
+                <div class="section-header-flex">
+                    <div>
+                        <span class="badge badge-accent"><i class="fa-solid fa-fire"></i> Verified Postings</span>
+                        <h2 class="section-title">Featured & Latest Job Vacancies</h2>
+                    </div>
+                    <div class="job-filter-pills" id="category-pills">
+                        <button class="pill-btn active" data-filter="all">All Jobs</button>
+                        <button class="pill-btn" data-filter="Fresher">Freshers</button>
+                        <button class="pill-btn" data-filter="Visakhapatnam">Visakhapatnam</button>
+                        <button class="pill-btn" data-filter="Remote">Remote</button>
+                    </div>
+                </div>
+
+                <!-- Job List Cards Container -->
+                <div class="jobs-grid" id="jobs-container">
+                    <!-- Populated via JavaScript dynamically with rich match % -->
+                </div>
+
+                <div class="text-center" style="margin-top: 36px;">
+                    <button class="btn-primary" id="btn-load-more-jobs" style="padding: 12px 32px;">
+                        <span>Explore All Vacancies</span>
+                        <i class="fa-solid fa-arrow-right"></i>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- =========================================================
+             7. HOW IT WORKS (Process Flow)
+             ========================================================= -->
+        <section class="how-it-works-section" id="how-it-works">
+            <div class="section-container">
+                <div class="section-header text-center">
+                    <span class="badge badge-accent">Seamless 5-Step Process</span>
+                    <h2 class="section-title">How SmartHire AI Works</h2>
+                    <p class="section-desc">From profile registration to receiving offer letters in 5 easy steps.</p>
+                </div>
+
+                <div class="workflow-steps">
+                    <div class="step-card glass-panel">
+                        <div class="step-number">1</div>
+                        <div class="step-icon"><i class="fa-solid fa-user-plus"></i></div>
+                        <h4>Create Profile</h4>
+                        <p>Sign up in under 60 seconds and set your career preferences.</p>
+                    </div>
+
+                    <div class="step-arrow"><i class="fa-solid fa-arrow-right"></i></div>
+
+                    <div class="step-card glass-panel">
+                        <div class="step-number">2</div>
+                        <div class="step-icon"><i class="fa-solid fa-file-arrow-up"></i></div>
+                        <h4>Upload Resume</h4>
+                        <p>Upload your PDF/Word CV for deep AI structure parsing.</p>
+                    </div>
+
+                    <div class="step-arrow"><i class="fa-solid fa-arrow-right"></i></div>
+
+                    <div class="step-card glass-panel highlight-step">
+                        <div class="step-number">3</div>
+                        <div class="step-icon"><i class="fa-solid fa-microchip"></i></div>
+                        <h4>AI Analyzes Skills</h4>
+                        <p>Algorithm scans your tech stack, projects, and strengths.</p>
+                    </div>
+
+                    <div class="step-arrow"><i class="fa-solid fa-arrow-right"></i></div>
+
+                    <div class="step-card glass-panel">
+                        <div class="step-number">4</div>
+                        <div class="step-icon"><i class="fa-solid fa-wand-magic-sparkles"></i></div>
+                        <h4>AI Finds Matches</h4>
+                        <p>Instantly calculates match % across active company openings.</p>
+                    </div>
+
+                    <div class="step-arrow"><i class="fa-solid fa-arrow-right"></i></div>
+
+                    <div class="step-card glass-panel">
+                        <div class="step-number">5</div>
+                        <div class="step-icon"><i class="fa-solid fa-paper-plane"></i></div>
+                        <h4>1-Click Apply</h4>
+                        <p>Submit direct applications to verified recruiters.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- =========================================================
+             8. FOR COMPANIES / RECRUITERS
+             ========================================================= -->
+        <section class="companies-section" id="companies">
+            <div class="section-container">
+                <div class="company-banner glass-panel">
+                    <div class="company-content">
+                        <span class="badge badge-accent"><i class="fa-solid fa-building"></i> For Employers & Recruiters</span>
+                        <h2 class="company-title">Find the Right Talent Faster with AI</h2>
+                        <p class="company-desc">
+                            Post your vacancies and let our AI engine automatically find, rank, and match the most suitable candidates with 95% accuracy. Cut hiring time in half.
+                        </p>
+
+                        <div class="company-features">
+                            <div><i class="fa-solid fa-check-double text-accent"></i> Automated Candidate Ranking</div>
+                            <div><i class="fa-solid fa-check-double text-accent"></i> Skill Verification Checks</div>
+                            <div><i class="fa-solid fa-check-double text-accent"></i> Zero Spam Applications</div>
+                        </div>
+
+                        <div class="company-actions">
+                            <button class="btn-primary" id="btn-register-company">
+                                <i class="fa-solid fa-building-circle-check"></i>
+                                <span>Register Your Company</span>
+                            </button>
+                            <a href="#featured-jobs" class="btn-outline">Learn More</a>
+                        </div>
+                    </div>
+
+                    <div class="company-visual">
+                        <div class="ai-match-preview-card glass-panel">
+                            <div class="preview-header">
+                                <i class="fa-solid fa-shield-halved text-success"></i>
+                                <span>AI Candidate Ranking Engine</span>
+                            </div>
+                            <div class="candidate-row">
+                                <div class="c-avatar">A</div>
+                                <div class="c-info">
+                                    <strong>Alex Sharma</strong>
+                                    <small>Python & Django Specialist</small>
+                                </div>
+                                <span class="match-badge">98% Match</span>
+                            </div>
+                            <div class="candidate-row">
+                                <div class="c-avatar">P</div>
+                                <div class="c-info">
+                                    <strong>Pooja Reddy</strong>
+                                    <small>React & Full Stack Dev</small>
+                                </div>
+                                <span class="match-badge">94% Match</span>
+                            </div>
+                            <div class="candidate-row">
+                                <div class="c-avatar">K</div>
+                                <div class="c-info">
+                                    <strong>Kiran Varma</strong>
+                                    <small>UI/UX & Frontend</small>
+                                </div>
+                                <span class="match-badge">91% Match</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- =========================================================
+             9. STATISTICS SECTION
+             ========================================================= -->
+        <section class="stats-section">
+            <div class="section-container">
+                <div class="stats-grid">
+                    <div class="stat-card glass-panel">
+                        <div class="stat-icon"><i class="fa-solid fa-briefcase"></i></div>
+                        <h3 class="stat-number" data-target="10000">10K+</h3>
+                        <p class="stat-label">Active Job Openings</p>
+                    </div>
+
+                    <div class="stat-card glass-panel">
+                        <div class="stat-icon"><i class="fa-solid fa-users"></i></div>
+                        <h3 class="stat-number" data-target="5000">5K+</h3>
+                        <p class="stat-label">Registered Job Seekers</p>
+                    </div>
+
+                    <div class="stat-card glass-panel">
+                        <div class="stat-icon"><i class="fa-solid fa-building-flag"></i></div>
+                        <h3 class="stat-number" data-target="500">500+</h3>
+                        <p class="stat-label">Hiring Companies</p>
+                    </div>
+
+                    <div class="stat-card glass-panel">
+                        <div class="stat-icon"><i class="fa-solid fa-bullseye"></i></div>
+                        <h3 class="stat-number">95%</h3>
+                        <p class="stat-label">AI Matching Accuracy</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- =========================================================
+             10. TESTIMONIALS
+             ========================================================= -->
+        <section class="testimonials-section">
+            <div class="section-container">
+                <div class="section-header text-center">
+                    <span class="badge badge-accent">Success Stories</span>
+                    <h2 class="section-title">Trusted by Job Seekers & Tech Leaders</h2>
+                    <p class="section-desc">See how professionals and companies are accelerating their career and hiring journeys.</p>
+                </div>
+
+                <div class="testimonials-grid">
+                    <!-- Review 1 -->
+                    <div class="testi-card glass-panel">
+                        <div class="stars">
+                            <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
+                        </div>
+                        <p class="testi-text">
+                            "As a fresher in Visakhapatnam, finding a legitimate Python developer position was overwhelming. SmartHire AI matched me with ABC Technologies in 3 days with an 85% match score!"
+                        </p>
+                        <div class="testi-user">
+                            <div class="testi-avatar">R</div>
+                            <div>
+                                <h5>Ramesh V.</h5>
+                                <small>Junior Python Developer</small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Review 2 -->
+                    <div class="testi-card glass-panel">
+                        <div class="stars">
+                            <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
+                        </div>
+                        <p class="testi-text">
+                            "The AI candidate ranking saves our HR team over 20 hours per week. We hired 4 senior cloud engineers who perfectly matched our tech stack requirement."
+                        </p>
+                        <div class="testi-user">
+                            <div class="testi-avatar" style="background: linear-gradient(135deg, #06b6d4, #3b82f6);">S</div>
+                            <div>
+                                <h5>Sneha Rao</h5>
+                                <small>HR Director at NexaCore</small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Review 3 -->
+                    <div class="testi-card glass-panel">
+                        <div class="stars">
+                            <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
+                        </div>
+                        <p class="testi-text">
+                            "The AI Resume Analysis pointed out 3 critical skills missing from my resume. After making the recommended changes, my interview calls increased immediately!"
+                        </p>
+                        <div class="testi-user">
+                            <div class="testi-avatar" style="background: linear-gradient(135deg, #ec4899, #8b5cf6);">A</div>
+                            <div>
+                                <h5>Ananya Mishra</h5>
+                                <small>UI/UX Product Designer</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- =========================================================
+             11. CALL-TO-ACTION (CTA)
+             ========================================================= -->
+        <section class="cta-section">
+            <div class="section-container">
+                <div class="cta-card glass-panel">
+                    <div class="cta-badge">🚀 Start Today for Free</div>
+                    <h2 class="cta-title">Ready to Find Your Next Opportunity?</h2>
+                    <p class="cta-desc">
+                        Join over 5,000+ candidates who found their dream careers with AI-powered matching.
+                    </p>
+                    <div class="cta-buttons">
+                        <button class="btn-primary" id="btn-cta-find-jobs">
+                            <i class="fa-solid fa-magnifying-glass"></i>
+                            <span>Find a Job</span>
+                        </button>
+                        <button class="btn-secondary" id="btn-cta-post-job">
+                            <i class="fa-solid fa-building-circle-arrow-right"></i>
+                            <span>Post a Job</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- =========================================================
+         12. FOOTER
+         ========================================================= -->
+    <footer class="main-footer">
+        <div class="section-container">
+            <div class="footer-grid">
+                <!-- Brand Info -->
+                <div class="footer-col brand-col">
+                    <a href="index.html" class="brand-logo">
+                        <i class="fa-solid fa-bolt-lightning brand-icon"></i>
+                        <span>SmartJob <span class="highlight">Finder</span></span>
+                    </a>
+                    <p class="footer-text">
+                        The next-generation AI-powered smart job vacancy finder system designed to accelerate career matching with precision neural algorithms.
+                    </p>
+                    <div class="social-links">
+                        <a href="javascript:void(0)" aria-label="LinkedIn"><i class="fa-brands fa-linkedin"></i></a>
+                        <a href="javascript:void(0)" aria-label="GitHub"><i class="fa-brands fa-github"></i></a>
+                        <a href="javascript:void(0)" aria-label="Twitter"><i class="fa-brands fa-x-twitter"></i></a>
+                        <a href="javascript:void(0)" aria-label="Instagram"><i class="fa-brands fa-instagram"></i></a>
+                    </div>
+                </div>
+
+                <!-- Job Seekers -->
+                <div class="footer-col">
+                    <h4>Job Seekers</h4>
+                    <ul class="footer-links">
+                        <li><a href="#featured-jobs">Explore Jobs</a></li>
+                        <li><a href="javascript:void(0)" id="footer-resume-scan">AI Resume Analysis</a></li>
+                        <li><a href="#categories">Browse Categories</a></li>
+                        <li><a href="javascript:void(0)" class="trigger-login">Job Seeker Sign In</a></li>
+                    </ul>
+                </div>
+
+                <!-- Employers -->
+                <div class="footer-col">
+                    <h4>Employers</h4>
+                    <ul class="footer-links">
+                        <li><a href="#companies">Post a Job</a></li>
+                        <li><a href="#companies">AI Candidate Search</a></li>
+                        <li><a href="javascript:void(0)" class="trigger-register">Register Company</a></li>
+                        <li><a href="dashboard.html">Recruiter Dashboard</a></li>
+                    </ul>
+                </div>
+
+                <!-- Company & Legal -->
+                <div class="footer-col">
+                    <h4>About & Legal</h4>
+                    <ul class="footer-links">
+                        <li><a href="javascript:void(0)">About Us</a></li>
+                        <li><a href="javascript:void(0)">Contact Support</a></li>
+                        <li><a href="javascript:void(0)">Privacy Policy</a></li>
+                        <li><a href="javascript:void(0)">Terms & Conditions</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="footer-bottom">
+                <p>© 2026 AI Powered Smart Job Vacancy Finder System. All rights reserved.</p>
+                <div class="footer-bottom-links">
+                    <span>Connected with Supabase PostgreSQL</span>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- =========================================================
+         INTEGRATED AUTH MODAL (Login & Register)
+         ========================================================= -->
+    <div class="modal-overlay" id="auth-modal">
+        <div class="modal-card auth-modal-box glass-panel">
+            <button type="button" class="btn-close-modal" id="btn-close-auth"><i class="fa-solid fa-xmark"></i></button>
+            
+            <div class="tab-switcher">
+                <button class="tab-btn active" id="modal-tab-login" data-target="modal-login-form">
+                    <i class="fa-solid fa-arrow-right-to-bracket"></i> Sign In
+                </button>
+                <button class="tab-btn" id="modal-tab-register" data-target="modal-register-form">
+                    <i class="fa-solid fa-user-plus"></i> Create Account
+                </button>
+                <div class="tab-indicator"></div>
+            </div>
+
+            <!-- Login Container in Modal -->
+            <div class="form-container active" id="modal-login-container">
+                <div class="form-header">
+                    <h2>Welcome to SmartJob Finder</h2>
+                    <p>Access your AI recommendations and applications</p>
+                </div>
+                <form id="modal-login-form">
+                    <div class="form-group">
+                        <label for="modal-login-email">Email Address</label>
+                        <div class="input-wrapper">
+                            <i class="fa-regular fa-envelope input-icon"></i>
+                            <input type="text" id="modal-login-email" placeholder="name@domain.com" required>
+                        </div>
+                        <span class="field-error" id="modal-login-email-error"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="label-row">
+                            <label for="modal-login-password">Password</label>
+                            <a href="javascript:void(0)" class="forgot-link" id="modal-btn-forgot">Forgot Password?</a>
+                        </div>
+                        <div class="input-wrapper">
+                            <i class="fa-solid fa-lock input-icon"></i>
+                            <input type="password" id="modal-login-password" placeholder="••••••••" required>
+                            <button type="button" class="toggle-password" data-target="modal-login-password"><i class="fa-regular fa-eye"></i></button>
+                        </div>
+                        <span class="field-error" id="modal-login-password-error"></span>
+                    </div>
+
+                    <button type="submit" class="btn-primary w-full" id="btn-modal-submit-login">
+                        <span class="btn-text">Sign In</span>
+                        <i class="fa-solid fa-arrow-right btn-icon"></i>
+                    </button>
+                </form>
+
+                <div class="quick-demo-section" style="margin-top: 16px;">
+                    <p class="quick-demo-title"><i class="fa-solid fa-wand-magic-sparkles"></i> One-Click Demo:</p>
+                    <div class="demo-buttons">
+                        <button type="button" class="btn-demo" id="modal-demo-seeker">Job Seeker</button>
+                        <button type="button" class="btn-demo" id="modal-demo-recruiter">Employer</button>
+                        <button type="button" class="btn-demo" id="modal-demo-admin">Admin</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Register Container in Modal -->
+            <div class="form-container" id="modal-register-container">
+                <div class="form-header">
+                    <h2>Join SmartJob Finder</h2>
+                    <p>Start finding matching job opportunities</p>
+                </div>
+                <form id="modal-register-form">
+                    <div class="form-group">
+                        <label>I want to join as:</label>
+                        <div class="role-selector">
+                            <label class="role-card active">
+                                <input type="radio" name="modal-user-role" value="seeker" checked>
+                                <div class="role-content">
+                                    <i class="fa-solid fa-user-tie"></i>
+                                    <div><strong>Job Seeker</strong><small>Find jobs</small></div>
+                                </div>
+                            </label>
+                            <label class="role-card">
+                                <input type="radio" name="modal-user-role" value="employer">
+                                <div class="role-content">
+                                    <i class="fa-solid fa-building"></i>
+                                    <div><strong>Employer</strong><small>Hire talent</small></div>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="modal-reg-fullname">Full Name</label>
+                        <div class="input-wrapper">
+                            <i class="fa-regular fa-user input-icon"></i>
+                            <input type="text" id="modal-reg-fullname" placeholder="Alex Morgan" required>
+                        </div>
+                        <span class="field-error" id="modal-reg-fullname-error"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="modal-reg-email">Email Address</label>
+                        <div class="input-wrapper">
+                            <i class="fa-regular fa-envelope input-icon"></i>
+                            <input type="email" id="modal-reg-email" placeholder="name@domain.com" required>
+                        </div>
+                        <span class="field-error" id="modal-reg-email-error"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="modal-reg-password">Password</label>
+                        <div class="input-wrapper">
+                            <i class="fa-solid fa-lock input-icon"></i>
+                            <input type="password" id="modal-reg-password" placeholder="Min 8 characters" required>
+                            <button type="button" class="toggle-password" data-target="modal-reg-password"><i class="fa-regular fa-eye"></i></button>
+                        </div>
+                        <span class="field-error" id="modal-reg-password-error"></span>
+                    </div>
+
+                    <button type="submit" class="btn-primary w-full" id="btn-modal-submit-reg">
+                        <span class="btn-text">Create Account</span>
+                        <i class="fa-solid fa-check btn-icon"></i>
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- AI Resume Analysis Modal -->
+    <div class="modal-overlay" id="resume-modal">
+        <div class="modal-card glass-panel">
+            <div class="modal-header">
+                <h3><i class="fa-solid fa-file-waveform highlight"></i> AI Resume Analyzer</h3>
+                <button type="button" class="btn-close-modal" id="btn-close-resume"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="modal-body">
+                <p>Upload your resume (PDF or DOCX) to get an instant AI skill score and matched job suggestions.</p>
+                <div class="upload-dropzone" id="resume-dropzone">
+                    <i class="fa-solid fa-cloud-arrow-up" style="font-size: 2.5rem; color: var(--accent); margin-bottom: 12px;"></i>
+                    <p><strong>Drag & Drop your resume here</strong> or click to browse</p>
+                    <small>Supports PDF, DOCX (Max 10MB)</small>
+                    <input type="file" id="resume-file-input" style="display: none;" accept=".pdf,.docx,.doc">
+                </div>
+                <div id="resume-analysis-result" style="display: none; margin-top: 20px;">
+                    <div style="background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.3); padding: 14px; border-radius: 12px; margin-bottom: 14px;">
+                        <h4 style="color: #34d399; margin-bottom: 6px;"><i class="fa-solid fa-circle-check"></i> Analysis Complete: 89/100 ATS Score</h4>
+                        <p style="font-size: 0.85rem; color: #cbd5e1;">Top detected skills: <strong>Python, React, SQL, Git, REST APIs</strong></p>
+                    </div>
+                    <button class="btn-primary w-full" id="btn-view-matched-jobs">View 12 Matched Jobs Now</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Job Details & Apply Modal -->
+    <div class="modal-overlay" id="job-details-modal">
+        <div class="modal-card glass-panel" style="max-width: 600px;">
+            <div class="modal-header">
+                <h3 id="modal-job-title">Job Details</h3>
+                <button type="button" class="btn-close-modal" id="btn-close-job-modal"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="modal-body" id="modal-job-body">
+                <!-- Dynamically loaded -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Supabase Setup Modal -->
+    <div class="modal-overlay" id="supabase-modal">
+        <div class="modal-card glass-panel">
+            <div class="modal-header">
+                <h3><i class="fa-solid fa-database highlight"></i> Supabase Database Settings</h3>
+                <button type="button" class="btn-close-modal" id="btn-close-supabase"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="modal-body">
+                <p style="font-size: 0.88rem; color: var(--text-muted); margin-bottom: 12px;">Configure your Supabase cloud PostgreSQL database credentials. Find your <strong>Project URL</strong> & <strong>anon public key</strong> under Supabase Dashboard &rarr; Project Settings &rarr; API.</p>
+                <div class="form-group">
+                    <label for="sb-url">Project URL</label>
+                    <div class="input-wrapper">
+                        <i class="fa-solid fa-link input-icon"></i>
+                        <input type="text" id="sb-url" placeholder="https://abudctbfxcjjtamzvwaf.supabase.co">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="sb-key">Anon Public API Key (JWT format starting with eyJ)</label>
+                    <div class="input-wrapper">
+                        <i class="fa-solid fa-key input-icon"></i>
+                        <input type="password" id="sb-key" placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...">
+                    </div>
+                </div>
+                <div style="display: flex; gap: 10px; margin-top: 14px;">
+                    <button type="button" class="btn-primary" id="btn-save-supabase" style="flex: 2;">Save & Test</button>
+                    <button type="button" class="btn-social" id="btn-disconnect-supabase" style="flex: 1; border-color: rgba(239,68,68,0.3); color: #f87171;">Disconnect</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Supabase JS Client SDK -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/supabase-config.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/db.js"></script>
+    <script src="js/home.js"></script>
+</body>
+</html>
