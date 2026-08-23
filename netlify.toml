@@ -1,12 +1,6 @@
 [build]
   publish = "."
 
-[[redirects]]
-  from = "/*"
-  to = "/index.html"
-  status = 200
-  conditions = {Role = ["admin"]}
-
 [[headers]]
   for = "/*"
   [headers.values]

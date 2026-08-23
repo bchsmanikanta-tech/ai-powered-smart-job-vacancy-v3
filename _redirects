@@ -1,0 +1,7 @@
+# Netlify Redirects for static pages
+/index    /index.html   200
+/seeker   /seeker-dashboard.html 200
+/company  /company-dashboard.html 200
+/admin    /admin-dashboard.html 200
+/search   /search-vacancies.html 200
+/auth     /auth.html 200
