@@ -19,11 +19,11 @@ function toUUID(str) {
 window.toUUID = toUUID;
 
 const SUPABASE_CONFIG = {
-    // Supabase Project URL
-    SUPABASE_URL: 'https://dxgmdgqjmyufxknqktbs.supabase.co',
+    // Supabase Project URL (Active Production: smartjobvacancy)
+    SUPABASE_URL: 'https://abudctbfxcjjtamzvwaf.supabase.co',
     
     // Supabase Public Anon JWT API Key
-    SUPABASE_ANON_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR4Z21kZ3FqbXl1ZnhrbnFrdGJzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODc2NDQ0NTIsImV4cCI6MjEwMzIyMDQ1Mn0.V3NGjhv1cU_0O25_7PGh1vTrnKh3BJkfC98VH45-hEk',
+    SUPABASE_ANON_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFidWRjdGJmeGNqanRhbXp2d2FmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODc0MDU2NDgsImV4cCI6MjEwMjk4MTY0OH0.Hq_sTwsbeoiApGDNDT4sD0s7WwSkOd6WNHrEYm6WPKs',
     
     USERS_TABLE: 'users',
     JOBS_TABLE: 'jobs',
