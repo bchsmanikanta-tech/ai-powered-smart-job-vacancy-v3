@@ -1614,15 +1614,19 @@
             });
         }
 
-        function setApplicantStatus(appId, newStatus) {
-            const apps = JSON.parse(localStorage.getItem('smarthire_applications') || '[]');
-            const idx = apps.findIndex(a => a.id === appId);
-            if (idx >= 0) {
-                apps[idx].status = newStatus;
-                localStorage.setItem('smarthire_applications', JSON.stringify(apps));
-                showToast(`Candidate status changed to "${newStatus}"`, newStatus === 'Shortlisted' ? 'success' : 'info');
-                loadApplicantsModalData();
+        async function setApplicantStatus(appId, newStatus) {
+            if (window.db && typeof window.db.updateApplicationStatus === 'function') {
+                await window.db.updateApplicationStatus(appId, newStatus);
+            } else {
+                const apps = JSON.parse(localStorage.getItem('smarthire_applications') || '[]');
+                const idx = apps.findIndex(a => String(a.id) === String(appId));
+                if (idx >= 0) {
+                    apps[idx].status = newStatus;
+                    localStorage.setItem('smarthire_applications', JSON.stringify(apps));
+                }
             }
+            showToast(`Candidate status changed to "${newStatus}"`, newStatus === 'Shortlisted' ? 'success' : 'info');
+            loadApplicantsModalData();
         }
 
         function closeModal(modalId) {
@@ -1651,32 +1655,38 @@
 
             // Load Jobs for this company
             if (window.db) {
-                const allJobs = window.db.getJobs() || [];
-                const companyJobs = allJobs.filter(j => 
-                    (j.company && j.company.toLowerCase() === currentEmployerName.toLowerCase()) || 
-                    !j.company || 
-                    allJobs.length <= 2
-                );
+                const updateMetrics = () => {
+                    const allJobs = window.db.getJobs() || [];
+                    const companyJobs = allJobs.filter(j => 
+                        (j.company && j.company.toLowerCase() === currentEmployerName.toLowerCase()) || 
+                        !j.company || 
+                        allJobs.length <= 2
+                    );
 
-                // Update Metrics
-                document.getElementById('kpi-posted-jobs').textContent = companyJobs.length;
-                document.getElementById('hero-stat-jobs').textContent = companyJobs.length;
+                    // Update Metrics
+                    document.getElementById('kpi-posted-jobs').textContent = companyJobs.length;
+                    document.getElementById('hero-stat-jobs').textContent = companyJobs.length;
 
-                // Load Applications (real users only)
-                let allApps = window.db.getApplications() || [];
-                allApps = allApps.filter(a => a.id !== 'app_101' && a.id !== 'app_102' && a.id !== 'app_103');
-                const pending = allApps.filter(a => !a.status || a.status === 'Applied' || a.status === 'Under Review').length;
-                const selected = allApps.filter(a => a.status === 'Shortlisted' || a.status === 'Interview' || a.status === 'Hired').length;
-                const rejected = allApps.filter(a => a.status === 'Rejected').length;
+                    // Load Applications (real users only)
+                    let allApps = window.db.getApplications() || [];
+                    allApps = allApps.filter(a => a.id !== 'app_101' && a.id !== 'app_102' && a.id !== 'app_103');
+                    const pending = allApps.filter(a => !a.status || a.status === 'Applied' || a.status === 'Under Review').length;
+                    const selected = allApps.filter(a => a.status === 'Shortlisted' || a.status === 'Interview' || a.status === 'Hired').length;
+                    const rejected = allApps.filter(a => a.status === 'Rejected').length;
 
-                document.getElementById('kpi-total-applicants').textContent = allApps.length;
-                document.getElementById('kpi-selected-candidates').textContent = selected;
-                document.getElementById('donut-count-selected').textContent = selected;
-                document.getElementById('donut-count-pending').textContent = pending;
-                document.getElementById('donut-count-rejected').textContent = rejected;
+                    document.getElementById('kpi-total-applicants').textContent = allApps.length;
+                    document.getElementById('kpi-selected-candidates').textContent = selected;
+                    document.getElementById('donut-count-selected').textContent = selected;
+                    document.getElementById('donut-count-pending').textContent = pending;
+                    document.getElementById('donut-count-rejected').textContent = rejected;
 
-                // Render Table
-                renderVacanciesTable(companyJobs);
+                    // Render Table
+                    renderVacanciesTable(companyJobs);
+                };
+
+                updateMetrics();
+                window.db.fetchJobsFromSupabase().then(() => updateMetrics());
+                window.db.fetchApplicationsFromSupabase().then(() => updateMetrics());
             }
         }
 
@@ -1745,13 +1755,14 @@
 
                 if (!title) return;
 
-                if (window.db) {
+                if (window.db && typeof window.db.saveJob === 'function') {
                     const newJob = {
                         id: 'job_' + Date.now(),
                         title: title,
                         company: company,
                         location: location,
                         type: type,
+                        workMode: type,
                         salary: salary,
                         experience: experience,
                         skills: skills,
@@ -1759,9 +1770,7 @@
                         createdAt: new Date().toISOString()
                     };
 
-                    const jobs = window.db.getJobs() || [];
-                    jobs.unshift(newJob);
-                    localStorage.setItem('smarthire_jobs', JSON.stringify(jobs));
+                    await window.db.saveJob(newJob);
 
                     showToast(`Vacancy "${title}" successfully published!`, 'success');
                     closeModal('modal-post-job');

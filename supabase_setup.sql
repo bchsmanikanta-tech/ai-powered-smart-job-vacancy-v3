@@ -143,10 +143,9 @@ CREATE POLICY "Allow public operations on saved_jobs" ON public.saved_jobs FOR A
 CREATE POLICY "Allow public operations on notifications" ON public.notifications FOR ALL USING (true) WITH CHECK (true);
 
 -- Profiles View Alias
-DROP TABLE IF EXISTS public.profiles CASCADE;
 DROP VIEW IF EXISTS public.profiles CASCADE;
 
-CREATE VIEW public.profiles AS 
+CREATE OR REPLACE VIEW public.profiles AS 
 SELECT 
     user_id AS id, 
     email, 

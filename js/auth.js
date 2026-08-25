@@ -28,6 +28,7 @@ class AuthService {
                 this.supabaseClient = window.supabase.createClient(creds.url, creds.key);
                 this.isSupabaseConnected = true;
                 console.log("⚡ Supabase Client connected successfully!");
+                setTimeout(() => this.syncUsersFromSupabase(), 300);
             } else {
                 this.isSupabaseConnected = false;
             }
@@ -48,44 +49,56 @@ class AuthService {
     }
 
     /**
-     * Initializes local user database with default demo accounts if not already present
+     * Initializes local user database (clean production state with no mock/demo accounts)
      */
     initLocalDatabase() {
         const existing = localStorage.getItem(AUTH_CONFIG.STORAGE_USERS_KEY);
         if (!existing) {
-            const defaultAccounts = [
-                {
-                    id: 'usr_1',
-                    fullName: 'Alex Seeker',
-                    email: 'seeker@example.com',
-                    phone: '+1 555 123 4567',
-                    password: this._hash('Password123!'),
-                    role: 'seeker',
-                    title: 'Senior Frontend Developer',
-                    createdAt: new Date().toISOString()
-                },
-                {
-                    id: 'usr_2',
-                    fullName: 'Sarah Recruiter',
-                    email: 'recruiter@company.com',
-                    phone: '+1 555 987 6543',
-                    password: this._hash('Password123!'),
-                    role: 'employer',
-                    company: 'TechCorp Innovations',
-                    createdAt: new Date().toISOString()
-                },
-                {
-                    id: 'usr_3',
-                    fullName: 'System Administrator',
-                    email: 'admin@smartjob.com',
-                    phone: '+1 555 000 1122',
-                    password: this._hash('AdminPass123!'),
-                    role: 'admin',
-                    createdAt: new Date().toISOString()
+            localStorage.setItem(AUTH_CONFIG.STORAGE_USERS_KEY, JSON.stringify([]));
+        } else {
+            // Automatically purge legacy demo users if previously cached
+            try {
+                const users = JSON.parse(existing);
+                const filtered = users.filter(u => 
+                    u.email !== 'seeker@example.com' && 
+                    u.email !== 'recruiter@company.com' && 
+                    u.email !== 'admin@smartjob.com' &&
+                    !(u.id && String(u.id).startsWith('demo_')) &&
+                    u.id !== 'usr_1' && u.id !== 'usr_2' && u.id !== 'usr_3'
+                );
+                if (filtered.length !== users.length) {
+                    localStorage.setItem(AUTH_CONFIG.STORAGE_USERS_KEY, JSON.stringify(filtered));
                 }
-            ];
-            localStorage.setItem(AUTH_CONFIG.STORAGE_USERS_KEY, JSON.stringify(defaultAccounts));
+            } catch (e) {}
         }
+
+        // Purge any active demo session
+        const currentSession = this.getCurrentUser();
+        if (currentSession && (
+            currentSession.email === 'seeker@example.com' ||
+            currentSession.email === 'recruiter@company.com' ||
+            currentSession.email === 'admin@smartjob.com' ||
+            (currentSession.id && String(currentSession.id).startsWith('demo_'))
+        )) {
+            this.logout();
+        }
+    }
+
+    /**
+     * Resets the entire local database, users, jobs, applications, and sessions
+     */
+    resetDatabase() {
+        localStorage.setItem(AUTH_CONFIG.STORAGE_USERS_KEY, JSON.stringify([]));
+        localStorage.removeItem(AUTH_CONFIG.STORAGE_SESSION_KEY);
+        localStorage.removeItem(AUTH_CONFIG.STORAGE_REMEMBER_KEY);
+        localStorage.removeItem('smartjob_active_user');
+        localStorage.setItem('smarthire_jobs', JSON.stringify([]));
+        localStorage.setItem('smarthire_applications', JSON.stringify([]));
+        localStorage.setItem('smarthire_saved_jobs', JSON.stringify([]));
+        localStorage.setItem('smartjob_saved_jobs', JSON.stringify([]));
+        localStorage.removeItem('smarthire_seeker_profiles');
+        localStorage.setItem('smarthire_chat_db', JSON.stringify({}));
+        console.log("🧹 Full database reset completed: All demo users, jobs, applications, and sessions wiped.");
     }
 
     /**
@@ -225,23 +238,10 @@ class AuthService {
     }
 
     /**
-     * Login user (Hybrid Supabase & Local Demo Accounts)
+     * Login user (Production Authentication via Supabase / Local Database)
      */
     async login(emailOrUser, password, rememberMe = false) {
         const query = emailOrUser.trim().toLowerCase();
-
-        // 0. INSTANT ZERO-LATENCY DEMO ACCOUNTS
-        if (query === 'seeker@example.com' || query === 'recruiter@company.com' || query === 'admin@smartjob.com') {
-            const role = query.includes('admin') ? 'admin' : (query.includes('recruiter') ? 'employer' : 'seeker');
-            const demoUser = {
-                id: 'demo_' + role,
-                fullName: role === 'admin' ? 'System Administrator' : (role === 'employer' ? 'TechCorp Recruiter' : 'Alex Seeker'),
-                email: query,
-                role: role
-            };
-            this.createSession(demoUser, rememberMe);
-            return { success: true, user: demoUser };
-        }
 
         // 1. Try Supabase Auth with strict 1.5s timeout
         if (this.isSupabaseConnected && this.supabaseClient) {
@@ -272,7 +272,7 @@ class AuthService {
             }
         }
 
-        // 2. Local Database Check (Fail-Safe)
+        // 2. Local Database Check
         const users = this._getLocalUsers();
         const user = users.find(u => 
             u.email.toLowerCase() === query || 
@@ -286,9 +286,8 @@ class AuthService {
             }
 
             const isHashedMatch = user.password === this._hash(password);
-            const isDemoPass = password === 'Password123!' || password === 'AdminPass123!' || password === '12345678';
             
-            if (isHashedMatch || isDemoPass || !user.password) {
+            if (isHashedMatch) {
                 this.createSession(user, rememberMe);
                 return { success: true, user: this._sanitizeUser(user) };
             } else {
@@ -409,27 +408,48 @@ class AuthService {
     }
 
     /**
+     * Synchronize users from Supabase cloud database to local storage
+     */
+    async syncUsersFromSupabase() {
+        if (!this.isSupabaseConnected || !this.supabaseClient) return this._getLocalUsers();
+        try {
+            const { data, error } = await this.supabaseClient.from('users').select('*').order('created_at', { ascending: false });
+            if (!error && Array.isArray(data)) {
+                const cloudUsers = data.map(u => ({
+                    id: u.user_id,
+                    fullName: u.name,
+                    email: u.email,
+                    password: u.password_hash,
+                    role: u.role || 'seeker',
+                    status: u.status || 'active',
+                    isBlocked: u.status === 'blocked',
+                    createdAt: u.created_at
+                }));
+
+                const localUsers = this._getLocalUsers();
+                const mergedMap = new Map();
+                cloudUsers.forEach(u => mergedMap.set(u.email.toLowerCase(), u));
+                localUsers.forEach(u => {
+                    if (!mergedMap.has(u.email.toLowerCase())) {
+                        mergedMap.set(u.email.toLowerCase(), u);
+                    }
+                });
+
+                const mergedList = Array.from(mergedMap.values());
+                localStorage.setItem(AUTH_CONFIG.STORAGE_USERS_KEY, JSON.stringify(mergedList));
+                return mergedList;
+            }
+        } catch (e) {
+            console.warn("Supabase users sync notice:", e);
+        }
+        return this._getLocalUsers();
+    }
+
+    /**
      * Retrieve all registered users from Supabase with fallback to local store
      */
     async getAllUsers() {
-        if (this.isSupabaseConnected && this.supabaseClient) {
-            try {
-                const { data, error } = await this.supabaseClient.from('users').select('*').order('created_at', { ascending: false });
-                if (!error && Array.isArray(data) && data.length > 0) {
-                    return data.map(u => ({
-                        id: u.user_id,
-                        fullName: u.name,
-                        email: u.email,
-                        role: u.role || 'seeker',
-                        status: u.status || 'active',
-                        createdAt: u.created_at
-                    }));
-                }
-            } catch (e) {
-                console.warn("Supabase fetch users notice:", e);
-            }
-        }
-        return this._getLocalUsers();
+        return await this.syncUsersFromSupabase();
     }
 
     /**

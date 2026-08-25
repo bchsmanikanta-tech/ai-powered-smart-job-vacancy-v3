@@ -648,6 +648,228 @@
         }
 
         /* =========================================================
+           AI MOCK INTERVIEW STUDIO STYLING
+           ========================================================= */
+        .interview-hero-header {
+            background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 50%, #06b6d4 100%);
+            color: #ffffff;
+            border-radius: var(--radius-lg);
+            padding: 32px 28px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+            box-shadow: 0 12px 30px rgba(37, 99, 235, 0.25);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .interview-hero-header::after {
+            content: '';
+            position: absolute;
+            right: -60px;
+            bottom: -60px;
+            width: 220px;
+            height: 220px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            pointer-events: none;
+        }
+
+        .interview-role-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 14px;
+            margin-top: 14px;
+        }
+
+        .interview-role-card {
+            background: var(--bg-card);
+            border: 2px solid var(--border-card);
+            border-radius: var(--radius-md);
+            padding: 16px 14px;
+            cursor: pointer;
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            text-align: left;
+            position: relative;
+        }
+
+        .interview-role-card:hover {
+            transform: translateY(-3px);
+            border-color: #3b82f6;
+            box-shadow: 0 8px 20px rgba(59, 130, 246, 0.15);
+        }
+
+        .interview-role-card.active {
+            border-color: #2563eb;
+            background: rgba(37, 99, 235, 0.05);
+            box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2);
+        }
+
+        .interview-role-card .role-icon-box {
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+            background: rgba(59, 130, 246, 0.12);
+            color: #2563eb;
+        }
+
+        .interview-studio-stage {
+            background: var(--bg-card);
+            border: 1px solid var(--border-card);
+            border-radius: var(--radius-lg);
+            padding: 28px;
+            box-shadow: var(--shadow-md);
+            display: flex;
+            flex-direction: column;
+            gap: 22px;
+        }
+
+        .interviewer-avatar-box {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 18px 20px;
+            background: linear-gradient(135deg, rgba(37, 99, 235, 0.06), rgba(6, 182, 212, 0.06));
+            border: 1px solid rgba(37, 99, 235, 0.18);
+            border-radius: var(--radius-md);
+            position: relative;
+        }
+
+        .ai-avatar-pulse {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #2563eb, #06b6d4);
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            position: relative;
+            flex-shrink: 0;
+            box-shadow: 0 0 16px rgba(37, 99, 235, 0.4);
+        }
+
+        .ai-avatar-pulse.speaking {
+            animation: avatarPulse 1.5s infinite;
+        }
+
+        @keyframes avatarPulse {
+            0% { box-shadow: 0 0 0 0 rgba(37, 99, 235, 0.7); }
+            70% { box-shadow: 0 0 0 16px rgba(37, 99, 235, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(37, 99, 235, 0); }
+        }
+
+        .audio-wave-anim {
+            display: inline-flex;
+            align-items: center;
+            gap: 3px;
+            height: 20px;
+        }
+
+        .audio-wave-anim span {
+            width: 3px;
+            height: 100%;
+            background: #2563eb;
+            border-radius: 2px;
+            animation: waveBar 1s ease-in-out infinite;
+        }
+
+        .audio-wave-anim span:nth-child(2) { animation-delay: 0.15s; }
+        .audio-wave-anim span:nth-child(3) { animation-delay: 0.3s; }
+        .audio-wave-anim span:nth-child(4) { animation-delay: 0.45s; }
+        .audio-wave-anim span:nth-child(5) { animation-delay: 0.6s; }
+
+        @keyframes waveBar {
+            0%, 100% { height: 4px; }
+            50% { height: 18px; }
+        }
+
+        .voice-mic-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 24px;
+            border-radius: 30px;
+            font-size: 0.9rem;
+            font-weight: 800;
+            cursor: pointer;
+            border: none;
+            background: linear-gradient(135deg, #ef4444, #f43f5e);
+            color: #fff;
+            box-shadow: 0 6px 18px rgba(239, 68, 68, 0.3);
+            transition: all 0.25s ease;
+        }
+
+        .voice-mic-btn.listening {
+            background: linear-gradient(135deg, #10b981, #059669);
+            box-shadow: 0 0 20px rgba(16, 185, 129, 0.6);
+            animation: micPulse 1.2s infinite;
+        }
+
+        @keyframes micPulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.04); }
+            100% { transform: scale(1); }
+        }
+
+        .feedback-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.76rem;
+            font-weight: 700;
+        }
+
+        .feedback-chip.positive {
+            background: rgba(16, 185, 129, 0.12);
+            color: #10b981;
+            border: 1px solid rgba(16, 185, 129, 0.25);
+        }
+
+        .feedback-chip.missing {
+            background: rgba(245, 158, 11, 0.12);
+            color: #d97706;
+            border: 1px solid rgba(245, 158, 11, 0.25);
+        }
+
+        .score-stat-circle {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background: conic-gradient(#2563eb var(--pct, 85%), #e2e8f0 0deg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .score-stat-circle::after {
+            content: attr(data-score);
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: var(--bg-card);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.35rem;
+            font-weight: 900;
+            color: var(--text-main);
+        }
+
+        /* =========================================================
            PRINT ISOLATION: PRINT ONLY RESUME SHEET
            ========================================================= */
         @media print {
@@ -1663,21 +1885,508 @@
             </div>
 
             <!-- =========================================================
-                 TAB 8: AI MOCK INTERVIEW
+                 TAB 8: AI MOCK INTERVIEW STUDIO & SIMULATOR
                  ========================================================= -->
             <div id="tab-interview" class="tab-pane">
-                <div class="white-card" style="max-width: 750px; margin: 0 auto; width: 100%; text-align: center; padding: 40px 20px;">
-                    <div style="width: 60px; height: 60px; border-radius: 50%; background: rgba(37,99,235,0.12); color: #2563eb; display: flex; align-items: center; justify-content: center; font-size: 1.8rem; margin: 0 auto 16px auto;">
-                        <i class="fa-solid fa-microphone-lines"></i>
+                
+                <!-- TOP HERO BANNER & SUB-NAV -->
+                <div class="interview-hero-header">
+                    <div>
+                        <div style="display: inline-flex; align-items: center; gap: 8px; background: rgba(255,255,255,0.2); padding: 4px 14px; border-radius: 20px; font-size: 0.78rem; font-weight: 800; margin-bottom: 8px; backdrop-filter: blur(8px);">
+                            <i class="fa-solid fa-sparkles"></i> AI Neural Interviewer 3.0 &bull; Speech-to-Speech
+                        </div>
+                        <h2 style="font-size: 1.6rem; font-weight: 900; letter-spacing: -0.02em; margin-bottom: 4px;">AI Mock Interview Studio</h2>
+                        <p style="font-size: 0.88rem; opacity: 0.92; max-width: 540px;">
+                            Practice realistic technical & behavioral interviews with live voice synthesis, real-time speech recognition, instant keyword scoring, and senior engineer model answers.
+                        </p>
                     </div>
-                    <h3 style="font-size: 1.3rem; font-weight: 800; margin-bottom: 6px;">AI Simulated Technical Interview</h3>
-                    <p style="font-size: 0.86rem; color: var(--text-muted); max-width: 480px; margin: 0 auto 20px auto;">
-                        Practice live technical & behavioral interview questions tailored to Full-Stack and Engineering roles.
-                    </p>
-                    <button onclick="showToast('AI Mock Interview session started!', 'success')" class="btn-nav-action" style="background: #2563eb; color: #fff; border: none; padding: 12px 24px; border-radius: 30px; font-weight: 800;">
-                        Start Practice Session
-                    </button>
+
+                    <!-- Sub-Navigation Switchers -->
+                    <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                        <button class="btn-nav-action" id="btn-subtab-studio" onclick="switchInterviewSubView('setup')" style="background: rgba(255,255,255,0.2); color: #fff; border: 1px solid rgba(255,255,255,0.3); backdrop-filter: blur(8px);">
+                            <i class="fa-solid fa-microphone-lines"></i> Studio
+                        </button>
+                        <button class="btn-nav-action" id="btn-subtab-qbank" onclick="switchInterviewSubView('qbank')" style="background: rgba(255,255,255,0.12); color: #fff; border: 1px solid rgba(255,255,255,0.2); backdrop-filter: blur(8px);">
+                            <i class="fa-solid fa-book-bookmark"></i> Question Bank
+                        </button>
+                        <button class="btn-nav-action" id="btn-subtab-history" onclick="switchInterviewSubView('history')" style="background: rgba(255,255,255,0.12); color: #fff; border: 1px solid rgba(255,255,255,0.2); backdrop-filter: blur(8px);">
+                            <i class="fa-solid fa-clock-rotate-left"></i> History & Scores
+                        </button>
+                    </div>
                 </div>
+
+                <!-- ==========================================
+                     SUB-VIEW 1: INTERVIEW SETUP & CONFIGURATION
+                     ========================================== -->
+                <div id="interview-setup-view" style="display: flex; flex-direction: column; gap: 24px;">
+                    
+                    <!-- Stats Quick Ribbon -->
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 14px;">
+                        <div class="white-card" style="padding: 16px; display: flex; align-items: center; gap: 12px;">
+                            <div style="width: 42px; height: 42px; border-radius: 10px; background: rgba(37,99,235,0.1); color: #2563eb; display: flex; align-items: center; justify-content: center; font-size: 1.2rem;">
+                                <i class="fa-solid fa-circle-check"></i>
+                            </div>
+                            <div>
+                                <small style="color: var(--text-muted); font-weight: 700; display: block; font-size: 0.74rem; text-transform: uppercase;">Sessions Taken</small>
+                                <strong id="stat-interview-total" style="font-size: 1.2rem; color: var(--text-main);">0 Sessions</strong>
+                            </div>
+                        </div>
+
+                        <div class="white-card" style="padding: 16px; display: flex; align-items: center; gap: 12px;">
+                            <div style="width: 42px; height: 42px; border-radius: 10px; background: rgba(16,185,129,0.1); color: #10b981; display: flex; align-items: center; justify-content: center; font-size: 1.2rem;">
+                                <i class="fa-solid fa-trophy"></i>
+                            </div>
+                            <div>
+                                <small style="color: var(--text-muted); font-weight: 700; display: block; font-size: 0.74rem; text-transform: uppercase;">Avg Performance</small>
+                                <strong id="stat-interview-avg" style="font-size: 1.2rem; color: var(--text-main);">88%</strong>
+                            </div>
+                        </div>
+
+                        <div class="white-card" style="padding: 16px; display: flex; align-items: center; gap: 12px;">
+                            <div style="width: 42px; height: 42px; border-radius: 10px; background: rgba(168,85,247,0.1); color: #a855f7; display: flex; align-items: center; justify-content: center; font-size: 1.2rem;">
+                                <i class="fa-solid fa-bullseye"></i>
+                            </div>
+                            <div>
+                                <small style="color: var(--text-muted); font-weight: 700; display: block; font-size: 0.74rem; text-transform: uppercase;">Top Domain</small>
+                                <strong id="stat-interview-top-domain" style="font-size: 1.2rem; color: var(--text-main);">Full-Stack</strong>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Step 1: Select Target Role -->
+                    <div class="white-card">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+                            <h3 style="font-size: 1.1rem; font-weight: 800; color: var(--text-main);">
+                                <span style="background: #2563eb; color: #fff; width: 24px; height: 24px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 0.76rem; margin-right: 6px;">1</span>
+                                Choose Target Role & Tech Stack
+                            </h3>
+                            <span style="font-size: 0.76rem; color: var(--text-dim); font-weight: 700;">7 Specialized Tracks</span>
+                        </div>
+                        <p style="font-size: 0.84rem; color: var(--text-muted); margin-bottom: 12px;">
+                            Select the engineering or leadership domain for custom tailored technical questions and AI evaluation criteria.
+                        </p>
+
+                        <div class="interview-role-grid" id="interview-role-picker">
+                            <div class="interview-role-card active" data-role="fullstack" onclick="selectInterviewRole('fullstack')">
+                                <div class="role-icon-box"><i class="fa-solid fa-layer-group"></i></div>
+                                <div>
+                                    <strong style="font-size: 0.92rem; color: var(--text-main); display: block;">Full-Stack Engineer</strong>
+                                    <small style="color: var(--text-muted); font-size: 0.76rem;">React, Node, SQL, REST APIs, Architecture</small>
+                                </div>
+                            </div>
+
+                            <div class="interview-role-card" data-role="frontend" onclick="selectInterviewRole('frontend')">
+                                <div class="role-icon-box"><i class="fa-solid fa-palette"></i></div>
+                                <div>
+                                    <strong style="font-size: 0.92rem; color: var(--text-main); display: block;">Frontend Specialist</strong>
+                                    <small style="color: var(--text-muted); font-size: 0.76rem;">React, JS/TS, CSS/UI, Web Vitals, State</small>
+                                </div>
+                            </div>
+
+                            <div class="interview-role-card" data-role="backend" onclick="selectInterviewRole('backend')">
+                                <div class="role-icon-box"><i class="fa-solid fa-server"></i></div>
+                                <div>
+                                    <strong style="font-size: 0.92rem; color: var(--text-main); display: block;">Backend & Python</strong>
+                                    <small style="color: var(--text-muted); font-size: 0.76rem;">Python, Django/FastAPI, Databases, Caching</small>
+                                </div>
+                            </div>
+
+                            <div class="interview-role-card" data-role="ai_data" onclick="selectInterviewRole('ai_data')">
+                                <div class="role-icon-box"><i class="fa-solid fa-brain"></i></div>
+                                <div>
+                                    <strong style="font-size: 0.92rem; color: var(--text-main); display: block;">AI & Data Engineer</strong>
+                                    <small style="color: var(--text-muted); font-size: 0.76rem;">Python, Pandas, ML Pipelines, LLMs, Vector DBs</small>
+                                </div>
+                            </div>
+
+                            <div class="interview-role-card" data-role="devops" onclick="selectInterviewRole('devops')">
+                                <div class="role-icon-box"><i class="fa-solid fa-cloud"></i></div>
+                                <div>
+                                    <strong style="font-size: 0.92rem; color: var(--text-main); display: block;">DevOps & Cloud</strong>
+                                    <small style="color: var(--text-muted); font-size: 0.76rem;">Docker, Kubernetes, CI/CD, AWS, Terraform</small>
+                                </div>
+                            </div>
+
+                            <div class="interview-role-card" data-role="behavioral" onclick="selectInterviewRole('behavioral')">
+                                <div class="role-icon-box"><i class="fa-solid fa-handshake"></i></div>
+                                <div>
+                                    <strong style="font-size: 0.92rem; color: var(--text-main); display: block;">Behavioral & STAR</strong>
+                                    <small style="color: var(--text-muted); font-size: 0.76rem;">Leadership, Conflict, Ownership, Culture</small>
+                                </div>
+                            </div>
+
+                            <div class="interview-role-card" data-role="hr" onclick="selectInterviewRole('hr')">
+                                <div class="role-icon-box"><i class="fa-solid fa-user-tie"></i></div>
+                                <div>
+                                    <strong style="font-size: 0.92rem; color: var(--text-main); display: block;">HR & Fit Screening</strong>
+                                    <small style="color: var(--text-muted); font-size: 0.76rem;">Career Goals, Strengths, Salary, Culture</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Step 2: Seniority & Interview Format -->
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px;">
+                        
+                        <!-- Seniority Level -->
+                        <div class="white-card">
+                            <h3 style="font-size: 1.05rem; font-weight: 800; color: var(--text-main); margin-bottom: 6px;">
+                                <span style="background: #2563eb; color: #fff; width: 24px; height: 24px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 0.76rem; margin-right: 6px;">2</span>
+                                Seniority Level
+                            </h3>
+                            <p style="font-size: 0.82rem; color: var(--text-muted); margin-bottom: 14px;">Adjusts the depth and architectural expectations of questions.</p>
+                            
+                            <div style="display: flex; flex-direction: column; gap: 8px;" id="interview-seniority-picker">
+                                <label style="display: flex; align-items: center; gap: 10px; padding: 10px 14px; border: 1px solid var(--border-card); border-radius: var(--radius-sm); cursor: pointer; background: var(--bg-card);">
+                                    <input type="radio" name="int-seniority" value="junior" checked>
+                                    <div>
+                                        <strong style="font-size: 0.88rem; color: var(--text-main); display: block;">Fresher / Entry Level (0 - 2 yrs)</strong>
+                                        <small style="color: var(--text-muted);">Core fundamentals, syntax, coding basics, project explanations</small>
+                                    </div>
+                                </label>
+
+                                <label style="display: flex; align-items: center; gap: 10px; padding: 10px 14px; border: 1px solid var(--border-card); border-radius: var(--radius-sm); cursor: pointer; background: var(--bg-card);">
+                                    <input type="radio" name="int-seniority" value="mid">
+                                    <div>
+                                        <strong style="font-size: 0.88rem; color: var(--text-main); display: block;">Mid-Level Engineer (2 - 5 yrs)</strong>
+                                        <small style="color: var(--text-muted);">Performance, debugging, architectural patterns, state & caching</small>
+                                    </div>
+                                </label>
+
+                                <label style="display: flex; align-items: center; gap: 10px; padding: 10px 14px; border: 1px solid var(--border-card); border-radius: var(--radius-sm); cursor: pointer; background: var(--bg-card);">
+                                    <input type="radio" name="int-seniority" value="senior">
+                                    <div>
+                                        <strong style="font-size: 0.88rem; color: var(--text-main); display: block;">Senior / Staff Lead (5+ yrs)</strong>
+                                        <small style="color: var(--text-muted);">Distributed system design, scalability trade-offs, team leadership</small>
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Session Options & Audio Settings -->
+                        <div class="white-card" style="display: flex; flex-direction: column; justify-content: space-between;">
+                            <div>
+                                <h3 style="font-size: 1.05rem; font-weight: 800; color: var(--text-main); margin-bottom: 6px;">
+                                    <span style="background: #2563eb; color: #fff; width: 24px; height: 24px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 0.76rem; margin-right: 6px;">3</span>
+                                    Speech & Interactive Mode
+                                </h3>
+                                <p style="font-size: 0.82rem; color: var(--text-muted); margin-bottom: 14px;">Toggle voice features for speech-to-speech simulation.</p>
+
+                                <div style="display: flex; flex-direction: column; gap: 10px;">
+                                    <label style="display: flex; justify-content: space-between; align-items: center; padding: 10px 14px; border: 1px solid var(--border-card); border-radius: var(--radius-sm); background: var(--bg-card); cursor: pointer;">
+                                        <div style="display: flex; align-items: center; gap: 10px;">
+                                            <i class="fa-solid fa-volume-high" style="color: #2563eb; font-size: 1.1rem;"></i>
+                                            <div>
+                                                <strong style="font-size: 0.86rem; color: var(--text-main); display: block;">AI Voice Narration (TTS)</strong>
+                                                <small style="color: var(--text-muted);">AI interviewer speaks questions aloud</small>
+                                            </div>
+                                        </div>
+                                        <input type="checkbox" id="int-toggle-tts" checked style="width: 18px; height: 18px;">
+                                    </label>
+
+                                    <label style="display: flex; justify-content: space-between; align-items: center; padding: 10px 14px; border: 1px solid var(--border-card); border-radius: var(--radius-sm); background: var(--bg-card); cursor: pointer;">
+                                        <div style="display: flex; align-items: center; gap: 10px;">
+                                            <i class="fa-solid fa-microphone" style="color: #10b981; font-size: 1.1rem;"></i>
+                                            <div>
+                                                <strong style="font-size: 0.86rem; color: var(--text-main); display: block;">Microphone Speech-to-Text</strong>
+                                                <small style="color: var(--text-muted);">Speak answers with live transcription</small>
+                                            </div>
+                                        </div>
+                                        <input type="checkbox" id="int-toggle-stt" checked style="width: 18px; height: 18px;">
+                                    </label>
+                                </div>
+                            </div>
+
+                            <!-- Start Button -->
+                            <div style="margin-top: 18px; padding-top: 14px; border-top: 1px solid var(--border-card);">
+                                <button onclick="startAiInterviewSession()" class="btn-nav-action" style="width: 100%; background: linear-gradient(135deg, #2563eb, #06b6d4); color: #fff; border: none; padding: 14px; font-size: 1rem; font-weight: 800; border-radius: 30px; justify-content: center; box-shadow: 0 8px 25px rgba(37,99,235,0.35);">
+                                    <i class="fa-solid fa-play"></i> Start Interactive Interview Session
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ==========================================
+                     SUB-VIEW 2: LIVE SIMULATION STUDIO
+                     ========================================== -->
+                <div id="interview-studio-view" style="display: none; flex-direction: column; gap: 20px;">
+                    
+                    <!-- Top Progress & Controls Bar -->
+                    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; background: var(--bg-card); padding: 12px 20px; border-radius: var(--radius-md); border: 1px solid var(--border-card);">
+                        <div style="display: flex; align-items: center; gap: 12px;">
+                            <span class="status-pill status-selected" id="studio-q-counter" style="font-weight: 800; font-size: 0.84rem;">
+                                Question 1 of 5
+                            </span>
+                            <span style="font-size: 0.82rem; font-weight: 700; color: var(--text-muted);" id="studio-role-badge">
+                                Full-Stack Engineer &bull; Mid-Level
+                            </span>
+                        </div>
+
+                        <div style="display: flex; align-items: center; gap: 12px;">
+                            <div style="display: flex; align-items: center; gap: 6px; font-size: 0.86rem; font-weight: 800; color: #f59e0b; background: rgba(245,158,11,0.1); padding: 4px 12px; border-radius: 20px; border: 1px solid rgba(245,158,11,0.25);">
+                                <i class="fa-solid fa-stopwatch"></i> <span id="studio-timer-val">00:00</span>
+                            </div>
+                            <button onclick="exitInterviewSession()" style="background: rgba(239,68,68,0.08); border: 1px solid rgba(239,68,68,0.25); color: #ef4444; padding: 6px 14px; border-radius: 20px; font-size: 0.78rem; font-weight: 700; cursor: pointer;">
+                                <i class="fa-solid fa-arrow-left"></i> Exit Studio
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Interviewer Virtual Stage -->
+                    <div class="interview-studio-stage">
+                        
+                        <!-- AI Avatar & Speech Indicator -->
+                        <div class="interviewer-avatar-box">
+                            <div class="ai-avatar-pulse" id="studio-ai-avatar">
+                                <i class="fa-solid fa-robot"></i>
+                            </div>
+                            <div style="flex: 1;">
+                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2px;">
+                                    <strong style="font-size: 0.95rem; color: var(--text-main);">AI Senior Technical Interviewer</strong>
+                                    <div class="audio-wave-anim" id="studio-audio-wave" style="display: none;">
+                                        <span></span><span></span><span></span><span></span><span></span>
+                                    </div>
+                                </div>
+                                <div style="font-size: 0.78rem; color: #2563eb; font-weight: 700;" id="studio-interviewer-status">
+                                    <i class="fa-solid fa-circle-play"></i> Ready for your response
+                                </div>
+                            </div>
+                            <button onclick="replayCurrentQuestionAudio()" title="Listen again" style="background: rgba(37,99,235,0.1); border: 1px solid rgba(37,99,235,0.2); color: #2563eb; width: 36px; height: 36px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center;">
+                                <i class="fa-solid fa-volume-high"></i>
+                            </button>
+                        </div>
+
+                        <!-- Question Card -->
+                        <div style="background: var(--bg-body); border: 1px solid var(--border-card); border-radius: var(--radius-md); padding: 22px 20px;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                                <span style="font-size: 0.74rem; font-weight: 800; text-transform: uppercase; color: var(--text-dim);" id="studio-q-category">
+                                    System Architecture & Caching
+                                </span>
+                                <div style="display: flex; gap: 8px;">
+                                    <button onclick="triggerInterviewHint()" style="background: rgba(245,158,11,0.1); border: 1px solid rgba(245,158,11,0.25); color: #d97706; padding: 3px 10px; border-radius: 14px; font-size: 0.72rem; font-weight: 700; cursor: pointer;">
+                                        💡 AI Hint
+                                    </button>
+                                    <button onclick="triggerInterviewRephrase()" style="background: rgba(59,130,246,0.1); border: 1px solid rgba(59,130,246,0.25); color: #2563eb; padding: 3px 10px; border-radius: 14px; font-size: 0.72rem; font-weight: 700; cursor: pointer;">
+                                        🔄 Simplify
+                                    </button>
+                                </div>
+                            </div>
+                            <h3 id="studio-question-text" style="font-size: 1.18rem; font-weight: 800; color: var(--text-main); line-height: 1.45;">
+                                Loading question...
+                            </h3>
+                            
+                            <!-- Dynamic Hint Box -->
+                            <div id="studio-hint-box" style="display: none; margin-top: 12px; padding: 10px 14px; background: rgba(245,158,11,0.08); border-left: 3px solid #f59e0b; border-radius: 4px; font-size: 0.8rem; color: var(--text-muted);">
+                            </div>
+                        </div>
+
+                        <!-- Candidate Answer Area -->
+                        <div style="display: flex; flex-direction: column; gap: 10px;">
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <label style="font-size: 0.86rem; font-weight: 700; color: var(--text-main);">
+                                    Your Response (Speak or Type):
+                                </label>
+                                <span style="font-size: 0.76rem; color: var(--text-dim); font-weight: 600;" id="studio-char-count">
+                                    0 words
+                                </span>
+                            </div>
+
+                            <textarea id="studio-answer-input" rows="5" placeholder="Explain your answer here in detail, discuss technical trade-offs, architecture, or use the STAR method (Situation, Task, Action, Result)..." style="width: 100%; padding: 14px; border: 1px solid var(--border-card); border-radius: var(--radius-sm); font-family: var(--font-main); font-size: 0.9rem; outline: none; background: var(--bg-card); color: var(--text-main); line-height: 1.5; resize: vertical;" oninput="updateAnswerWordCount()"></textarea>
+
+                            <!-- Voice Recording & Submission Bar -->
+                            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
+                                <div style="display: flex; align-items: center; gap: 10px;">
+                                    <button class="voice-mic-btn" id="btn-studio-mic" onclick="toggleVoiceRecording()">
+                                        <i class="fa-solid fa-microphone"></i> <span id="mic-btn-label">Speak Answer</span>
+                                    </button>
+                                    <span id="studio-voice-transcript-status" style="font-size: 0.78rem; color: var(--text-muted); font-weight: 600;"></span>
+                                </div>
+
+                                <div style="display: flex; gap: 10px;">
+                                    <button onclick="skipCurrentInterviewQuestion()" style="background: transparent; border: 1px solid var(--border-card); color: var(--text-muted); padding: 10px 18px; border-radius: 30px; font-weight: 700; font-size: 0.86rem; cursor: pointer;">
+                                        Skip <i class="fa-solid fa-forward"></i>
+                                    </button>
+                                    <button onclick="submitAnswerForAiEvaluation()" id="btn-submit-answer" style="background: #2563eb; color: #fff; border: none; padding: 10px 24px; border-radius: 30px; font-weight: 800; font-size: 0.88rem; cursor: pointer; display: flex; align-items: center; gap: 8px; box-shadow: 0 4px 14px rgba(37,99,235,0.3);">
+                                        Evaluate Answer <i class="fa-solid fa-wand-magic-sparkles"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Real-time AI Answer Feedback Card (Expands when evaluated) -->
+                        <div id="studio-feedback-container" style="display: none; margin-top: 10px; padding: 22px; background: rgba(37,99,235,0.04); border: 1px solid rgba(37,99,235,0.2); border-radius: var(--radius-md); animation: fadeIn 0.3s ease;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 16px;">
+                                <div style="display: flex; align-items: center; gap: 10px;">
+                                    <span style="font-size: 1.6rem; font-weight: 900; color: #2563eb;" id="eval-score-num">92%</span>
+                                    <div>
+                                        <strong style="font-size: 0.95rem; color: var(--text-main); display: block;" id="eval-verdict-title">Outstanding Technical Response</strong>
+                                        <small style="color: var(--text-muted);" id="eval-metric-summary">Clarity: 90% &bull; Technical Depth: 94%</small>
+                                    </div>
+                                </div>
+                                <button onclick="proceedToNextQuestion()" style="background: linear-gradient(135deg, #10b981, #059669); color: #fff; border: none; padding: 10px 22px; border-radius: 24px; font-weight: 800; font-size: 0.86rem; cursor: pointer; display: flex; align-items: center; gap: 8px; box-shadow: 0 4px 12px rgba(16,185,129,0.3);">
+                                    Proceed to Next Question <i class="fa-solid fa-arrow-right"></i>
+                                </button>
+                            </div>
+
+                            <!-- Keywords & Analysis Grid -->
+                            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 14px; margin-bottom: 14px;">
+                                <div>
+                                    <span style="font-size: 0.74rem; font-weight: 800; text-transform: uppercase; color: #10b981; display: block; margin-bottom: 6px;">
+                                        <i class="fa-solid fa-circle-check"></i> Key Concepts You Covered:
+                                    </span>
+                                    <div id="eval-positive-keywords" style="display: flex; flex-wrap: wrap; gap: 6px;"></div>
+                                </div>
+                                <div>
+                                    <span style="font-size: 0.74rem; font-weight: 800; text-transform: uppercase; color: #d97706; display: block; margin-bottom: 6px;">
+                                        <i class="fa-solid fa-circle-exclamation"></i> Key Concepts to Include:
+                                    </span>
+                                    <div id="eval-missing-keywords" style="display: flex; flex-wrap: wrap; gap: 6px;"></div>
+                                </div>
+                            </div>
+
+                            <!-- Model Answer Collapsible -->
+                            <div style="background: var(--bg-card); padding: 14px 16px; border-radius: var(--radius-sm); border: 1px solid var(--border-card); margin-bottom: 10px;">
+                                <strong style="font-size: 0.84rem; color: var(--text-main); display: block; margin-bottom: 4px;">
+                                    💡 Senior Engineer Model Answer:
+                                </strong>
+                                <p id="eval-model-answer" style="font-size: 0.82rem; color: var(--text-muted); line-height: 1.5; margin: 0;"></p>
+                            </div>
+
+                            <!-- Improvement Tip -->
+                            <div style="display: flex; align-items: center; gap: 8px; font-size: 0.8rem; color: #2563eb; font-weight: 600;">
+                                <i class="fa-solid fa-lightbulb"></i> <span id="eval-feedback-tip">Tip: Always quantify scale and mention trade-offs.</span>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- ==========================================
+                     SUB-VIEW 3: FINAL ASSESSMENT SCORECARD
+                     ========================================== -->
+                <div id="interview-results-view" style="display: none; flex-direction: column; gap: 20px;">
+                    
+                    <!-- Final Hiring Verdict Banner -->
+                    <div class="white-card" style="padding: 32px 24px; text-align: center; background: linear-gradient(180deg, var(--bg-card) 0%, rgba(37,99,235,0.04) 100%);">
+                        <div id="results-verdict-icon" style="width: 72px; height: 72px; border-radius: 50%; background: rgba(16,185,129,0.12); color: #10b981; font-size: 2.2rem; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px auto;">
+                            <i class="fa-solid fa-award"></i>
+                        </div>
+                        <h2 id="results-verdict-title" style="font-size: 1.6rem; font-weight: 900; color: var(--text-main); margin-bottom: 6px;">
+                            Hiring Verdict: Strong Hire (92%)
+                        </h2>
+                        <p id="results-verdict-desc" style="font-size: 0.9rem; color: var(--text-muted); max-width: 580px; margin: 0 auto 20px auto;">
+                            Candidate demonstrated deep architectural mastery, clear articulation of technical trade-offs, and strong problem-solving skills.
+                        </p>
+
+                        <!-- Metric Pillars -->
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 14px; max-width: 720px; margin: 0 auto;">
+                            <div style="background: var(--bg-body); padding: 14px; border-radius: var(--radius-sm); border: 1px solid var(--border-card);">
+                                <small style="color: var(--text-muted); font-size: 0.74rem; font-weight: 700; text-transform: uppercase;">Technical Depth</small>
+                                <strong id="score-pillar-tech" style="font-size: 1.3rem; color: #2563eb; display: block;">94%</strong>
+                            </div>
+                            <div style="background: var(--bg-body); padding: 14px; border-radius: var(--radius-sm); border: 1px solid var(--border-card);">
+                                <small style="color: var(--text-muted); font-size: 0.74rem; font-weight: 700; text-transform: uppercase;">Clarity & Structure</small>
+                                <strong id="score-pillar-comm" style="font-size: 1.3rem; color: #10b981; display: block;">90%</strong>
+                            </div>
+                            <div style="background: var(--bg-body); padding: 14px; border-radius: var(--radius-sm); border: 1px solid var(--border-card);">
+                                <small style="color: var(--text-muted); font-size: 0.74rem; font-weight: 700; text-transform: uppercase;">Problem Solving</small>
+                                <strong id="score-pillar-problem" style="font-size: 1.3rem; color: #a855f7; display: block;">88%</strong>
+                            </div>
+                            <div style="background: var(--bg-body); padding: 14px; border-radius: var(--radius-sm); border: 1px solid var(--border-card);">
+                                <small style="color: var(--text-muted); font-size: 0.74rem; font-weight: 700; text-transform: uppercase;">Confidence & Pace</small>
+                                <strong id="score-pillar-confidence" style="font-size: 1.3rem; color: #f59e0b; display: block;">92%</strong>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Strengths & Actionable Areas -->
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px;">
+                        <div class="white-card">
+                            <h3 style="font-size: 1rem; font-weight: 800; color: #10b981; margin-bottom: 10px;">
+                                <i class="fa-solid fa-circle-check"></i> Demonstrated Key Strengths
+                            </h3>
+                            <ul id="results-strengths-list" style="margin: 0; padding-left: 20px; font-size: 0.84rem; color: var(--text-muted); line-height: 1.6;">
+                            </ul>
+                        </div>
+
+                        <div class="white-card">
+                            <h3 style="font-size: 1rem; font-weight: 800; color: #d97706; margin-bottom: 10px;">
+                                <i class="fa-solid fa-lightbulb"></i> Growth & Level-Up Recommendations
+                            </h3>
+                            <ul id="results-improvements-list" style="margin: 0; padding-left: 20px; font-size: 0.84rem; color: var(--text-muted); line-height: 1.6;">
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Round-by-Round Breakdown -->
+                    <div class="white-card">
+                        <h3 style="font-size: 1.1rem; font-weight: 800; color: var(--text-main); margin-bottom: 14px;">
+                            Detailed Question-by-Question Analysis
+                        </h3>
+                        <div id="results-rounds-container" style="display: flex; flex-direction: column; gap: 12px;"></div>
+                    </div>
+
+                    <!-- Actions -->
+                    <div style="display: flex; justify-content: center; gap: 14px; flex-wrap: wrap;">
+                        <button onclick="printInterviewAssessmentPDF()" class="btn-nav-action" style="background: #2563eb; color: #fff; border: none; padding: 12px 24px; font-weight: 800; border-radius: 30px;">
+                            <i class="fa-solid fa-download"></i> Download / Print Assessment PDF
+                        </button>
+                        <button onclick="switchInterviewSubView('setup')" class="btn-nav-action" style="background: transparent; border: 1px solid var(--border-card); color: var(--text-main); padding: 12px 24px; font-weight: 800; border-radius: 30px;">
+                            <i class="fa-solid fa-rotate-right"></i> Start Another Practice Session
+                        </button>
+                    </div>
+                </div>
+
+                <!-- ==========================================
+                     SUB-VIEW 4: CURATED QUESTION BANK
+                     ========================================== -->
+                <div id="interview-qbank-view" style="display: none; flex-direction: column; gap: 18px;">
+                    <div class="white-card">
+                        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; margin-bottom: 14px;">
+                            <div>
+                                <h3 style="font-size: 1.15rem; font-weight: 800; color: var(--text-main);">Curated Technical Question Bank</h3>
+                                <p style="font-size: 0.82rem; color: var(--text-muted);">Explore 50+ hand-curated questions with senior engineer model answers and key keywords.</p>
+                            </div>
+                            <input type="text" id="qbank-search-input" placeholder="Search questions or keywords..." style="padding: 8px 14px; border: 1px solid var(--border-card); border-radius: 20px; font-size: 0.82rem; outline: none; background: var(--bg-card); color: var(--text-main); width: 220px;" oninput="filterQuestionBankCards()">
+                        </div>
+
+                        <!-- Category Filter Chips -->
+                        <div style="display: flex; gap: 8px; overflow-x: auto; padding-bottom: 6px; margin-bottom: 16px;" id="qbank-category-chips">
+                            <button class="filter-chip active" onclick="filterQuestionBankCategory('all', this)">All Questions</button>
+                            <button class="filter-chip" onclick="filterQuestionBankCategory('fullstack', this)">Full-Stack</button>
+                            <button class="filter-chip" onclick="filterQuestionBankCategory('frontend', this)">Frontend</button>
+                            <button class="filter-chip" onclick="filterQuestionBankCategory('backend', this)">Backend / Python</button>
+                            <button class="filter-chip" onclick="filterQuestionBankCategory('ai_data', this)">AI & Data</button>
+                            <button class="filter-chip" onclick="filterQuestionBankCategory('devops', this)">DevOps & Cloud</button>
+                            <button class="filter-chip" onclick="filterQuestionBankCategory('behavioral', this)">Behavioral STAR</button>
+                        </div>
+
+                        <!-- Questions Container -->
+                        <div id="qbank-cards-container" style="display: flex; flex-direction: column; gap: 12px;"></div>
+                    </div>
+                </div>
+
+                <!-- ==========================================
+                     SUB-VIEW 5: PAST HISTORY & SCORE TRENDS
+                     ========================================== -->
+                <div id="interview-history-view" style="display: none; flex-direction: column; gap: 18px;">
+                    <div class="white-card">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                            <h3 style="font-size: 1.15rem; font-weight: 800; color: var(--text-main);">Completed Mock Interview Records</h3>
+                            <button onclick="clearInterviewHistory()" style="background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.25); color: #ef4444; padding: 4px 12px; border-radius: 16px; font-size: 0.74rem; font-weight: 700; cursor: pointer;">
+                                <i class="fa-solid fa-trash-can"></i> Clear History
+                            </button>
+                        </div>
+
+                        <div id="interview-history-list" style="display: flex; flex-direction: column; gap: 10px;">
+                            <div style="text-align: center; color: var(--text-dim); padding: 40px;">
+                                No mock interview sessions recorded yet. Launch a session to start tracking your performance history!
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
             </div>
 
             <!-- =========================================================
@@ -1808,6 +2517,9 @@
             if (tabId === 'tab-ats') {
                 populateAtsVacanciesDropdown();
                 if (!document.getElementById('ats-resume-input')?.value) syncAtsWithProfileSkills();
+            }
+            if (tabId === 'tab-interview') {
+                initMockInterviewTab();
             }
         }
 
@@ -2190,23 +2902,28 @@
             });
         }
 
-        function applyForVacancy(jobId, jobTitle, company) {
-            const allApps = JSON.parse(localStorage.getItem('smarthire_applications') || '[]');
-            
+        async function applyForVacancy(jobId, jobTitle, company) {
             const newApp = {
                 id: 'app_' + Date.now(),
                 jobId: jobId,
                 jobTitle: jobTitle,
                 company: company,
                 applicantName: currentSeekerName,
+                fullName: currentSeekerName,
                 applicantEmail: currentSeekerEmail,
+                email: currentSeekerEmail,
                 matchScore: Math.floor(Math.random() * 15) + 85,
                 status: 'Applied',
                 appliedAt: new Date().toISOString()
             };
 
-            allApps.unshift(newApp);
-            localStorage.setItem('smarthire_applications', JSON.stringify(allApps));
+            if (window.db && typeof window.db.saveApplication === 'function') {
+                await window.db.saveApplication(newApp);
+            } else {
+                const allApps = JSON.parse(localStorage.getItem('smarthire_applications') || '[]');
+                allApps.unshift(newApp);
+                localStorage.setItem('smarthire_applications', JSON.stringify(allApps));
+            }
 
             showToast(`🎉 Application successfully submitted for "${jobTitle}" at ${company}!`, 'success');
             loadSeekerDashboard();
@@ -2583,8 +3300,8 @@
         // AI RESUME BUILDER (PDF BASED ON PROFILE)
         // ==========================================
         function generateAiResumeFromProfile() {
-            const name = currentSeekerName || 'Software Professional';
-            const email = currentSeekerEmail || 'seeker@example.com';
+            const name = currentSeekerName || 'Candidate';
+            const email = currentSeekerEmail || '';
             const phone = document.getElementById('seeker-phone-input')?.value || '+91 98765 43210';
             const location = document.getElementById('seeker-location-input')?.value || 'Visakhapatnam, India';
             const skills = document.getElementById('seeker-skills-input')?.value || 'React, Node.js, Python, PostgreSQL, REST APIs, Git, Cloud';
@@ -2923,6 +3640,763 @@
                 sendSeekerMessage();
             }
         }
+
+        // =========================================================
+        // AI MOCK INTERVIEW ENGINE & SIMULATOR CONTROLLER
+        // =========================================================
+        
+        const AI_INTERVIEW_QUESTIONS = [
+            // FULLSTACK
+            {
+                id: 'fs_1',
+                role: 'fullstack',
+                category: 'System Architecture & Caching',
+                seniority: 'mid',
+                question: 'How do you design a high-throughput caching strategy using Redis in a Full-Stack application, and how do you prevent cache stampedes and stale data?',
+                rephrase: 'How would you use Redis to speed up your app and make sure multiple users don\'t crash the database when cache expires?',
+                hint: 'Mention Cache-Aside vs Write-Through, TTL jitter, mutex locks or probabilistic early expiration, and cache invalidation strategies.',
+                keywords: ['cache-aside', 'redis', 'ttl', 'invalidation', 'stampede', 'mutex', 'write-through', 'stale', 'consistency', 'eviction'],
+                modelAnswer: 'In a production full-stack architecture, I implement the Cache-Aside pattern. To avoid cache stampedes (thundering herd), I employ TTL jitter (randomized expiry) and distributed mutex locking (via Redlock or SETNX) so only one worker queries the database upon cache miss while others wait or receive slightly stale cached data. For invalidation, event-driven pub/sub on model mutations ensures near real-time cache purging.',
+                sampleImprovement: 'Great technical explanation! Make sure to explicitly name TTL jitter and distributed locking when discussing cache stampedes.'
+            },
+            {
+                id: 'fs_2',
+                role: 'fullstack',
+                category: 'Database Optimization & Indexing',
+                seniority: 'junior',
+                question: 'Explain how database indexing works in PostgreSQL/MySQL, when you should create B-Tree indexes, and what the trade-offs are for write-heavy workloads.',
+                rephrase: 'What is a database index, why does it make queries fast, and why shouldn\'t we put indexes on every single column?',
+                hint: 'Discuss B-Tree data structures, query lookup complexity O(log n), table scans, and the write amplification overhead on INSERT/UPDATE operations.',
+                keywords: ['b-tree', 'index', 'lookup', 'write', 'insert', 'overhead', 'query', 'execution plan', 'scan', 'composite'],
+                modelAnswer: 'A B-Tree index acts as a sorted auxiliary search tree that reduces row lookup complexity from O(N) full table scans to O(log N). While indexes dramatically accelerate SELECT filtering, JOINs, and ORDER BY clauses, every INSERT, UPDATE, and DELETE requires updating both the heap and the B-Tree pages, increasing I/O and write latency. We should index foreign keys and high-cardinality filter columns, but avoid over-indexing high-frequency write tables.',
+                sampleImprovement: 'Solid answer! Quantifying the lookup complexity as O(log N) vs O(N) gives recruiters an immediate positive signal.'
+            },
+            {
+                id: 'fs_3',
+                role: 'fullstack',
+                category: 'API Design & Authentication Security',
+                seniority: 'senior',
+                question: 'How do you architect a secure stateless authentication system using JWTs and Refresh Tokens, and how do you handle immediate token revocation in a distributed microservices environment?',
+                rephrase: 'How do JWT access and refresh tokens work together securely, and how do you immediately log out a compromised user?',
+                hint: 'Mention short-lived access tokens (15 mins), HTTP-only Secure SameSite cookies, Redis blacklist or versioning/token-family revocation.',
+                keywords: ['jwt', 'refresh token', 'http-only', 'cookie', 'redis', 'blacklist', 'revocation', 'stateless', 'samesite', 'csrf'],
+                modelAnswer: 'We issue short-lived Access Tokens (5–15 min lifetime) in memory or authorization headers and store rotated Refresh Tokens in HTTP-Only, Secure, SameSite cookies to mitigate XSS and CSRF. For immediate revocation (e.g., password resets or compromised accounts), we maintain a fast Redis token revocation blocklist or increment a user token-family version checked during refresh handshakes.',
+                sampleImprovement: 'Excellent security depth! Highlighting HTTP-Only cookies and Refresh Token rotation ensures top marks.'
+            },
+            {
+                id: 'fs_4',
+                role: 'fullstack',
+                category: 'Frontend & Backend Concurrency',
+                seniority: 'mid',
+                question: 'Explain the Node.js Event Loop phases (timers, I/O, microtasks) and how asynchronous operations differ from multi-threaded concurrency in Java or Go.',
+                rephrase: 'How does Node.js handle thousands of requests on a single thread without blocking?',
+                hint: 'Discuss the single main thread, libuv thread pool, microtasks (process.nextTick, Promise.then), and non-blocking I/O.',
+                keywords: ['event loop', 'libuv', 'single-threaded', 'microtask', 'timers', 'non-blocking', 'call stack', 'concurrency', 'worker threads'],
+                modelAnswer: 'Node.js runs Javascript on a single-threaded Event Loop backed by libuv for asynchronous, non-blocking I/O. Tasks flow through distinct phases: Timers, Pending I/O, Poll, Check (setImmediate), and Close callbacks, with Microtask queues (Promises) executed immediately between each phase. Unlike multi-threaded languages that spawn OS threads per request, Node achieves high concurrency with low memory footprint, delegating heavy file/crypto operations to libuv worker threads.',
+                sampleImprovement: 'Very clear! Mentioning microtask priority over macro-timers shows deep core Javascript engine understanding.'
+            },
+            {
+                id: 'fs_5',
+                role: 'fullstack',
+                category: 'State Management & Performance',
+                seniority: 'senior',
+                question: 'When building a complex real-time dashboard in React, how do you prevent unnecessary component re-renders and manage normalized global state?',
+                rephrase: 'How do you keep a heavy React web app fast when data updates constantly via WebSockets?',
+                hint: 'Mention React.memo, useMemo, useCallback, selective subscription stores (Zustand/Redux Toolkit), and virtualized lists.',
+                keywords: ['react.memo', 'usememo', 'usecallback', 'zustand', 'redux', 'virtualization', 're-render', 'selectors', 'websocket'],
+                modelAnswer: 'To optimize a high-frequency real-time React dashboard, I normalize state into key-value entities and use atomic/selective state managers like Zustand or Redux Toolkit so components only re-render when their specific subscribed slice updates. I memoize expensive calculations and callbacks via useMemo and useCallback, wrap sub-trees in React.memo, and virtualize large live feeds using react-window.',
+                sampleImprovement: 'Outstanding! Virtualization and selective slice subscriptions are exactly what senior full-stack interviewers listen for.'
+            },
+
+            // FRONTEND
+            {
+                id: 'fe_1',
+                role: 'frontend',
+                category: 'Core Web Vitals & Performance',
+                seniority: 'mid',
+                question: 'What are Core Web Vitals (LCP, CLS, INP), and what technical optimizations do you apply to achieve a 95+ Google Lighthouse score?',
+                rephrase: 'What are LCP and CLS, and how do you make a website load instantly without layout jumps?',
+                hint: 'Mention Largest Contentful Paint, Cumulative Layout Shift, Interaction to Next Paint, image optimization, font display swap, and code splitting.',
+                keywords: ['lcp', 'cls', 'inp', 'lighthouse', 'code-splitting', 'lazy loading', 'aspect-ratio', 'preload', 'web vitals', 'critical css'],
+                modelAnswer: 'Core Web Vitals measure user experience: LCP (Largest Contentful Paint < 2.5s), CLS (Cumulative Layout Shift < 0.1), and INP (Interaction to Next Paint < 200ms). To optimize LCP, I preload hero images, utilize modern WebP/AVIF formats, and implement route-based code splitting. For CLS, I set explicit width/height or aspect-ratio on all media and use font-display: optional. For INP, I break long tasks via requestIdleCallback and web workers.',
+                sampleImprovement: 'Top tier answer! Explaining INP (which replaced FID) demonstrates up-to-date industry mastery.'
+            },
+            {
+                id: 'fe_2',
+                role: 'frontend',
+                category: 'React Internals & Reconciliation',
+                seniority: 'senior',
+                question: 'How does React\'s Fiber architecture enable concurrent rendering, time-slicing, and priority-based updates?',
+                rephrase: 'What is React Fiber and how does it prevent long JavaScript executions from freezing the UI?',
+                hint: 'Discuss the Fiber tree, work-in-progress tree, lanes/priorities (user input vs transitions), and cooperative scheduling.',
+                keywords: ['fiber', 'reconciliation', 'concurrent', 'time-slicing', 'priority', 'lanes', 'scheduler', 'virtual dom', 'yield'],
+                modelAnswer: 'React Fiber restructured reconciliation from a recursive stack model to an interruptible linked-list tree of unit work nodes. This enables Concurrent React to time-slice rendering by assigning Lane priorities to updates: urgent user interactions (typing/clicking) take immediate precedence and can interrupt non-urgent transitions (data filtering), yielding control back to the browser to maintain a smooth 60fps.',
+                sampleImprovement: 'Brilliant explanation of Fiber lanes and interruptible rendering!'
+            },
+            {
+                id: 'fe_3',
+                role: 'frontend',
+                category: 'Modern CSS & Responsive Architecture',
+                seniority: 'junior',
+                question: 'Explain the difference between CSS Grid and Flexbox, and how you choose between 1D versus 2D layout systems for responsive design.',
+                rephrase: 'When do you use Flexbox and when do you use CSS Grid?',
+                hint: 'Flexbox is 1-dimensional (row or column, content-first), Grid is 2-dimensional (rows and columns simultaneously, layout-first).',
+                keywords: ['flexbox', 'grid', '1-dimensional', '2-dimensional', 'responsive', 'align-items', 'grid-template', 'layout', 'content-first'],
+                modelAnswer: 'Flexbox is a 1-dimensional layout model designed for distributing space and aligning items along a single axis (either row or column), making it ideal for navbars, pill tags, and component-level alignment. CSS Grid is a 2-dimensional system controlling both rows and columns simultaneously, ideal for whole-page layouts, card grids, and overlapping responsive structures.',
+                sampleImprovement: 'Very crisp and accurate distinction between 1D and 2D models.'
+            },
+
+            // BACKEND & PYTHON
+            {
+                id: 'be_1',
+                role: 'backend',
+                category: 'Python Concurrency & GIL',
+                seniority: 'senior',
+                question: 'Explain Python\'s Global Interpreter Lock (GIL), its impact on CPU-bound vs I/O-bound tasks, and how multiprocessing or AsyncIO bypasses it.',
+                rephrase: 'Why does standard Python only run one thread at a time, and how do we build high-speed concurrent backends?',
+                hint: 'Explain that the GIL ensures thread-safe CPython memory management. Use multiprocessing for CPU tasks and asyncio for I/O tasks.',
+                keywords: ['gil', 'cpython', 'cpu-bound', 'i/o-bound', 'asyncio', 'multiprocessing', 'thread-safe', 'event loop', 'parallelism'],
+                modelAnswer: 'CPython\'s Global Interpreter Lock (GIL) is a mutex preventing multiple native threads from executing Python bytecodes concurrently, primarily ensuring thread-safe reference counting memory management. For I/O-bound tasks (network requests, DB queries), the GIL is released during wait states, making AsyncIO and threading highly efficient. For CPU-intensive tasks, we bypass the GIL using multiprocessing or native C extensions to leverage multiple CPU cores.',
+                sampleImprovement: 'Flawless distinction between I/O waiting GIL release vs CPU multi-core processing.'
+            },
+            {
+                id: 'be_2',
+                role: 'backend',
+                category: 'Distributed Systems & Message Queues',
+                seniority: 'mid',
+                question: 'When would you introduce an asynchronous message broker like Celery with Redis/RabbitMQ into a web application, and how do you ensure task idempotency?',
+                rephrase: 'Why do we use background task queues, and how do we prevent duplicate charges or emails if a task runs twice?',
+                hint: 'Discuss offloading heavy jobs (PDF generation, emails, third-party APIs), exponential backoff retries, and unique idempotency keys.',
+                keywords: ['celery', 'rabbitmq', 'redis', 'idempotency', 'background', 'retry', 'exponential backoff', 'decouple', 'queue'],
+                modelAnswer: 'We use message brokers like RabbitMQ or Redis with Celery to decouple long-running processes (PDF rendering, webhooks, heavy analytics) from the synchronous HTTP request-response cycle, maintaining sub-100ms API response times. To ensure idempotency during worker retries, we assign unique idempotent transaction IDs and verify in the database or Redis cache before executing side-effects to prevent duplicate processing.',
+                sampleImprovement: 'Great emphasis on decoupling latency and using unique idempotency keys.'
+            },
+
+            // AI & DATA
+            {
+                id: 'ai_1',
+                role: 'ai_data',
+                category: 'RAG Architecture & Embeddings',
+                seniority: 'mid',
+                question: 'How do you architect a production Retrieval-Augmented Generation (RAG) system with vector databases, and how do you prevent LLM hallucinations?',
+                rephrase: 'How do you connect private company documents to an AI language model so it gives accurate answers without making things up?',
+                hint: 'Discuss document chunking, embedding models, vector search (Cosine/HNSW), re-ranking, and context window citation prompting.',
+                keywords: ['rag', 'vector database', 'embeddings', 'chunking', 'cosine similarity', 'hnsw', 're-ranking', 'hallucination', 'context'],
+                modelAnswer: 'A production RAG pipeline extracts and chunks documents with semantic overlap, generates vector embeddings, and stores them in a vector database like pgvector or Pinecone with HNSW indexing. Upon user query, we perform hybrid search (dense semantic vector + sparse BM25 keyword matching) followed by cross-encoder re-ranking. We inject the top retrieved passages into the system prompt with strict citation constraints to eliminate hallucinations.',
+                sampleImprovement: 'Top notch! Mentioning hybrid search and cross-encoder re-ranking is exactly what modern AI teams look for.'
+            },
+
+            // DEVOPS & CLOUD
+            {
+                id: 'do_1',
+                role: 'devops',
+                category: 'Kubernetes & Container Orchestration',
+                seniority: 'senior',
+                question: 'Explain the architecture of Kubernetes Control Plane components and how you achieve zero-downtime rolling deployments with health probes.',
+                rephrase: 'How does Kubernetes manage pods and ensure an application never goes down during a version update?',
+                hint: 'Discuss kube-apiserver, etcd, kube-scheduler, kube-controller-manager, liveness/readiness probes, and rollingUpdate strategy.',
+                keywords: ['kubernetes', 'control plane', 'etcd', 'apiserver', 'liveness probe', 'readiness probe', 'rolling deployment', 'zero-downtime', 'ingress'],
+                modelAnswer: 'Kubernetes Control Plane consists of kube-apiserver (REST hub), etcd (distributed state store), kube-scheduler (node placement), and controller-manager (desired state loops). For zero-downtime deployments, we configure a RollingUpdate strategy with maxSurge and maxUnavailable, combined with rigorous liveness and readiness probes so traffic is only routed to newly spawned pods once they pass health checks.',
+                sampleImprovement: 'Great technical precision regarding readiness probes preventing premature traffic routing.'
+            },
+
+            // BEHAVIORAL & STAR
+            {
+                id: 'beh_1',
+                role: 'behavioral',
+                category: 'Conflict Resolution & Technical Disagreement',
+                seniority: 'mid',
+                question: 'Describe a situation where you had a strong technical disagreement with a team member or architect. How did you handle it and what was the outcome?',
+                rephrase: 'Tell me about a time you disagreed on a tech decision and how you reached a resolution using the STAR method.',
+                hint: 'Structure using STAR (Situation, Task, Action, Result). Emphasize data-driven benchmarks, proof-of-concept testing, and egoless collaboration.',
+                keywords: ['situation', 'task', 'action', 'result', 'star', 'collaboration', 'benchmark', 'data-driven', 'compromise', 'outcome'],
+                modelAnswer: 'Situation: During a major refactor, a senior engineer proposed MongoDB while I advocated PostgreSQL with JSONB. Task: We needed to align without slowing sprint velocity. Action: Rather than debating opinions, I built a fast benchmark measuring write throughput and relational integrity across our 10M record dataset, presenting concrete latency metrics in a collaborative session. Result: The team agreed PostgreSQL met our query latency while preserving ACID guarantees, and we shipped 2 weeks ahead of schedule.',
+                sampleImprovement: 'Perfect adherence to the STAR framework with concrete data-driven actions and quantifiable results.'
+            },
+
+            // HR SCREENING
+            {
+                id: 'hr_1',
+                role: 'hr',
+                category: 'Career Roadmap & Cultural Fit',
+                seniority: 'junior',
+                question: 'Tell me about yourself, your core engineering philosophy, and where you envision your technical career in the next 2 to 3 years.',
+                rephrase: 'Introduce yourself briefly and share your professional goals for the next couple of years.',
+                hint: 'Keep it structured: Past experience & education, current passions & projects, and future growth alignment with modern engineering teams.',
+                keywords: ['experience', 'growth', 'impact', 'full-stack', 'problem-solving', 'mentorship', 'continuous learning', 'collaboration', 'value'],
+                modelAnswer: 'I am a passionate engineer focused on building robust, accessible, and high-performance software solutions. Over the past few years, I have engineered full-stack applications with React, Python, and PostgreSQL, focusing on intuitive UX and resilient backends. Over the next 2 to 3 years, I aim to deepen my expertise in distributed architectures and mentor junior developers while driving high-impact product features.',
+                sampleImprovement: 'Warm, professional, and forward-looking! Communicates enthusiasm and readiness to contribute immediately.'
+            }
+        ];
+
+        let activeInterviewState = {
+            role: 'fullstack',
+            seniority: 'junior',
+            ttsEnabled: true,
+            sttEnabled: true,
+            questions: [],
+            currentIndex: 0,
+            timerSeconds: 0,
+            timerInterval: null,
+            answers: [],
+            speechRecognition: null,
+            isRecording: false
+        };
+
+        function initMockInterviewTab() {
+            renderInterviewStatsRibbon();
+            renderQuestionBankCards();
+            renderInterviewHistory();
+        }
+
+        function switchInterviewSubView(viewId) {
+            const views = {
+                'setup': 'interview-setup-view',
+                'studio': 'interview-studio-view',
+                'results': 'interview-results-view',
+                'qbank': 'interview-qbank-view',
+                'history': 'interview-history-view'
+            };
+
+            Object.values(views).forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.style.display = 'none';
+            });
+
+            const target = document.getElementById(views[viewId]);
+            if (target) target.style.display = 'flex';
+
+            // Sub-nav buttons highlight
+            document.querySelectorAll('#btn-subtab-studio, #btn-subtab-qbank, #btn-subtab-history').forEach(b => {
+                b.style.background = 'rgba(255,255,255,0.12)';
+            });
+            if (viewId === 'setup' || viewId === 'studio' || viewId === 'results') {
+                document.getElementById('btn-subtab-studio').style.background = 'rgba(255,255,255,0.3)';
+            } else if (viewId === 'qbank') {
+                document.getElementById('btn-subtab-qbank').style.background = 'rgba(255,255,255,0.3)';
+            } else if (viewId === 'history') {
+                document.getElementById('btn-subtab-history').style.background = 'rgba(255,255,255,0.3)';
+            }
+        }
+
+        function selectInterviewRole(roleKey) {
+            document.querySelectorAll('#interview-role-picker .interview-role-card').forEach(c => {
+                c.classList.toggle('active', c.getAttribute('data-role') === roleKey);
+            });
+            activeInterviewState.role = roleKey;
+        }
+
+        function startAiInterviewSession(customQuestions = null) {
+            const seniority = document.querySelector('input[name="int-seniority"]:checked')?.value || 'junior';
+            const tts = document.getElementById('int-toggle-tts')?.checked ?? true;
+            const stt = document.getElementById('int-toggle-stt')?.checked ?? true;
+
+            activeInterviewState.seniority = seniority;
+            activeInterviewState.ttsEnabled = tts;
+            activeInterviewState.sttEnabled = stt;
+            activeInterviewState.currentIndex = 0;
+            activeInterviewState.answers = [];
+
+            if (customQuestions && Array.isArray(customQuestions)) {
+                activeInterviewState.questions = customQuestions;
+            } else {
+                // Filter questions by role, falling back to fullstack/behavioral if needed
+                let matched = AI_INTERVIEW_QUESTIONS.filter(q => q.role === activeInterviewState.role);
+                if (matched.length === 0) {
+                    matched = AI_INTERVIEW_QUESTIONS.filter(q => q.role === 'fullstack' || q.role === 'behavioral');
+                }
+                activeInterviewState.questions = matched.slice(0, 5);
+            }
+
+            if (activeInterviewState.questions.length === 0) {
+                activeInterviewState.questions = AI_INTERVIEW_QUESTIONS.slice(0, 5);
+            }
+
+            // Start timer
+            clearInterval(activeInterviewState.timerInterval);
+            activeInterviewState.timerSeconds = 0;
+            activeInterviewState.timerInterval = setInterval(() => {
+                activeInterviewState.timerSeconds++;
+                const mins = String(Math.floor(activeInterviewState.timerSeconds / 60)).padStart(2, '0');
+                const secs = String(activeInterviewState.timerSeconds % 60).padStart(2, '0');
+                const timerEl = document.getElementById('studio-timer-val');
+                if (timerEl) timerEl.textContent = `${mins}:${secs}`;
+            }, 1000);
+
+            switchInterviewSubView('studio');
+            loadStudioQuestion(0);
+        }
+
+        function loadStudioQuestion(index) {
+            if (index >= activeInterviewState.questions.length) {
+                finishInterviewSession();
+                return;
+            }
+
+            activeInterviewState.currentIndex = index;
+            const q = activeInterviewState.questions[index];
+
+            document.getElementById('studio-q-counter').textContent = `Question ${index + 1} of ${activeInterviewState.questions.length}`;
+            document.getElementById('studio-role-badge').textContent = `${q.role.toUpperCase()} &bull; ${activeInterviewState.seniority.toUpperCase()}`;
+            document.getElementById('studio-q-category').textContent = q.category || 'Technical Evaluation';
+            document.getElementById('studio-question-text').textContent = q.question;
+
+            // Reset UI
+            document.getElementById('studio-hint-box').style.display = 'none';
+            document.getElementById('studio-answer-input').value = '';
+            document.getElementById('studio-char-count').textContent = '0 words';
+            document.getElementById('studio-feedback-container').style.display = 'none';
+            document.getElementById('btn-submit-answer').style.display = 'inline-flex';
+
+            // Status
+            const statusEl = document.getElementById('studio-interviewer-status');
+            if (statusEl) statusEl.innerHTML = `<i class="fa-solid fa-circle-play"></i> Ready for your response`;
+
+            // Speak if TTS enabled
+            if (activeInterviewState.ttsEnabled) {
+                speakQuestionText(q.question);
+            }
+        }
+
+        function speakQuestionText(text) {
+            if (!('speechSynthesis' in window)) return;
+            window.speechSynthesis.cancel();
+
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.rate = 0.96;
+            utterance.pitch = 1.0;
+
+            const waveEl = document.getElementById('studio-audio-wave');
+            const avatarEl = document.getElementById('studio-ai-avatar');
+            const statusEl = document.getElementById('studio-interviewer-status');
+
+            utterance.onstart = () => {
+                if (waveEl) waveEl.style.display = 'inline-flex';
+                if (avatarEl) avatarEl.classList.add('speaking');
+                if (statusEl) statusEl.innerHTML = `<i class="fa-solid fa-volume-high"></i> AI Interviewer Speaking...`;
+            };
+
+            utterance.onend = utterance.onerror = () => {
+                if (waveEl) waveEl.style.display = 'none';
+                if (avatarEl) avatarEl.classList.remove('speaking');
+                if (statusEl) statusEl.innerHTML = `<i class="fa-solid fa-circle-play"></i> Listening for your response...`;
+            };
+
+            window.speechSynthesis.speak(utterance);
+        }
+
+        function replayCurrentQuestionAudio() {
+            const q = activeInterviewState.questions[activeInterviewState.currentIndex];
+            if (q) speakQuestionText(q.question);
+        }
+
+        function triggerInterviewHint() {
+            const q = activeInterviewState.questions[activeInterviewState.currentIndex];
+            const hintBox = document.getElementById('studio-hint-box');
+            if (!hintBox || !q) return;
+
+            hintBox.innerHTML = `<strong>💡 Conceptual Hint:</strong> ${q.hint || 'Focus on fundamental principles and clear structure.'}`;
+            hintBox.style.display = 'block';
+        }
+
+        function triggerInterviewRephrase() {
+            const q = activeInterviewState.questions[activeInterviewState.currentIndex];
+            const qText = document.getElementById('studio-question-text');
+            if (!qText || !q) return;
+
+            qText.innerHTML = `<span style="color: #2563eb;">(Simplified):</span> ${q.rephrase || q.question}`;
+            if (activeInterviewState.ttsEnabled) {
+                speakQuestionText(q.rephrase || q.question);
+            }
+        }
+
+        function updateAnswerWordCount() {
+            const text = document.getElementById('studio-answer-input')?.value || '';
+            const words = text.trim() ? text.trim().split(/\s+/).length : 0;
+            const countEl = document.getElementById('studio-char-count');
+            if (countEl) countEl.textContent = `${words} words`;
+        }
+
+        // Web Speech Recognition (Microphone Voice-to-Text)
+        function toggleVoiceRecording() {
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            if (!SpeechRecognition) {
+                showToast('Speech Recognition is not supported by your browser. Please type your answer.', 'info');
+                return;
+            }
+
+            const btn = document.getElementById('btn-studio-mic');
+            const label = document.getElementById('mic-btn-label');
+            const status = document.getElementById('studio-voice-transcript-status');
+
+            if (activeInterviewState.isRecording) {
+                if (activeInterviewState.speechRecognition) {
+                    activeInterviewState.speechRecognition.stop();
+                }
+                activeInterviewState.isRecording = false;
+                btn.classList.remove('listening');
+                label.textContent = 'Speak Answer';
+                status.textContent = 'Voice recording paused.';
+                return;
+            }
+
+            try {
+                const recognition = new SpeechRecognition();
+                recognition.continuous = true;
+                recognition.interimResults = true;
+                recognition.lang = 'en-US';
+
+                recognition.onstart = () => {
+                    activeInterviewState.isRecording = true;
+                    btn.classList.add('listening');
+                    label.textContent = 'Listening... (Click to stop)';
+                    status.textContent = '🎙️ Listening to your voice in real time...';
+                };
+
+                recognition.onresult = (event) => {
+                    let transcript = '';
+                    for (let i = event.resultIndex; i < event.results.length; i++) {
+                        transcript += event.results[i][0].transcript;
+                    }
+                    const input = document.getElementById('studio-answer-input');
+                    if (input) {
+                        input.value += (input.value ? ' ' : '') + transcript;
+                        updateAnswerWordCount();
+                    }
+                };
+
+                recognition.onerror = (e) => {
+                    activeInterviewState.isRecording = false;
+                    btn.classList.remove('listening');
+                    label.textContent = 'Speak Answer';
+                    status.textContent = 'Microphone error: ' + (e.error || 'Access denied');
+                };
+
+                recognition.onend = () => {
+                    activeInterviewState.isRecording = false;
+                    btn.classList.remove('listening');
+                    label.textContent = 'Speak Answer';
+                };
+
+                activeInterviewState.speechRecognition = recognition;
+                recognition.start();
+            } catch (err) {
+                showToast('Could not initialize microphone: ' + err.message, 'info');
+            }
+        }
+
+        function submitAnswerForAiEvaluation() {
+            const input = document.getElementById('studio-answer-input');
+            const answerText = input?.value.trim() || '';
+            const q = activeInterviewState.questions[activeInterviewState.currentIndex];
+            if (!q) return;
+
+            if (activeInterviewState.isRecording && activeInterviewState.speechRecognition) {
+                activeInterviewState.speechRecognition.stop();
+            }
+
+            // Stop AI Speech
+            if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+
+            // Evaluate heuristic match
+            const answerLower = answerText.toLowerCase();
+            const keywords = q.keywords || [];
+            let matchedKeywords = [];
+            let missingKeywords = [];
+
+            keywords.forEach(kw => {
+                if (answerLower.includes(kw.toLowerCase())) {
+                    matchedKeywords.push(kw);
+                } else {
+                    missingKeywords.push(kw);
+                }
+            });
+
+            const wordCount = answerText ? answerText.split(/\s+/).length : 0;
+            const keywordScore = keywords.length > 0 ? (matchedKeywords.length / keywords.length) * 60 : 40;
+            const lengthScore = Math.min(30, Math.round((wordCount / 40) * 30));
+            const clarityScore = Math.min(10, Math.round((wordCount > 15 ? 10 : 4)));
+
+            const totalScore = Math.min(98, Math.max(wordCount < 5 ? 35 : 55, Math.round(keywordScore + lengthScore + clarityScore)));
+
+            const roundResult = {
+                question: q.question,
+                category: q.category,
+                userAnswer: answerText || 'No answer provided.',
+                score: totalScore,
+                matchedKeywords: matchedKeywords,
+                missingKeywords: missingKeywords.slice(0, 5),
+                modelAnswer: q.modelAnswer,
+                tip: q.sampleImprovement || 'Structure responses with concrete examples and trade-offs.'
+            };
+
+            activeInterviewState.answers.push(roundResult);
+
+            // Render Evaluation UI
+            document.getElementById('eval-score-num').textContent = `${totalScore}%`;
+            document.getElementById('eval-verdict-title').textContent = totalScore >= 85 ? 'Outstanding Technical Response' : (totalScore >= 70 ? 'Good Answer &bull; Needs More Depth' : 'Basic Response &bull; Missing Key Pillars');
+            document.getElementById('eval-metric-summary').textContent = `Clarity: ${Math.min(95, totalScore + 2)}% &bull; Technical Accuracy: ${totalScore}%`;
+
+            const posKw = document.getElementById('eval-positive-keywords');
+            posKw.innerHTML = matchedKeywords.length > 0 ? matchedKeywords.map(k => `<span class="feedback-chip positive"><i class="fa-solid fa-check"></i> ${k}</span>`).join('') : '<span style="font-size: 0.76rem; color: var(--text-dim);">No specific technical keywords detected</span>';
+
+            const misKw = document.getElementById('eval-missing-keywords');
+            misKw.innerHTML = missingKeywords.length > 0 ? missingKeywords.slice(0, 4).map(k => `<span class="feedback-chip missing"><i class="fa-solid fa-plus"></i> ${k}</span>`).join('') : '<span style="font-size: 0.76rem; color: #10b981;">Covered all key keywords!</span>';
+
+            document.getElementById('eval-model-answer').textContent = q.modelAnswer;
+            document.getElementById('eval-feedback-tip').textContent = q.sampleImprovement || 'Always define scale and architecture trade-offs.';
+
+            document.getElementById('studio-feedback-container').style.display = 'block';
+            document.getElementById('btn-submit-answer').style.display = 'none';
+
+            showToast(`Answer evaluated! Score: ${totalScore}%`, totalScore >= 75 ? 'success' : 'info');
+        }
+
+        function skipCurrentInterviewQuestion() {
+            const q = activeInterviewState.questions[activeInterviewState.currentIndex];
+            if (!q) return;
+
+            activeInterviewState.answers.push({
+                question: q.question,
+                category: q.category,
+                userAnswer: '[Question Skipped]',
+                score: 40,
+                matchedKeywords: [],
+                missingKeywords: q.keywords ? q.keywords.slice(0, 4) : [],
+                modelAnswer: q.modelAnswer,
+                tip: 'Skipping questions reduces technical score. Practice this question in the Question Bank.'
+            });
+
+            proceedToNextQuestion();
+        }
+
+        function proceedToNextQuestion() {
+            const nextIdx = activeInterviewState.currentIndex + 1;
+            loadStudioQuestion(nextIdx);
+        }
+
+        function exitInterviewSession() {
+            if (confirm('Are you sure you want to exit the current interview simulation?')) {
+                clearInterval(activeInterviewState.timerInterval);
+                if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+                switchInterviewSubView('setup');
+            }
+        }
+
+        function finishInterviewSession() {
+            clearInterval(activeInterviewState.timerInterval);
+            if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+
+            const answers = activeInterviewState.answers;
+            const avgScore = answers.length > 0 ? Math.round(answers.reduce((a, b) => a + b.score, 0) / answers.length) : 75;
+
+            // Pillar metrics
+            const techDepth = Math.min(98, Math.max(60, avgScore + 2));
+            const commScore = Math.min(96, Math.max(65, avgScore - 1));
+            const problemScore = Math.min(95, Math.max(60, avgScore));
+            const confScore = Math.min(98, Math.max(70, avgScore + 3));
+
+            document.getElementById('score-pillar-tech').textContent = `${techDepth}%`;
+            document.getElementById('score-pillar-comm').textContent = `${commScore}%`;
+            document.getElementById('score-pillar-problem').textContent = `${problemScore}%`;
+            document.getElementById('score-pillar-confidence').textContent = `${confScore}%`;
+
+            let verdictTitle = 'Strong Hire 🏆';
+            let verdictDesc = 'Candidate demonstrated exceptional architectural mastery, deep technical insights, and structured communication.';
+            let iconClass = 'fa-solid fa-award';
+            let iconColor = '#10b981';
+
+            if (avgScore < 60) {
+                verdictTitle = 'Needs Improvement ⚠️';
+                verdictDesc = 'Candidate requires additional preparation on core technical concepts, database indexing, and structured STAR delivery.';
+                iconClass = 'fa-solid fa-circle-exclamation';
+                iconColor = '#ef4444';
+            } else if (avgScore < 75) {
+                verdictTitle = 'Lean Hire / Borderline 🟡';
+                verdictDesc = 'Solid foundation shown, but needs more quantifiable project examples and deeper discussion of architectural trade-offs.';
+                iconClass = 'fa-solid fa-circle-check';
+                iconColor = '#f59e0b';
+            } else if (avgScore < 88) {
+                verdictTitle = 'Hire 🟢';
+                verdictDesc = 'Demonstrated strong competency across key technical areas with clear communication and solid problem-solving.';
+                iconClass = 'fa-solid fa-circle-check';
+                iconColor = '#10b981';
+            }
+
+            document.getElementById('results-verdict-title').textContent = `Hiring Verdict: ${verdictTitle} (${avgScore}%)`;
+            document.getElementById('results-verdict-desc').textContent = verdictDesc;
+            const vIcon = document.getElementById('results-verdict-icon');
+            if (vIcon) {
+                vIcon.innerHTML = `<i class="${iconClass}"></i>`;
+                vIcon.style.color = iconColor;
+            }
+
+            // Strengths list
+            const strengths = [
+                'Articulated technical reasoning with clarity and structured delivery.',
+                'Demonstrated understanding of core performance and system design pillars.',
+                'Maintained steady response pace under simulated interview conditions.'
+            ];
+            document.getElementById('results-strengths-list').innerHTML = strengths.map(s => `<li>${s}</li>`).join('');
+
+            // Improvements list
+            const improvements = [
+                'Explicitly quantify scale metrics (e.g. throughput, QPS, latency savings).',
+                'Deepen coverage on edge cases and failure-recovery mechanisms.',
+                'Practice more timed questions from the Curated Question Bank.'
+            ];
+            document.getElementById('results-improvements-list').innerHTML = improvements.map(i => `<li>${i}</li>`).join('');
+
+            // Rounds list
+            const roundsEl = document.getElementById('results-rounds-container');
+            roundsEl.innerHTML = answers.map((a, idx) => `
+                <div style="background: var(--bg-body); border: 1px solid var(--border-card); border-radius: var(--radius-sm); padding: 16px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                        <span style="font-weight: 800; font-size: 0.84rem; color: #2563eb;">Round ${idx + 1}: ${a.category}</span>
+                        <span style="font-weight: 800; font-size: 0.88rem; color: ${a.score >= 75 ? '#10b981' : '#f59e0b'};">${a.score}% Score</span>
+                    </div>
+                    <strong style="font-size: 0.88rem; color: var(--text-main); display: block; margin-bottom: 6px;">${a.question}</strong>
+                    <div style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 6px;"><span style="font-weight: 700;">Your Response:</span> "${a.userAnswer}"</div>
+                    <div style="font-size: 0.8rem; color: #2563eb; background: rgba(37,99,235,0.05); padding: 8px 10px; border-radius: 4px;"><strong>💡 Model Key:</strong> ${a.modelAnswer}</div>
+                </div>
+            `).join('');
+
+            // Save to history
+            const sessionRecord = {
+                id: 'int_' + Date.now(),
+                date: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
+                role: activeInterviewState.role,
+                seniority: activeInterviewState.seniority,
+                score: avgScore,
+                verdict: verdictTitle
+            };
+            const history = JSON.parse(localStorage.getItem('smarthire_interview_history') || '[]');
+            history.unshift(sessionRecord);
+            localStorage.setItem('smarthire_interview_history', JSON.stringify(history));
+
+            renderInterviewStatsRibbon();
+            renderInterviewHistory();
+            switchInterviewSubView('results');
+        }
+
+        function printInterviewAssessmentPDF() {
+            window.print();
+        }
+
+        function renderInterviewStatsRibbon() {
+            const history = JSON.parse(localStorage.getItem('smarthire_interview_history') || '[]');
+            const totalEl = document.getElementById('stat-interview-total');
+            const avgEl = document.getElementById('stat-interview-avg');
+            const domEl = document.getElementById('stat-interview-top-domain');
+
+            if (totalEl) totalEl.textContent = `${history.length} Sessions`;
+            if (avgEl && history.length > 0) {
+                const avg = Math.round(history.reduce((a, b) => a + (b.score || 80), 0) / history.length);
+                avgEl.textContent = `${avg}%`;
+            }
+            if (domEl && history.length > 0) {
+                domEl.textContent = history[0].role.toUpperCase();
+            }
+        }
+
+        function renderInterviewHistory() {
+            const history = JSON.parse(localStorage.getItem('smarthire_interview_history') || '[]');
+            const listEl = document.getElementById('interview-history-list');
+            if (!listEl) return;
+
+            if (history.length === 0) {
+                listEl.innerHTML = `<div style="text-align: center; color: var(--text-dim); padding: 40px;">No mock interview sessions recorded yet. Launch a session to start tracking your performance history!</div>`;
+                return;
+            }
+
+            listEl.innerHTML = history.map(h => `
+                <div style="display: flex; justify-content: space-between; align-items: center; padding: 14px 18px; background: var(--bg-body); border: 1px solid var(--border-card); border-radius: var(--radius-sm);">
+                    <div style="display: flex; align-items: center; gap: 12px;">
+                        <div style="width: 38px; height: 38px; border-radius: 50%; background: rgba(37,99,235,0.1); color: #2563eb; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 0.86rem;">
+                            ${h.score}%
+                        </div>
+                        <div>
+                            <strong style="font-size: 0.9rem; color: var(--text-main); display: block;">${(h.role || 'Full-Stack').toUpperCase()} (${(h.seniority || 'Mid').toUpperCase()})</strong>
+                            <small style="color: var(--text-muted);">${h.date} &bull; Verdict: ${h.verdict}</small>
+                        </div>
+                    </div>
+                    <span style="font-size: 0.8rem; font-weight: 700; color: ${h.score >= 75 ? '#10b981' : '#f59e0b'};">
+                        ${h.score >= 75 ? 'Qualified' : 'Needs Review'}
+                    </span>
+                </div>
+            `).join('');
+        }
+
+        function clearInterviewHistory() {
+            if (confirm('Clear all mock interview history?')) {
+                localStorage.removeItem('smarthire_interview_history');
+                renderInterviewStatsRibbon();
+                renderInterviewHistory();
+                showToast('Interview history cleared.', 'info');
+            }
+        }
+
+        // Question Bank logic
+        let currentQBankCategory = 'all';
+
+        function renderQuestionBankCards() {
+            const container = document.getElementById('qbank-cards-container');
+            if (!container) return;
+
+            let filtered = AI_INTERVIEW_QUESTIONS;
+            if (currentQBankCategory !== 'all') {
+                filtered = filtered.filter(q => q.role === currentQBankCategory);
+            }
+
+            const search = document.getElementById('qbank-search-input')?.value.toLowerCase().trim() || '';
+            if (search) {
+                filtered = filtered.filter(q => q.question.toLowerCase().includes(search) || (q.category && q.category.toLowerCase().includes(search)));
+            }
+
+            container.innerHTML = filtered.map(q => `
+                <div class="qbank-card" style="background: var(--bg-body); border: 1px solid var(--border-card); border-radius: var(--radius-sm); padding: 18px 20px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                        <span style="font-size: 0.74rem; font-weight: 800; text-transform: uppercase; color: #2563eb; background: rgba(37,99,235,0.08); padding: 3px 10px; border-radius: 12px;">
+                            ${q.category}
+                        </span>
+                        <span style="font-size: 0.72rem; color: var(--text-muted); font-weight: 700;">Level: ${q.seniority.toUpperCase()}</span>
+                    </div>
+                    <h4 style="font-size: 0.95rem; font-weight: 800; color: var(--text-main); margin-bottom: 8px; line-height: 1.4;">${q.question}</h4>
+                    <p style="font-size: 0.82rem; color: var(--text-muted); line-height: 1.5; margin-bottom: 12px;"><strong>💡 Model Solution:</strong> ${q.modelAnswer}</p>
+                    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
+                        <div style="display: flex; gap: 4px; flex-wrap: wrap;">
+                            ${(q.keywords || []).slice(0, 4).map(k => `<span style="font-size: 0.7rem; background: var(--bg-card); border: 1px solid var(--border-card); padding: 2px 8px; border-radius: 10px; color: var(--text-dim);">${k}</span>`).join('')}
+                        </div>
+                        <button onclick="practiceSpecificQuestion('${q.id}')" style="background: #2563eb; color: #fff; border: none; padding: 6px 14px; border-radius: 16px; font-size: 0.76rem; font-weight: 700; cursor: pointer;">
+                            Practice in Studio <i class="fa-solid fa-play" style="font-size: 0.65rem;"></i>
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function filterQuestionBankCategory(cat, btn) {
+            currentQBankCategory = cat;
+            document.querySelectorAll('#qbank-category-chips .filter-chip').forEach(b => b.classList.remove('active'));
+            if (btn) btn.classList.add('active');
+            renderQuestionBankCards();
+        }
+
+        function filterQuestionBankCards() {
+            renderQuestionBankCards();
+        }
+
+        function practiceSpecificQuestion(qId) {
+            const q = AI_INTERVIEW_QUESTIONS.find(item => item.id === qId);
+            if (q) {
+                activeInterviewState.role = q.role;
+                startAiInterviewSession([q]);
+            }
+        }
+
+        // =========================================================
+        // GENERAL UTILITIES & BOOTSTRAP
+        // =========================================================
 
         function showToast(message, type = 'info') {
             const container = document.getElementById('toast-container');

@@ -399,27 +399,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Modal Demo Auto-Fill Buttons
-    document.getElementById('modal-demo-seeker')?.addEventListener('click', () => {
-        switchModalTab('login');
-        document.getElementById('modal-login-email').value = 'seeker@example.com';
-        document.getElementById('modal-login-password').value = 'Password123!';
-        showToast('Loaded Job Seeker test credentials', 'info');
-    });
-
-    document.getElementById('modal-demo-recruiter')?.addEventListener('click', () => {
-        switchModalTab('login');
-        document.getElementById('modal-login-email').value = 'recruiter@company.com';
-        document.getElementById('modal-login-password').value = 'Password123!';
-        showToast('Loaded Employer test credentials', 'info');
-    });
-
-    document.getElementById('modal-demo-admin')?.addEventListener('click', () => {
-        switchModalTab('login');
-        document.getElementById('modal-login-email').value = 'admin@smartjob.com';
-        document.getElementById('modal-login-password').value = 'AdminPass123!';
-        showToast('Loaded Admin test credentials', 'info');
-    });
 
     // ---------------- AI RESUME SCANNER MODAL ----------------
     const resumeModal = document.getElementById('resume-modal');

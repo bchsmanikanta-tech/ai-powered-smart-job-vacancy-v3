@@ -546,7 +546,7 @@
             loadApplicationForm();
 
             // Submit Form
-            document.getElementById('form-job-application')?.addEventListener('submit', (e) => {
+            document.getElementById('form-job-application')?.addEventListener('submit', async (e) => {
                 e.preventDefault();
 
                 const fullName = document.getElementById('app-full-name').value.trim();
@@ -554,23 +554,24 @@
                 const phone = document.getElementById('app-phone').value.trim();
                 const city = document.getElementById('app-city').value.trim();
                 const qualification = document.getElementById('app-qualification').value;
-                const experience = document.getElementById('app-experience').value.trim();
+                const experience = document.getElementById('app-experience').value;
                 const coverLetter = document.getElementById('app-cover-letter').value.trim();
                 const jobId = document.getElementById('app-hidden-jobid').value;
                 const jobTitle = document.getElementById('app-job-title').value;
                 const company = document.getElementById('app-hidden-company').value;
 
-                const allApps = JSON.parse(localStorage.getItem('smarthire_applications') || '[]');
-
-                const newApp = {
+                const newAppData = {
                     id: 'app_' + Date.now(),
                     jobId: jobId,
                     jobTitle: jobTitle,
                     company: company,
+                    fullName: fullName,
                     applicantName: fullName,
+                    email: email,
                     applicantEmail: email,
                     phone: phone,
                     city: city,
+                    location: city,
                     qualification: qualification,
                     experience: experience,
                     coverLetter: coverLetter,
@@ -579,8 +580,13 @@
                     appliedAt: new Date().toISOString()
                 };
 
-                allApps.unshift(newApp);
-                localStorage.setItem('smarthire_applications', JSON.stringify(allApps));
+                if (window.db && typeof window.db.saveApplication === 'function') {
+                    await window.db.saveApplication(newAppData);
+                } else {
+                    const allApps = JSON.parse(localStorage.getItem('smarthire_applications') || '[]');
+                    allApps.unshift(newAppData);
+                    localStorage.setItem('smarthire_applications', JSON.stringify(allApps));
+                }
 
                 showToast(`🎉 Application successfully submitted for "${jobTitle}"!`, 'success');
 

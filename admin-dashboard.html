@@ -1175,12 +1175,15 @@
                     </div>
                 </div>
 
-                <div style="display: flex; gap: 10px;">
+                <div style="display: flex; gap: 10px; flex-wrap: wrap;">
                     <button type="button" class="btn-backup" onclick="testCloudConnection()">
                         <i class="fa-solid fa-vial"></i> Test Database Latency
                     </button>
                     <button type="button" class="btn-action-sm" onclick="showToast('Platform caches flushed successfully.', 'success')">
                         <i class="fa-solid fa-broom"></i> Clear Cache
+                    </button>
+                    <button type="button" class="btn-action-sm" style="background: rgba(239, 68, 68, 0.12); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.3);" onclick="adminResetFullDatabase()">
+                        <i class="fa-solid fa-trash-can"></i> Reset Full Database
                     </button>
                 </div>
             </div>
@@ -1539,18 +1542,37 @@
             showToast("📥 System JSON Backup successfully generated and downloaded!", "success");
         }
 
-        // ---------------- TEST LATENCY ----------------
-        async function testCloudConnection() {
-            const start = performance.now();
-            if (window.auth?.supabaseClient) {
-                try {
-                    await window.auth.supabaseClient.from('users').select('user_id').limit(1);
-                } catch(e) {}
+        // ---------------- RESET FULL DATABASE ----------------
+        async function adminResetFullDatabase() {
+            const confirmed = confirm("⚠️ Are you sure you want to RESET THE FULL DATABASE?\n\nThis will permanently delete all registered users, posted jobs, candidate applications, saved bookmarks, and messages. This action cannot be undone.");
+            if (!confirmed) return;
+
+            if (window.db && typeof window.db.clearAllData === 'function') {
+                window.db.clearAllData();
+            } else if (window.auth && typeof window.auth.resetDatabase === 'function') {
+                window.auth.resetDatabase();
             }
-            const duration = Math.round(performance.now() - start);
-            const latencyEl = document.getElementById('diag-latency-val');
-            if (latencyEl) latencyEl.textContent = `${duration} ms`;
-            showToast(`⚡ Supabase PostgreSQL cloud response latency: ${duration} ms`, 'success');
+
+            // If Supabase connected, attempt cloud tables reset
+            if (window.auth?.supabaseClient && window.auth.isSupabaseConnected) {
+                try {
+                    const client = window.auth.supabaseClient;
+                    await client.from('applications').delete().neq('application_id', '00000000-0000-0000-0000-000000000000');
+                    await client.from('saved_jobs').delete().neq('saved_id', '00000000-0000-0000-0000-000000000000');
+                    await client.from('notifications').delete().neq('notification_id', '00000000-0000-0000-0000-000000000000');
+                    await client.from('jobs').delete().neq('job_id', '00000000-0000-0000-0000-000000000000');
+                    await client.from('job_seekers').delete().neq('seeker_id', '00000000-0000-0000-0000-000000000000');
+                    await client.from('companies').delete().neq('company_id', '00000000-0000-0000-0000-000000000000');
+                    await client.from('users').delete().neq('user_id', '00000000-0000-0000-0000-000000000000');
+                } catch(e) {
+                    console.warn("Cloud tables purge notice:", e);
+                }
+            }
+
+            showToast("🧹 Full database has been reset completely!", "success");
+            setTimeout(() => {
+                window.location.reload();
+            }, 1000);
         }
 
         // ---------------- TOAST NOTIFICATION UTILITY ----------------

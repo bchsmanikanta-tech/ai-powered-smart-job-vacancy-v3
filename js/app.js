@@ -23,10 +23,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const meterFill = document.getElementById('meter-fill');
     const meterScore = document.getElementById('meter-score');
 
-    // Demo Buttons
-    const demoSeeker = document.getElementById('demo-seeker');
-    const demoRecruiter = document.getElementById('demo-recruiter');
-    const demoAdmin = document.getElementById('demo-admin');
+
 
     // Supabase Modal & Status Elements
     const supabaseModal = document.getElementById('supabase-modal');
@@ -350,33 +347,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // ---------------- QUICK DEMO AUTO-FILL ----------------
-    if (demoSeeker) {
-        demoSeeker.addEventListener('click', () => {
-            activateTab('login');
-            document.getElementById('login-email').value = 'seeker@example.com';
-            document.getElementById('login-password').value = 'Password123!';
-            showToast('Filled Job Seeker test credentials', 'info');
-        });
-    }
 
-    if (demoRecruiter) {
-        demoRecruiter.addEventListener('click', () => {
-            activateTab('login');
-            document.getElementById('login-email').value = 'recruiter@company.com';
-            document.getElementById('login-password').value = 'Password123!';
-            showToast('Filled Employer / Recruiter test credentials', 'info');
-        });
-    }
-
-    if (demoAdmin) {
-        demoAdmin.addEventListener('click', () => {
-            activateTab('login');
-            document.getElementById('login-email').value = 'admin@smartjob.com';
-            document.getElementById('login-password').value = 'AdminPass123!';
-            showToast('Filled Admin test credentials', 'info');
-        });
-    }
 
     // ---------------- SOCIAL LOGINS ----------------
     socialButtons.forEach(btn => {

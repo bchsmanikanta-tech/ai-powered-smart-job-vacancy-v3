@@ -586,90 +586,104 @@
             let allApps = JSON.parse(localStorage.getItem('smarthire_applications') || '[]');
             
             // Remove demo placeholder records
-            allApps = allApps.filter(a => a.id !== 'app_1' && a.id !== 'app_2' && a.id !== 'app_101' && a.id !== 'app_102' && a.applicantName !== 'Priya Patel' && a.applicantName !== 'Rahul Sharma');
-            localStorage.setItem('smarthire_applications', JSON.stringify(allApps));
+            const renderRows = (apps) => {
+                tbody.innerHTML = '';
+                if (!apps || apps.length === 0) {
+                    tbody.innerHTML = `
+                        <tr>
+                            <td colspan="10" style="text-align: center; color: var(--text-dim); padding: 50px 20px;">
+                                <i class="fa-solid fa-folder-open" style="font-size: 2.4rem; color: #cbd5e1; margin-bottom: 12px; display: block;"></i>
+                                <div style="font-size: 0.95rem; font-weight: 700; color: var(--text-muted);">No Candidate Applications Received Yet</div>
+                                <small style="color: var(--text-dim);">When registered job seekers apply to your posted vacancies, their applications will be listed here.</small>
+                            </td>
+                        </tr>
+                    `;
+                    return;
+                }
+                apps.forEach(a => {
+                    const tr = document.createElement('tr');
 
-            tbody.innerHTML = '';
+                    // Status tag
+                    let statusBadge = `<span class="status-pill status-pending"><i class="fa-solid fa-circle" style="font-size: 0.5rem;"></i> Pending</span>`;
+                    if (a.status === 'Shortlisted' || a.status === 'Accepted' || a.status === 'Hired') {
+                        statusBadge = `<span class="status-pill status-selected"><i class="fa-solid fa-circle" style="font-size: 0.5rem;"></i> Selected</span>`;
+                    } else if (a.status === 'Rejected') {
+                        statusBadge = `<span class="status-pill status-rejected"><i class="fa-solid fa-circle" style="font-size: 0.5rem;"></i> Rejected</span>`;
+                    }
 
-            if (allApps.length === 0) {
-                tbody.innerHTML = `
-                    <tr>
-                        <td colspan="10" style="text-align: center; color: var(--text-dim); padding: 50px 20px;">
-                            <i class="fa-solid fa-folder-open" style="font-size: 2.4rem; color: #cbd5e1; margin-bottom: 12px; display: block;"></i>
-                            <div style="font-size: 0.95rem; font-weight: 700; color: var(--text-muted);">No Candidate Applications Received Yet</div>
-                            <small style="color: var(--text-dim);">When registered job seekers apply to your posted vacancies, their applications will be listed here.</small>
+                    // Action buttons
+                    let acceptBtn = `<button class="btn-act-accept" onclick="updateAppStatus('${a.id}', 'Shortlisted')"><i class="fa-solid fa-circle-check"></i> Accept</button>`;
+                    if (a.status === 'Shortlisted' || a.status === 'Accepted') {
+                        acceptBtn = `<button class="btn-act-accepted"><i class="fa-solid fa-circle-check"></i> Accepted</button>`;
+                    }
+
+                    const letterText = (a.coverLetter || 'No cover letter provided.').replace(/'/g, "\\'");
+
+                    tr.innerHTML = `
+                        <td>
+                            <div class="candidate-name-cell">${a.applicantName || a.fullName || 'Candidate'}</div>
+                            <div class="ai-match-badge"><i class="fa-solid fa-wand-magic-sparkles"></i> ${a.matchScore || a.aiMatch || 85}% AI Match</div>
                         </td>
-                    </tr>
-                `;
-                return;
-            }
-            allApps.forEach(a => {
-                const tr = document.createElement('tr');
-
-                // Status tag
-                let statusBadge = `<span class="status-pill status-pending"><i class="fa-solid fa-circle" style="font-size: 0.5rem;"></i> Pending</span>`;
-                if (a.status === 'Shortlisted' || a.status === 'Accepted' || a.status === 'Hired') {
-                    statusBadge = `<span class="status-pill status-selected"><i class="fa-solid fa-circle" style="font-size: 0.5rem;"></i> Selected</span>`;
-                } else if (a.status === 'Rejected') {
-                    statusBadge = `<span class="status-pill status-rejected"><i class="fa-solid fa-circle" style="font-size: 0.5rem;"></i> Rejected</span>`;
-                }
-
-                // Action buttons
-                let acceptBtn = `<button class="btn-act-accept" onclick="updateAppStatus('${a.id}', 'Shortlisted')"><i class="fa-solid fa-circle-check"></i> Accept</button>`;
-                if (a.status === 'Shortlisted' || a.status === 'Accepted') {
-                    acceptBtn = `<button class="btn-act-accepted"><i class="fa-solid fa-circle-check"></i> Accepted</button>`;
-                }
-
-                const letterText = (a.coverLetter || 'No cover letter provided.').replace(/'/g, "\\'");
-
-                tr.innerHTML = `
-                    <td>
-                        <div class="candidate-name-cell">${a.applicantName || 'Candidate'}</div>
-                        <div class="ai-match-badge"><i class="fa-solid fa-wand-magic-sparkles"></i> ${a.matchScore || 85}% AI Match</div>
-                    </td>
-                    <td style="color: var(--text-muted);">${a.applicantEmail}</td>
-                    <td style="font-weight: 700; color: var(--text-main);">${a.jobTitle || 'Engineer'}</td>
-                    <td style="color: var(--text-muted);">${a.city || 'Hyderabad, Telangana'}</td>
-                    <td style="font-weight: 800; color: var(--text-main); font-size: 0.95rem;">${a.cgpa || '8.5'}</td>
-                    <td>
-                        <button class="btn-read-letter" onclick="openCoverLetter('${letterText}')" title="Read Cover Letter">
-                            <i class="fa-regular fa-eye"></i> Read Letter
-                        </button>
-                    </td>
-                    <td style="color: var(--text-dim); font-size: 0.8rem;">${a.resume || 'No resume'}</td>
-                    <td style="color: var(--text-dim); font-size: 0.8rem;">${a.certification || 'No cert'}</td>
-                    <td>${statusBadge}</td>
-                    <td>
-                        <div class="action-cell-stack">
-                            <div class="action-row-btns">
-                                ${acceptBtn}
-                                <button class="btn-act-reject" onclick="updateAppStatus('${a.id}', 'Rejected')"><i class="fa-solid fa-circle-xmark"></i> Reject</button>
+                        <td style="color: var(--text-muted);">${a.applicantEmail || a.email}</td>
+                        <td style="font-weight: 700; color: var(--text-main);">${a.jobTitle || 'Engineer'}</td>
+                        <td style="color: var(--text-muted);">${a.city || a.location || 'Visakhapatnam'}</td>
+                        <td style="font-weight: 800; color: var(--text-main); font-size: 0.95rem;">${a.cgpa || '8.5'}</td>
+                        <td>
+                            <button class="btn-read-letter" onclick="openCoverLetter('${letterText}')" title="Read Cover Letter">
+                                <i class="fa-regular fa-eye"></i> Read Letter
+                            </button>
+                        </td>
+                        <td style="color: var(--text-dim); font-size: 0.8rem;">${a.resumeName || a.resume || 'Resume.pdf'}</td>
+                        <td style="color: var(--text-dim); font-size: 0.8rem;">${a.qualification || 'B.Tech'}</td>
+                        <td>${statusBadge}</td>
+                        <td>
+                            <div class="action-cell-stack">
+                                <div class="action-row-btns">
+                                    ${acceptBtn}
+                                    <button class="btn-act-reject" onclick="updateAppStatus('${a.id}', 'Rejected')"><i class="fa-solid fa-circle-xmark"></i> Reject</button>
+                                </div>
+                                <button class="btn-act-chat" onclick="openCandidateChat('${(a.applicantName || a.fullName || 'Candidate').replace(/'/g, "\\'")}', '${(a.applicantEmail || a.email || 'candidate@gmail.com').replace(/'/g, "\\'")}')"><i class="fa-regular fa-comment-dots"></i> Chat</button>
                             </div>
-                            <button class="btn-act-chat" onclick="openCandidateChat('${(a.applicantName || 'Candidate').replace(/'/g, "\\'")}', '${(a.applicantEmail || 'candidate@gmail.com').replace(/'/g, "\\'")}')"><i class="fa-regular fa-comment-dots"></i> Chat</button>
-                        </div>
-                    </td>
-                `;
+                        </td>
+                    `;
 
-                tbody.appendChild(tr);
-            });
+                    tbody.appendChild(tr);
+                });
+            };
+
+            let allApps = window.db ? window.db.getApplications() : JSON.parse(localStorage.getItem('smarthire_applications') || '[]');
+            allApps = allApps.filter(a => a.id !== 'app_1' && a.id !== 'app_2' && a.id !== 'app_101' && a.id !== 'app_102' && a.applicantName !== 'Priya Patel' && a.applicantName !== 'Rahul Sharma');
+            renderRows(allApps);
+
+            if (window.db && typeof window.db.fetchApplicationsFromSupabase === 'function') {
+                window.db.fetchApplicationsFromSupabase().then(cloudApps => {
+                    if (cloudApps) {
+                        const filtered = cloudApps.filter(a => a.id !== 'app_1' && a.id !== 'app_2' && a.id !== 'app_101' && a.id !== 'app_102' && a.applicantName !== 'Priya Patel' && a.applicantName !== 'Rahul Sharma');
+                        renderRows(filtered);
+                    }
+                });
+            }
         }
 
-        function updateAppStatus(appId, newStatus) {
-            const allApps = JSON.parse(localStorage.getItem('smarthire_applications') || '[]');
-            const index = allApps.findIndex(a => a.id === appId);
-
-            if (index !== -1) {
-                allApps[index].status = newStatus;
-                localStorage.setItem('smarthire_applications', JSON.stringify(allApps));
-
-                if (newStatus === 'Shortlisted') {
-                    showToast(`Candidate ${allApps[index].applicantName} accepted & shortlisted!`, 'success');
-                } else {
-                    showToast(`Candidate application marked as rejected.`, 'info');
+        async function updateAppStatus(appId, newStatus) {
+            if (window.db && typeof window.db.updateApplicationStatus === 'function') {
+                await window.db.updateApplicationStatus(appId, newStatus);
+            } else {
+                const allApps = JSON.parse(localStorage.getItem('smarthire_applications') || '[]');
+                const index = allApps.findIndex(a => String(a.id) === String(appId));
+                if (index !== -1) {
+                    allApps[index].status = newStatus;
+                    localStorage.setItem('smarthire_applications', JSON.stringify(allApps));
                 }
-
-                loadApplicantsList();
             }
+
+            if (newStatus === 'Shortlisted') {
+                showToast(`Candidate application accepted & shortlisted!`, 'success');
+            } else {
+                showToast(`Candidate application marked as rejected.`, 'info');
+            }
+
+            loadJobApplicantsData();
         }
 
         let activeChatEmail = '';

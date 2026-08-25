@@ -637,10 +637,17 @@
                 dashLink.href = `seeker-dashboard.html?session_email=${encodeURIComponent(currentSeekerEmail)}&session_name=${encodeURIComponent(currentSeekerName)}&session_role=seeker`;
             }
 
-            // Load Jobs & Sync Saved from Supabase
+            // Load Jobs & Sync from Supabase
             if (window.db) {
                 allLiveJobs = window.db.getJobs() || [];
                 renderVacanciesList(allLiveJobs);
+
+                window.db.fetchJobsFromSupabase().then(jobs => {
+                    if (jobs && jobs.length > 0) {
+                        allLiveJobs = jobs;
+                        renderVacanciesList(allLiveJobs);
+                    }
+                });
 
                 if (typeof window.db.syncSavedJobsFromSupabase === 'function') {
                     window.db.syncSavedJobsFromSupabase(currentSeekerEmail).then(() => {
@@ -775,15 +782,14 @@
             window.location.href = `job-details.html?id=${encodeURIComponent(jobId)}&session_email=${encodeURIComponent(email)}&session_name=${encodeURIComponent(name)}&session_role=seeker`;
         }
 
-        function confirmApplyModal() {
-            const jobId = document.getElementById('modal-job-id').value;
-            const job = allLiveJobs.find(j => j.id === jobId);
+        async function applyForVacancyModal(jobId) {
+            const job = allLiveJobs.find(j => String(j.id) === String(jobId));
             if (!job) return;
 
-            const allApps = JSON.parse(localStorage.getItem('smarthire_applications') || '[]');
+            const allApps = window.db ? window.db.getApplications() : JSON.parse(localStorage.getItem('smarthire_applications') || '[]');
             
             // Check if already applied
-            const exists = allApps.some(a => a.jobId === jobId && a.applicantEmail?.toLowerCase() === currentSeekerEmail.toLowerCase());
+            const exists = allApps.some(a => String(a.jobId) === String(jobId) && (a.applicantEmail || a.email)?.toLowerCase() === currentSeekerEmail.toLowerCase());
             if (exists) {
                 showToast('You have already applied for this vacancy.', 'info');
                 closeModal('modal-job-details');
@@ -796,14 +802,20 @@
                 jobTitle: job.title,
                 company: job.company || 'TechCorp Solutions',
                 applicantName: currentSeekerName,
+                fullName: currentSeekerName,
                 applicantEmail: currentSeekerEmail,
+                email: currentSeekerEmail,
                 matchScore: Math.floor(Math.random() * 12) + 88,
                 status: 'Applied',
                 appliedAt: new Date().toISOString()
             };
 
-            allApps.unshift(newApp);
-            localStorage.setItem('smarthire_applications', JSON.stringify(allApps));
+            if (window.db && typeof window.db.saveApplication === 'function') {
+                await window.db.saveApplication(newApp);
+            } else {
+                allApps.unshift(newApp);
+                localStorage.setItem('smarthire_applications', JSON.stringify(allApps));
+            }
 
             showToast(`🎉 Application successfully submitted for "${job.title}"!`, 'success');
             closeModal('modal-job-details');

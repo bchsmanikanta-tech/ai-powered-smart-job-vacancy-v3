@@ -611,6 +611,9 @@
             }
 
             renderJobsGrid();
+            if (window.db && typeof window.db.fetchJobsFromSupabase === 'function') {
+                window.db.fetchJobsFromSupabase().then(() => renderJobsGrid());
+            }
         }
 
         function renderJobsGrid() {
@@ -827,14 +830,18 @@
             document.getElementById('modal-edit-job')?.classList.add('active');
         }
 
-        function deleteJobVacancy(jobId, jobTitle) {
+        async function deleteJobVacancy(jobId, jobTitle) {
             if (!confirm(`Are you sure you want to permanently delete vacancy "${jobTitle}"?`)) {
                 return;
             }
 
-            let allJobs = window.db?.getJobs() || [];
-            allJobs = allJobs.filter(j => j.id !== jobId);
-            localStorage.setItem('smarthire_jobs', JSON.stringify(allJobs));
+            if (window.db && typeof window.db.deleteJob === 'function') {
+                await window.db.deleteJob(jobId);
+            } else {
+                let allJobs = window.db?.getJobs() || [];
+                allJobs = allJobs.filter(j => String(j.id) !== String(jobId));
+                localStorage.setItem('smarthire_jobs', JSON.stringify(allJobs));
+            }
 
             showToast(`Vacancy "${jobTitle}" deleted.`, 'success');
             renderJobsGrid();
@@ -864,7 +871,7 @@
             loadManageJobs();
 
             // Handle Edit Job Form Submission
-            document.getElementById('form-edit-job')?.addEventListener('submit', (e) => {
+            document.getElementById('form-edit-job')?.addEventListener('submit', async (e) => {
                 e.preventDefault();
                 const id = document.getElementById('edit-job-id').value;
                 const title = document.getElementById('edit-job-title').value.trim();
@@ -872,19 +879,27 @@
                 const salary = document.getElementById('edit-job-salary').value.trim();
                 const description = document.getElementById('edit-job-desc').value.trim();
 
-                const allJobs = window.db?.getJobs() || [];
-                const idx = allJobs.findIndex(j => j.id === id);
-                if (idx >= 0) {
-                    allJobs[idx].title = title;
-                    allJobs[idx].location = location;
-                    allJobs[idx].salary = salary;
-                    allJobs[idx].description = description;
-                    localStorage.setItem('smarthire_jobs', JSON.stringify(allJobs));
+                const updatedFields = {
+                    title: title,
+                    location: location,
+                    salary: salary,
+                    description: description
+                };
 
-                    showToast(`Vacancy "${title}" updated successfully!`, 'success');
-                    closeModal('modal-edit-job');
-                    renderJobsGrid();
+                if (window.db && typeof window.db.updateJob === 'function') {
+                    await window.db.updateJob(id, updatedFields);
+                } else {
+                    const allJobs = window.db?.getJobs() || [];
+                    const idx = allJobs.findIndex(j => String(j.id) === String(id));
+                    if (idx >= 0) {
+                        allJobs[idx] = { ...allJobs[idx], ...updatedFields };
+                        localStorage.setItem('smarthire_jobs', JSON.stringify(allJobs));
+                    }
                 }
+
+                showToast(`Vacancy "${title}" updated successfully!`, 'success');
+                closeModal('modal-edit-job');
+                renderJobsGrid();
             });
 
             // Theme Toggle

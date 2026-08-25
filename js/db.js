@@ -1,5 +1,5 @@
 /**
- * SmartHire AI - Dual-Engine Database Persistence Service
+ * SmartHire AI - Dual-Engine Permanent Database Persistence Service
  * Supabase PostgreSQL Cloud Sync + LocalStorage Fail-Safe Fallback
  */
 
@@ -17,19 +17,26 @@
         if (/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(str)) {
             return str;
         }
-        let hash = 0;
+        let hash1 = 0, hash2 = 0;
         for (let i = 0; i < str.length; i++) {
-            hash = ((hash << 5) - hash) + str.charCodeAt(i);
-            hash |= 0;
+            hash1 = ((hash1 << 5) - hash1) + str.charCodeAt(i);
+            hash1 |= 0;
+            hash2 = ((hash2 << 7) - hash2) + str.charCodeAt(i);
+            hash2 |= 0;
         }
-        const hex = Math.abs(hash).toString(16).padStart(8, '0');
-        return `${hex.slice(0, 8)}-1111-4111-8111-${hex.padEnd(12, '0').slice(0, 12)}`;
+        const h1 = Math.abs(hash1).toString(16).padStart(8, '0').slice(0, 8);
+        const h2 = Math.abs(hash2).toString(16).padStart(8, '0').slice(0, 8);
+        const h3 = Math.abs(hash1 ^ hash2).toString(16).padStart(8, '0').slice(0, 8);
+        return `${h1}-a1b2-4c3d-8e4f-${(h2 + h3).slice(0, 12)}`;
     }
+    window.toUUID = toUUID;
 
     class DatabaseService {
         constructor() {
             this.supabase = null;
             this.initLocalStore();
+            // Automatically synchronize from cloud database on startup
+            setTimeout(() => this.syncAllFromSupabase(), 200);
         }
 
         getSupabase() {
@@ -49,9 +56,7 @@
         }
 
         initLocalStore() {
-            // Auto purge legacy mock/sample jobs
-            const existingJobs = localStorage.getItem(STORAGE_KEYS.JOBS);
-            if (!existingJobs || existingJobs.includes('job_python_vizag') || existingJobs.includes('job_react_remote')) {
+            if (!localStorage.getItem(STORAGE_KEYS.JOBS)) {
                 localStorage.setItem(STORAGE_KEYS.JOBS, JSON.stringify([]));
             }
             if (!localStorage.getItem(STORAGE_KEYS.APPLICATIONS)) {
@@ -66,22 +71,40 @@
             localStorage.setItem(STORAGE_KEYS.APPLICATIONS, JSON.stringify([]));
             localStorage.setItem(STORAGE_KEYS.JOBS, JSON.stringify([]));
             localStorage.setItem(STORAGE_KEYS.SAVED_JOBS, JSON.stringify([]));
+            localStorage.setItem('smartjob_saved_jobs', JSON.stringify([]));
+            localStorage.setItem('smartjob_users_db', JSON.stringify([]));
+            localStorage.setItem('smarthire_chat_db', JSON.stringify({}));
             localStorage.removeItem(STORAGE_KEYS.PROFILES);
-            console.log("🧹 All local jobs and application data cleared!");
+            localStorage.removeItem('smartjob_active_session');
+            localStorage.removeItem('smartjob_remember_user');
+            localStorage.removeItem('smartjob_active_user');
+            if (window.auth && typeof window.auth.resetDatabase === 'function') {
+                window.auth.resetDatabase();
+            }
+            console.log("🧹 All local database tables, users, jobs, and applications wiped clean!");
         }
 
         // ==========================================
         // 1. APPLICATIONS
         // ==========================================
         async saveApplication(appData) {
+            const rawId = appData.id || ('app_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5));
+            const applicantName = appData.fullName || appData.applicantName || 'Candidate';
+            const applicantEmail = appData.email || appData.applicantEmail || '';
+            const matchScore = Number(appData.matchScore || appData.aiMatch || 90);
+
             const newApp = {
-                id: 'app_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5),
+                id: rawId,
+                jobId: appData.jobId || rawId,
                 jobTitle: appData.jobTitle || 'Software Engineer',
                 company: appData.company || 'TechCorp Global',
-                fullName: appData.fullName,
-                email: appData.email,
+                fullName: applicantName,
+                applicantName: applicantName,
+                email: applicantEmail,
+                applicantEmail: applicantEmail,
                 phone: appData.phone || '',
-                location: appData.location || 'Visakhapatnam',
+                location: appData.location || appData.city || 'Visakhapatnam',
+                city: appData.city || appData.location || 'Visakhapatnam',
                 qualification: appData.qualification || 'B.Tech / Diploma',
                 college: appData.college || '',
                 passYear: appData.passYear || '2026',
@@ -91,26 +114,31 @@
                 expectedSalary: appData.expectedSalary || '₹30,000/mo',
                 resumeName: appData.resumeName || 'Resume.pdf',
                 coverLetter: appData.coverLetter || '',
-                aiMatch: appData.aiMatch || 92,
-                status: 'Applied',
-                appliedAt: new Date().toISOString()
+                aiMatch: matchScore,
+                matchScore: matchScore,
+                status: appData.status || 'Applied',
+                appliedAt: appData.appliedAt || new Date().toISOString()
             };
 
             // 1. Persist to Local Storage
             const apps = this.getApplications();
-            apps.unshift(newApp);
+            const existingIdx = apps.findIndex(a => a.id === newApp.id || (a.jobId === newApp.jobId && a.email?.toLowerCase() === newApp.email?.toLowerCase()));
+            if (existingIdx >= 0) {
+                apps[existingIdx] = newApp;
+            } else {
+                apps.unshift(newApp);
+            }
             localStorage.setItem(STORAGE_KEYS.APPLICATIONS, JSON.stringify(apps));
 
             // 2. Insert into Supabase Applications PostgreSQL Table
             const client = this.getSupabase();
             if (client) {
                 try {
-                    const rawJobId = appData.jobId || newApp.id;
                     const rawSeekerId = window.auth?.getCurrentUser()?.id || newApp.email;
 
                     const payload = {
                         application_id: toUUID(newApp.id),
-                        job_id: toUUID(rawJobId),
+                        job_id: toUUID(newApp.jobId),
                         seeker_id: toUUID(rawSeekerId),
                         job_title: newApp.jobTitle,
                         company: newApp.company,
@@ -127,18 +155,15 @@
                         expected_salary: newApp.expectedSalary,
                         resume_name: newApp.resumeName,
                         cover_letter: newApp.coverLetter,
-                        ai_match_score: newApp.aiMatch,
-                        status: 'Applied',
+                        ai_match_score: newApp.matchScore,
+                        status: newApp.status,
                         notes: `Applicant: ${newApp.fullName} (${newApp.email}) - Qualification: ${newApp.qualification}`
                     };
 
-                    const { data, error } = await client.from('applications').insert([payload]).select();
+                    const { data, error } = await client.from('applications').upsert([payload]).select();
 
                     if (error) {
-                        console.error("❌ Supabase Applications Insert Error:", error.message || error);
-                        if (typeof showToast === 'function') {
-                            showToast(`⚠️ Supabase Applications: ${error.message || 'Key unauthorized'}`, 'error');
-                        }
+                        console.error("❌ Supabase Applications Save Error:", error.message || error);
                     } else {
                         console.log("⚡ Application successfully stored in Supabase cloud table!", data);
                     }
@@ -163,11 +188,49 @@
             if (!client) return this.getApplications();
             try {
                 const { data, error } = await client.from('applications').select('*').order('applied_date', { ascending: false });
-                if (error) {
+                if (error || !data) {
                     console.warn("Supabase applications fetch error:", error);
                     return this.getApplications();
                 }
-                return data || [];
+
+                const cloudApps = data.map(a => ({
+                    id: a.application_id,
+                    jobId: a.job_id,
+                    jobTitle: a.job_title,
+                    company: a.company,
+                    applicantName: a.full_name,
+                    fullName: a.full_name,
+                    applicantEmail: a.email,
+                    email: a.email,
+                    phone: a.phone,
+                    location: a.location,
+                    city: a.location,
+                    qualification: a.qualification,
+                    college: a.college,
+                    passYear: a.pass_year,
+                    cgpa: a.cgpa,
+                    skills: a.skills,
+                    experience: a.experience,
+                    expectedSalary: a.expected_salary,
+                    resumeName: a.resume_name,
+                    coverLetter: a.cover_letter,
+                    matchScore: a.ai_match_score,
+                    aiMatch: a.ai_match_score,
+                    status: a.status || 'Applied',
+                    appliedAt: a.applied_date
+                }));
+
+                // Merge with local applications
+                const localApps = this.getApplications();
+                const mergedMap = new Map();
+                cloudApps.forEach(a => mergedMap.set(String(a.id), a));
+                localApps.forEach(a => {
+                    if (!mergedMap.has(String(a.id))) mergedMap.set(String(a.id), a);
+                });
+
+                const mergedList = Array.from(mergedMap.values());
+                localStorage.setItem(STORAGE_KEYS.APPLICATIONS, JSON.stringify(mergedList));
+                return mergedList;
             } catch (e) {
                 return this.getApplications();
             }
@@ -175,7 +238,7 @@
 
         async updateApplicationStatus(appId, newStatus) {
             const apps = this.getApplications();
-            const idx = apps.findIndex(a => a.id === appId);
+            const idx = apps.findIndex(a => String(a.id) === String(appId));
             if (idx >= 0) {
                 apps[idx].status = newStatus;
                 localStorage.setItem(STORAGE_KEYS.APPLICATIONS, JSON.stringify(apps));
@@ -197,29 +260,37 @@
         // 2. JOB VACANCIES (EMPLOYER POSTINGS)
         // ==========================================
         async saveJob(jobData) {
+            const rawId = jobData.id || ('job_' + Date.now());
             const newJob = {
-                id: 'job_' + Date.now(),
+                id: rawId,
                 title: jobData.title,
                 company: jobData.company || 'TechCorp Global',
                 location: jobData.location || 'Visakhapatnam',
                 salary: jobData.salary || '₹30,000 - ₹50,000/mo',
-                skills: Array.isArray(jobData.skills) ? jobData.skills : (jobData.skills ? jobData.skills.split(',').map(s => s.trim()) : ['General']),
+                type: jobData.type || jobData.workMode || 'Full-time',
+                workMode: jobData.workMode || jobData.type || 'Hybrid',
+                experience: jobData.experience || 'Fresher (Entry Level)',
+                skills: Array.isArray(jobData.skills) ? jobData.skills : (jobData.skills ? String(jobData.skills).split(',').map(s => s.trim()).filter(Boolean) : ['General']),
                 description: jobData.description || 'Job description',
-                workMode: jobData.workMode || 'Hybrid',
-                status: 'active',
-                createdAt: new Date().toISOString()
+                status: jobData.status || 'active',
+                createdAt: jobData.createdAt || new Date().toISOString()
             };
 
             // 1. Save locally
             const jobs = this.getJobs();
-            jobs.unshift(newJob);
+            const existingIdx = jobs.findIndex(j => String(j.id) === String(newJob.id));
+            if (existingIdx >= 0) {
+                jobs[existingIdx] = newJob;
+            } else {
+                jobs.unshift(newJob);
+            }
             localStorage.setItem(STORAGE_KEYS.JOBS, JSON.stringify(jobs));
 
-            // 2. Insert into Supabase Jobs PostgreSQL Table
+            // 2. Insert/Upsert into Supabase Jobs PostgreSQL Table
             const client = this.getSupabase();
             if (client) {
                 try {
-                    const { data, error } = await client.from('jobs').insert([{
+                    const payload = {
                         job_id: toUUID(newJob.id),
                         company_name: newJob.company,
                         title: newJob.title,
@@ -229,7 +300,9 @@
                         work_mode: newJob.workMode,
                         skills: newJob.skills,
                         status: 'active'
-                    }]).select();
+                    };
+
+                    const { data, error } = await client.from('jobs').upsert([payload]).select();
 
                     if (error) {
                         console.error("❌ Supabase Jobs Insert Error:", error.message || error);
@@ -242,6 +315,53 @@
             }
 
             return newJob;
+        }
+
+        async updateJob(jobId, updatedFields) {
+            const jobs = this.getJobs();
+            const idx = jobs.findIndex(j => String(j.id) === String(jobId));
+            if (idx >= 0) {
+                jobs[idx] = { ...jobs[idx], ...updatedFields };
+                localStorage.setItem(STORAGE_KEYS.JOBS, JSON.stringify(jobs));
+            }
+
+            const client = this.getSupabase();
+            if (client) {
+                try {
+                    const updatePayload = {};
+                    if (updatedFields.title) updatePayload.title = updatedFields.title;
+                    if (updatedFields.company) updatePayload.company_name = updatedFields.company;
+                    if (updatedFields.location) updatePayload.location = updatedFields.location;
+                    if (updatedFields.salary) updatePayload.salary = updatedFields.salary;
+                    if (updatedFields.description) updatePayload.description = updatedFields.description;
+                    if (updatedFields.workMode) updatePayload.work_mode = updatedFields.workMode;
+                    if (updatedFields.skills) updatePayload.skills = Array.isArray(updatedFields.skills) ? updatedFields.skills : updatedFields.skills.split(',').map(s => s.trim());
+
+                    await client.from('jobs').update(updatePayload).eq('job_id', toUUID(jobId));
+                } catch (e) {
+                    console.warn("Supabase updateJob notice:", e);
+                }
+            }
+            return true;
+        }
+
+        async deleteJob(jobId) {
+            let jobs = this.getJobs();
+            jobs = jobs.filter(j => String(j.id) !== String(jobId));
+            localStorage.setItem(STORAGE_KEYS.JOBS, JSON.stringify(jobs));
+
+            const client = this.getSupabase();
+            if (client) {
+                try {
+                    const uuid = toUUID(jobId);
+                    await client.from('jobs').delete().eq('job_id', uuid);
+                    await client.from('applications').delete().eq('job_id', uuid);
+                    console.log("⚡ Job deleted from Supabase cloud table!");
+                } catch (e) {
+                    console.warn("Supabase deleteJob notice:", e);
+                }
+            }
+            return true;
         }
 
         getJobs() {
@@ -261,9 +381,9 @@
                     console.warn("Supabase jobs fetch notice:", error);
                     return this.getJobs();
                 }
-                // Map Supabase fields to app schema
+
                 const cloudJobs = data.map(j => ({
-                    id: j.job_id || 'job_' + Date.now(),
+                    id: j.job_id,
                     title: j.title,
                     company: j.company_name || 'TechCorp Global',
                     location: j.location,
@@ -271,10 +391,22 @@
                     skills: j.skills || [],
                     description: j.description,
                     workMode: j.work_mode || 'On-site',
+                    type: j.work_mode || 'Full-time',
                     status: j.status || 'active',
                     createdAt: j.created_at
                 }));
-                return cloudJobs;
+
+                // Merge cloud and local jobs
+                const localJobs = this.getJobs();
+                const mergedMap = new Map();
+                cloudJobs.forEach(j => mergedMap.set(String(j.id), j));
+                localJobs.forEach(j => {
+                    if (!mergedMap.has(String(j.id))) mergedMap.set(String(j.id), j);
+                });
+
+                const mergedList = Array.from(mergedMap.values());
+                localStorage.setItem(STORAGE_KEYS.JOBS, JSON.stringify(mergedList));
+                return mergedList;
             } catch (e) {
                 return this.getJobs();
             }
@@ -295,7 +427,7 @@
                     const { data, error } = await client.from('job_seekers').upsert({
                         user_id: seekerUserId,
                         education: profileData.education || '',
-                        skills: Array.isArray(profileData.skills) ? profileData.skills : (profileData.skills ? profileData.skills.split(',').map(s => s.trim()) : []),
+                        skills: Array.isArray(profileData.skills) ? profileData.skills : (profileData.skills ? String(profileData.skills).split(',').map(s => s.trim()) : []),
                         experience_years: profileData.experience || 'Fresher',
                         location: profileData.location || '',
                         expected_salary: profileData.expectedSalary || '',
@@ -412,9 +544,28 @@
             }
             return this.getSavedJobs();
         }
+
+        // ==========================================
+        // 5. UNIFIED ALL-TABLE CLOUD SYNC
+        // ==========================================
+        async syncAllFromSupabase() {
+            try {
+                await Promise.allSettled([
+                    this.fetchJobsFromSupabase(),
+                    this.fetchApplicationsFromSupabase(),
+                    window.auth?.syncUsersFromSupabase?.()
+                ]);
+                console.log("🔄 Dual-Engine Database fully synced with Supabase PostgreSQL cloud!");
+            } catch (err) {
+                console.warn("Database full sync exception:", err);
+            }
+        }
     }
 
     window.db = new DatabaseService();
+    window.resetFullDatabase = function() {
+        if (window.db) window.db.clearAllData();
+        if (window.auth) window.auth.resetDatabase();
+    };
     console.log("📦 SmartHire Dual-Engine Database Service Ready!");
 })();
-
