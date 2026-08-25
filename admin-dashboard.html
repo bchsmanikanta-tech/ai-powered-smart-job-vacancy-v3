@@ -735,9 +735,6 @@
                     <li class="nav-item active" data-tab="tab-dashboard" onclick="switchTab('tab-dashboard')">
                         <button class="nav-btn"><i class="fa-solid fa-gauge-high"></i> <span>Dashboard</span></button>
                     </li>
-                    <li class="nav-item" data-tab="tab-analytics" onclick="switchTab('tab-analytics')">
-                        <button class="nav-btn"><i class="fa-solid fa-chart-line"></i> <span>AI Market Analytics</span></button>
-                    </li>
                 </ul>
 
                 <div class="menu-category" style="margin-top: 10px;">Management</div>
@@ -1529,116 +1526,7 @@
             </div>
         </div>
 
-        <!-- ---------------- VIEW 11: AI MARKET ANALYTICS & INTELLIGENCE ---------------- -->
-        <div class="tab-view" id="tab-analytics">
-            <div class="top-action-bar">
-                <div>
-                    <h1 class="page-title">AI Market Analytics &amp; Salary Intelligence</h1>
-                    <p class="page-subtitle">Real-time talent supply-demand metrics, industry salary heatmaps, and hiring velocity</p>
-                </div>
-                <button class="btn-backup" onclick="renderMarketAnalytics()" style="background: rgba(168,85,247,0.12); border-color: #a855f7; color: #a855f7;">
-                    <i class="fa-solid fa-arrows-rotate"></i> Refresh Intelligence Engine
-                </button>
-            </div>
 
-            <!-- 4 Top Analytics Cards -->
-            <div class="stats-grid">
-                <div class="stat-card-solid purple">
-                    <div>
-                        <div class="stat-card-icon"><i class="fa-solid fa-arrow-trend-up"></i></div>
-                        <div class="stat-card-value">+34.8%</div>
-                    </div>
-                    <div class="stat-card-label">Hiring Velocity (MoM)</div>
-                </div>
-                <div class="stat-card-solid green">
-                    <div>
-                        <div class="stat-card-icon"><i class="fa-solid fa-money-bill-wave"></i></div>
-                        <div class="stat-card-value">$94,200</div>
-                    </div>
-                    <div class="stat-card-label">Avg. Industry Tech Salary</div>
-                </div>
-                <div class="stat-card-solid blue">
-                    <div>
-                        <div class="stat-card-icon"><i class="fa-solid fa-bullseye"></i></div>
-                        <div class="stat-card-value">28.6%</div>
-                    </div>
-                    <div class="stat-card-label">Application-to-Interview Rate</div>
-                </div>
-                <div class="stat-card-solid violet">
-                    <div>
-                        <div class="stat-card-icon"><i class="fa-solid fa-microchip"></i></div>
-                        <div class="stat-card-value">96.4</div>
-                    </div>
-                    <div class="stat-card-label">AI Talent Demand Index</div>
-                </div>
-            </div>
-
-            <div class="grid-middle" style="margin-bottom: 24px;">
-                <!-- Salary Distribution Heatmap -->
-                <div class="white-card">
-                    <div class="card-header-flex">
-                        <div class="card-heading"><i class="fa-solid fa-chart-simple" style="color: #a855f7;"></i> Market Salary Heatmap by Specialization</div>
-                        <span class="card-tag">Live Compensation Bands</span>
-                    </div>
-                    <div style="display: flex; flex-direction: column; gap: 14px; margin-top: 10px;" id="salary-heatmap-container">
-                        <div>
-                            <div style="display: flex; justify-content: space-between; font-size: 0.84rem; font-weight: 700; color: var(--text-main); margin-bottom: 4px;">
-                                <span><i class="fa-solid fa-brain" style="color: #a855f7;"></i> AI / Machine Learning &amp; LLMs</span>
-                                <span>$115k - $185k/yr</span>
-                            </div>
-                            <div class="diag-bar-bg" style="height: 10px;"><div class="diag-bar-fill" style="width: 95%; background: linear-gradient(90deg, #a855f7, #ec4899);"></div></div>
-                        </div>
-                        <div>
-                            <div style="display: flex; justify-content: space-between; font-size: 0.84rem; font-weight: 700; color: var(--text-main); margin-bottom: 4px;">
-                                <span><i class="fa-solid fa-cloud" style="color: #3b82f6;"></i> Cloud Architecture &amp; DevOps</span>
-                                <span>$95k - $160k/yr</span>
-                            </div>
-                            <div class="diag-bar-bg" style="height: 10px;"><div class="diag-bar-fill" style="width: 82%; background: linear-gradient(90deg, #3b82f6, #06b6d4);"></div></div>
-                        </div>
-                        <div>
-                            <div style="display: flex; justify-content: space-between; font-size: 0.84rem; font-weight: 700; color: var(--text-main); margin-bottom: 4px;">
-                                <span><i class="fa-solid fa-shield-virus" style="color: #ef4444;"></i> Cybersecurity &amp; DevSecOps</span>
-                                <span>$105k - $170k/yr</span>
-                            </div>
-                            <div class="diag-bar-bg" style="height: 10px;"><div class="diag-bar-fill" style="width: 88%; background: linear-gradient(90deg, #ef4444, #f59e0b);"></div></div>
-                        </div>
-                        <div>
-                            <div style="display: flex; justify-content: space-between; font-size: 0.84rem; font-weight: 700; color: var(--text-main); margin-bottom: 4px;">
-                                <span><i class="fa-solid fa-code" style="color: #10b981;"></i> Full-Stack &amp; Modern Web (React/Node)</span>
-                                <span>$80k - $140k/yr</span>
-                            </div>
-                            <div class="diag-bar-bg" style="height: 10px;"><div class="diag-bar-fill" style="width: 74%; background: linear-gradient(90deg, #10b981, #14b8a6);"></div></div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Trending In-Demand Skills Matrix -->
-                <div class="white-card">
-                    <div class="card-header-flex">
-                        <div class="card-heading"><i class="fa-solid fa-fire" style="color: #f59e0b;"></i> Top In-Demand Tech Stack Skills</div>
-                        <span class="card-tag">Neural Keyword Weights</span>
-                    </div>
-                    <div style="display: flex; flex-direction: column; gap: 12px; margin-top: 10px;">
-                        <div style="display: flex; align-items: center; justify-content: space-between;">
-                            <span style="font-weight: 700; font-size: 0.84rem; color: var(--text-main);">React.js &amp; Modern Frontend</span>
-                            <span class="status-badge badge-active">94% Demand</span>
-                        </div>
-                        <div style="display: flex; align-items: center; justify-content: space-between;">
-                            <span style="font-weight: 700; font-size: 0.84rem; color: var(--text-main);">Supabase &amp; PostgreSQL Cloud</span>
-                            <span class="status-badge badge-active" style="background: rgba(37,99,235,0.15); color: #3b82f6;">89% Demand</span>
-                        </div>
-                        <div style="display: flex; align-items: center; justify-content: space-between;">
-                            <span style="font-weight: 700; font-size: 0.84rem; color: var(--text-main);">Python &amp; AI Algorithms</span>
-                            <span class="status-badge badge-active" style="background: rgba(168,85,247,0.15); color: #a855f7;">87% Demand</span>
-                        </div>
-                        <div style="display: flex; align-items: center; justify-content: space-between;">
-                            <span style="font-weight: 700; font-size: 0.84rem; color: var(--text-main);">Docker &amp; CI/CD Pipelines</span>
-                            <span class="status-badge badge-active" style="background: rgba(245,158,11,0.15); color: #f59e0b;">78% Demand</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
 
         <!-- ---------------- VIEW 12: COMPANY VERIFICATION QUEUE (KYC) ---------------- -->
         <div class="tab-view" id="tab-companies">
@@ -1778,14 +1666,8 @@
             if (tabId === 'tab-jobs') renderAdminJobListings();
             if (tabId === 'tab-cloud') pingSupabaseHealth();
             if (tabId === 'tab-fraud') runFraudScanNow();
-            if (tabId === 'tab-analytics') renderMarketAnalytics();
             if (tabId === 'tab-companies') renderCompanyVerificationQueue();
             if (tabId === 'tab-audit') renderSecurityAuditLogs();
-        }
-
-        // ---------------- 1. AI MARKET ANALYTICS ENGINE ----------------
-        function renderMarketAnalytics() {
-            showToast('AI Market Intelligence Engine updated with latest telemetry.', 'info');
         }
 
         // ---------------- 2. COMPANY VERIFICATION QUEUE ----------------
