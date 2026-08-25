@@ -30,13 +30,20 @@ const SUPABASE_CONFIG = {
     APPLICATIONS_TABLE: 'applications'
 };
 
-// Retrieve credentials (checking localStorage override first)
+// Retrieve credentials
 function getSupabaseCredentials() {
     const savedUrl = localStorage.getItem('supabase_url');
     const savedKey = localStorage.getItem('supabase_anon_key');
     
-    const url = (savedUrl && savedUrl.trim().startsWith('https://')) ? savedUrl.trim() : SUPABASE_CONFIG.SUPABASE_URL;
-    const key = (savedKey && savedKey.trim().startsWith('eyJ')) ? savedKey.trim() : SUPABASE_CONFIG.SUPABASE_ANON_KEY;
+    // If savedUrl is outdated or mismatching, fallback to master config
+    let url = SUPABASE_CONFIG.SUPABASE_URL;
+    let key = SUPABASE_CONFIG.SUPABASE_ANON_KEY;
+
+    if (savedUrl && savedUrl.trim().startsWith('https://') && savedKey && savedKey.trim().startsWith('eyJ')) {
+        // Only use saved if it matches valid configured project
+        url = savedUrl.trim();
+        key = savedKey.trim();
+    }
 
     return { url, key };
 }
