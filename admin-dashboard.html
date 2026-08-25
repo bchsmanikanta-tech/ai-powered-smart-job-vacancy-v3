@@ -1909,9 +1909,9 @@
                 timestamp: new Date().toISOString(),
                 platform: 'SmartHire AI / JobFinder Unified Admin',
                 environment: 'production',
-                users: JSON.parse(localStorage.getItem('smartjob_users_db') || '[]'),
-                jobs: JSON.parse(localStorage.getItem('smarthire_jobs') || '[]'),
-                applications: JSON.parse(localStorage.getItem('smarthire_applications') || '[]')
+                users: cachedUsersList && cachedUsersList.length > 0 ? cachedUsersList : JSON.parse(localStorage.getItem('smartjob_users_db') || '[]'),
+                jobs: (window.db && typeof window.db.getJobs === 'function') ? window.db.getJobs() : JSON.parse(localStorage.getItem('smarthire_jobs') || '[]'),
+                applications: (window.db && typeof window.db.getApplications === 'function') ? window.db.getApplications() : JSON.parse(localStorage.getItem('smarthire_applications') || '[]')
             };
 
             const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(backupData, null, 2));

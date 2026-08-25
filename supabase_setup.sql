@@ -142,18 +142,77 @@ CREATE POLICY "Allow public operations on applications" ON public.applications F
 CREATE POLICY "Allow public operations on saved_jobs" ON public.saved_jobs FOR ALL USING (true) WITH CHECK (true);
 CREATE POLICY "Allow public operations on notifications" ON public.notifications FOR ALL USING (true) WITH CHECK (true);
 
--- Profiles View Alias
-DROP VIEW IF EXISTS public.profiles CASCADE;
+-- 8. Profiles Table (Linked directly to auth.users)
+CREATE TABLE IF NOT EXISTS public.profiles (
+    id UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
+    full_name VARCHAR(255),
+    email VARCHAR(255),
+    phone VARCHAR(50),
+    role VARCHAR(50) DEFAULT 'job_seeker', -- 'job_seeker', 'company', 'admin'
+    location VARCHAR(255),
+    profile_image TEXT,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
+);
 
-CREATE OR REPLACE VIEW public.profiles AS 
-SELECT 
-    user_id AS id, 
-    email, 
-    name AS full_name, 
-    role, 
-    status, 
-    created_at 
-FROM public.users;
+ALTER TABLE public.profiles ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "Public profiles are viewable by everyone" ON public.profiles;
+DROP POLICY IF EXISTS "Users can insert their own profile" ON public.profiles;
+DROP POLICY IF EXISTS "Users can update their own profile" ON public.profiles;
+
+CREATE POLICY "Public profiles are viewable by everyone" ON public.profiles FOR SELECT USING (true);
+CREATE POLICY "Users can insert their own profile" ON public.profiles FOR INSERT WITH CHECK (true);
+CREATE POLICY "Users can update their own profile" ON public.profiles FOR UPDATE USING (true);
+
+-- Automatic Auth Trigger: auth.users -> public.profiles
+CREATE OR REPLACE FUNCTION public.handle_new_user()
+RETURNS trigger AS $$
+BEGIN
+    INSERT INTO public.profiles (id, full_name, email, phone, role, location, created_at, updated_at)
+    VALUES (
+        NEW.id,
+        COALESCE(NEW.raw_user_meta_data->>'full_name', split_part(NEW.email, '@', 1)),
+        NEW.email,
+        COALESCE(NEW.raw_user_meta_data->>'phone', ''),
+        COALESCE(NEW.raw_user_meta_data->>'role', 'job_seeker'),
+        COALESCE(NEW.raw_user_meta_data->>'location', ''),
+        NOW(),
+        NOW()
+    )
+    ON CONFLICT (id) DO UPDATE
+    SET 
+        full_name = EXCLUDED.full_name,
+        email = EXCLUDED.email,
+        updated_at = NOW();
+
+    INSERT INTO public.users (user_id, name, email, role, status, created_at, updated_at)
+    VALUES (
+        NEW.id,
+        COALESCE(NEW.raw_user_meta_data->>'full_name', split_part(NEW.email, '@', 1)),
+        NEW.email,
+        CASE 
+            WHEN (NEW.raw_user_meta_data->>'role') = 'company' THEN 'employer'
+            WHEN (NEW.raw_user_meta_data->>'role') = 'admin' THEN 'admin'
+            ELSE 'seeker'
+        END,
+        'active',
+        NOW(),
+        NOW()
+    )
+    ON CONFLICT (email) DO UPDATE
+    SET 
+        name = EXCLUDED.name,
+        role = EXCLUDED.role,
+        updated_at = NOW();
+
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+DROP TRIGGER IF EXISTS on_auth_user_created ON auth.users;
+CREATE TRIGGER on_auth_user_created
+  AFTER INSERT ON auth.users
+  FOR EACH ROW EXECUTE FUNCTION public.handle_new_user();
 
 
 

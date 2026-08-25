@@ -349,25 +349,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
 
-    // ---------------- SOCIAL LOGINS ----------------
+    // ---------------- SOCIAL LOGINS VIA SUPABASE ----------------
     socialButtons.forEach(btn => {
-        btn.addEventListener('click', () => {
-            const provider = btn.textContent.trim();
-            showToast(`Connecting with ${provider}... (Demo Authorization)`, 'info');
-            setTimeout(() => {
-                // Mock social login user
-                const socialUser = {
-                    id: 'usr_social_' + Date.now(),
-                    fullName: `${provider} User`,
-                    email: `user@${provider.toLowerCase()}.com`,
-                    role: 'seeker'
-                };
-                window.auth.createSession(socialUser, true);
-                showToast(`Successfully authorized via ${provider}!`, 'success');
-                setTimeout(() => {
-                    window.location.href = 'dashboard.html';
-                }, 800);
-            }, 600);
+        btn.addEventListener('click', async () => {
+            const providerText = btn.textContent.trim().toLowerCase();
+            const provider = providerText.includes('google') ? 'google' : (providerText.includes('github') ? 'github' : (providerText.includes('linkedin') ? 'linkedin' : 'google'));
+            showToast(`Redirecting to ${provider} sign-in via Supabase...`, 'info');
+            try {
+                await window.auth.loginWithOAuth(provider);
+            } catch (err) {
+                showToast(err.message || `OAuth sign-in with ${provider} is not configured on Supabase project.`, 'error');
+            }
         });
     });
 
