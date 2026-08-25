@@ -1470,10 +1470,19 @@
         let cachedApplicationsList = [];
         let currentApplicantFilter = 'all';
 
+        function openViewApplicantsModal(filterJobId = null) {
+            loadApplicantsModalData(filterJobId);
+            document.getElementById('modal-view-applicants')?.classList.add('active');
+        }
+
         function viewAllApplicants(filterJobId = null) {
+            openViewApplicantsModal(filterJobId);
+        }
+
+        function openFullApplicantsPage() {
             const q = getQueryParams();
             const user = window.auth?.getCurrentUser();
-            const email = q.email || user?.email || 'company@smartjob.com';
+            const email = q.email || user?.email || 'mrmaheshbabu222@gmail.com';
             const name = q.name || currentEmployerName;
             window.location.href = `job-applicants.html?session_email=${encodeURIComponent(email)}&session_name=${encodeURIComponent(name)}&session_role=company`;
         }
@@ -1486,9 +1495,8 @@
                 apps = JSON.parse(localStorage.getItem('smarthire_applications') || '[]');
             }
 
-            // Remove any mock demo applicants
+            // Filter real applications
             apps = apps.filter(a => a.id !== 'app_101' && a.id !== 'app_102' && a.id !== 'app_103');
-            localStorage.setItem('smarthire_applications', JSON.stringify(apps));
 
             if (filterJobId) {
                 apps = apps.filter(a => a.jobId === filterJobId || !a.jobId);
@@ -1497,6 +1505,16 @@
             cachedApplicationsList = apps;
             updateApplicantFilterCounts();
             renderApplicantsTable();
+
+            if (window.db && typeof window.db.fetchApplicationsFromSupabase === 'function') {
+                window.db.fetchApplicationsFromSupabase().then(cloudApps => {
+                    if (cloudApps) {
+                        cachedApplicationsList = cloudApps.filter(a => a.id !== 'app_101' && a.id !== 'app_102' && a.id !== 'app_103');
+                        updateApplicantFilterCounts();
+                        renderApplicantsTable();
+                    }
+                });
+            }
         }
 
         function updateApplicantFilterCounts() {
@@ -1554,7 +1572,7 @@
         }
 
         function renderApplicantsTable() {
-            const tbody = document.getElementById('applicants-modal-tbody');
+            const tbody = document.getElementById('modal-applicants-tbody');
             if (!tbody) return;
 
             let filtered = cachedApplicationsList;
@@ -1591,22 +1609,22 @@
                     statusBadge = `<span style="background: rgba(239,68,68,0.12); color: #ef4444; padding: 3px 8px; border-radius: 4px; font-size: 0.74rem; font-weight: 700;">Rejected</span>`;
                 }
 
-                const matchColor = (app.matchScore || 85) >= 80 ? '#10b981' : '#f59e0b';
-                const dateStr = app.appliedAt ? new Date(app.appliedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : 'Recent';
+                const matchColor = (app.matchScore || app.aiMatch || 85) >= 80 ? '#10b981' : '#f59e0b';
+                const dateStr = app.appliedAt || app.applied_date ? new Date(app.appliedAt || app.applied_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : 'Recent';
 
                 tr.innerHTML = `
                     <td>
-                        <strong>${app.applicantName || 'Candidate'}</strong>
-                        <div style="font-size: 0.74rem; color: var(--text-dim);">${app.applicantEmail || 'candidate@example.com'}</div>
+                        <strong>${app.applicantName || app.fullName || 'Candidate'}</strong>
+                        <div style="font-size: 0.74rem; color: var(--text-dim);">${app.applicantEmail || app.email || 'candidate@example.com'}</div>
                     </td>
                     <td><strong style="color: var(--text-main);">${app.jobTitle || 'Senior Developer'}</strong></td>
-                    <td><span style="font-weight: 800; color: ${matchColor};"><i class="fa-solid fa-sparkles"></i> ${app.matchScore || 85}%</span></td>
+                    <td><span style="font-weight: 800; color: ${matchColor};"><i class="fa-solid fa-sparkles"></i> ${app.matchScore || app.aiMatch || 85}%</span></td>
+                    <td>${dateStr}</td>
                     <td>${statusBadge}</td>
-                    <td style="font-size: 0.8rem; color: var(--text-muted);">${dateStr}</td>
-                    <td>
-                        <div style="display: flex; gap: 6px;">
-                            ${!isShortlisted ? `<button class="btn-card-action btn-action-applicants" style="padding: 4px 10px; font-size: 0.72rem;" onclick="setApplicantStatus('${app.id}', 'Shortlisted')"><i class="fa-solid fa-star"></i> Shortlist</button>` : ''}
-                            ${!isRejected ? `<button class="btn-card-action btn-action-delete" style="padding: 4px 10px; font-size: 0.72rem;" onclick="setApplicantStatus('${app.id}', 'Rejected')"><i class="fa-solid fa-ban"></i> Reject</button>` : ''}
+                    <td style="text-align: right;">
+                        <div style="display: inline-flex; gap: 6px;">
+                            ${!isShortlisted ? `<button class="btn-card-action btn-action-applicants" style="padding: 5px 10px; font-size: 0.72rem;" onclick="setApplicantStatus('${app.id}', 'Shortlisted')"><i class="fa-solid fa-star"></i> Shortlist</button>` : ''}
+                            ${!isRejected ? `<button class="btn-card-action btn-action-delete" style="padding: 5px 10px; font-size: 0.72rem;" onclick="setApplicantStatus('${app.id}', 'Rejected')"><i class="fa-solid fa-ban"></i> Reject</button>` : ''}
                         </div>
                     </td>
                 `;
@@ -1627,6 +1645,7 @@
             }
             showToast(`Candidate status changed to "${newStatus}"`, newStatus === 'Shortlisted' ? 'success' : 'info');
             loadApplicantsModalData();
+            loadCompanyDashboard();
         }
 
         function closeModal(modalId) {
