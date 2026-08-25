@@ -1761,16 +1761,16 @@
             loadCompanyDashboard();
 
             // Handle Post Job Form Submission
-            document.getElementById('form-create-job')?.addEventListener('submit', (e) => {
+            document.getElementById('form-create-job')?.addEventListener('submit', async (e) => {
                 e.preventDefault();
-                const title = document.getElementById('job-title').value.trim();
+                const title = document.getElementById('job-title')?.value.trim();
                 const company = document.getElementById('job-company')?.value.trim() || currentEmployerName;
-                const location = document.getElementById('job-location').value.trim();
-                const type = document.getElementById('job-type').value || 'Full-time';
-                const salary = document.getElementById('job-salary').value.trim() || '₹6 LPA';
+                const location = document.getElementById('job-location')?.value.trim();
+                const type = document.getElementById('job-type')?.value || 'Full-time';
+                const salary = document.getElementById('job-salary')?.value.trim() || '₹6 LPA';
                 const experience = document.getElementById('job-experience')?.value || 'Fresher (Entry Level)';
-                const skills = document.getElementById('job-skills').value.split(',').map(s => s.trim()).filter(Boolean);
-                const description = document.getElementById('job-desc').value.trim();
+                const skills = (document.getElementById('job-skills')?.value || '').split(',').map(s => s.trim()).filter(Boolean);
+                const description = document.getElementById('job-desc')?.value.trim();
 
                 if (!title) return;
 
@@ -1793,7 +1793,7 @@
 
                     showToast(`Vacancy "${title}" successfully published!`, 'success');
                     closeModal('modal-post-job');
-                    document.getElementById('form-create-job').reset();
+                    document.getElementById('form-create-job')?.reset();
                     loadCompanyDashboard();
                 }
             });
