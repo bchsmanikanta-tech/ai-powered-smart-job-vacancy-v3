@@ -113,10 +113,13 @@ class AuthService {
      * 2. Upsert into public.profiles table (and legacy users table for backward compat)
      */
     async register(userData) {
+        console.log("📝 [REGISTER] Signup function called for email:", userData.email ? userData.email.trim().toLowerCase() : '(none)', "Role:", userData.role);
+
         if (!this.supabaseClient) {
             this.initSupabase();
             if (!this.supabaseClient) {
-                throw new Error("Cannot connect to Supabase Cloud Authentication. Please check your network connection or Supabase settings.");
+                console.error("❌ [REGISTER] Supabase client initialization failed.");
+                throw new Error("Cannot connect to Supabase Cloud Authentication. Please check your Supabase settings.");
             }
         }
 
@@ -124,40 +127,61 @@ class AuthService {
         const normalizedEmail = email.trim().toLowerCase();
         const normalizedRole = this._normalizeRole(role);
 
-        // 1. Register account in Supabase Authentication (auth.users)
-        const { data: authData, error: authError } = await this.supabaseClient.auth.signUp({
-            email: normalizedEmail,
-            password: password,
-            options: {
-                data: {
-                    full_name: fullName.trim(),
-                    phone: phone ? phone.trim() : '',
-                    role: normalizedRole,
-                    location: location ? location.trim() : ''
-                }
-            }
-        });
+        console.log("⚡ [REGISTER] Starting Supabase Auth signUp request to:", this.supabaseClient.authUrl || "Supabase Cloud");
 
+        // 1. Call Supabase Auth signUp
+        let authResult;
+        try {
+            authResult = await this.supabaseClient.auth.signUp({
+                email: normalizedEmail,
+                password: password,
+                options: {
+                    data: {
+                        full_name: fullName.trim(),
+                        phone: phone ? phone.trim() : '',
+                        role: normalizedRole,
+                        location: location ? location.trim() : ''
+                    }
+                }
+            });
+        } catch (netErr) {
+            console.error("❌ [REGISTER] Network exception during signUp:", netErr);
+            throw new Error(`Network Error: ${netErr.message || "Failed to reach Supabase server"}`);
+        }
+
+        const { data: authData, error: authError } = authResult;
+
+        // Check if error was returned
         if (authError) {
-            console.error("❌ Supabase Auth signUp error:", authError);
+            console.error("❌ [REGISTER] Supabase Auth returned error:", {
+                message: authError.message,
+                status: authError.status,
+                name: authError.name
+            });
+
             let friendlyMsg = authError.message;
             if (authError.message.includes('User already registered') || authError.message.includes('already exists')) {
                 friendlyMsg = "An account with this email address is already registered. Please sign in instead.";
             } else if (authError.message.includes('Password should be at least')) {
                 friendlyMsg = "Password must be at least 6 characters long.";
             } else if (authError.message.includes('invalid') && authError.message.includes('email')) {
-                friendlyMsg = "Please enter a valid email address.";
+                friendlyMsg = "Invalid email address. Please use a standard email format (e.g. name@gmail.com).";
             }
             throw new Error(friendlyMsg);
         }
 
-        if (!authData || !authData.user) {
-            throw new Error("Registration failed: Supabase did not return a valid user.");
+        // Check if user object was returned
+        const userCreated = Boolean(authData && authData.user && authData.user.id);
+        console.log("✅ [REGISTER] Supabase Auth signUp completed. User object returned:", userCreated, "User ID:", authData?.user?.id);
+
+        if (!userCreated) {
+            console.error("❌ [REGISTER] Supabase returned empty user:", authData);
+            throw new Error("Registration failed: Supabase did not return an authenticated user ID.");
         }
 
         const userId = authData.user.id;
 
-        // 2. Create/Upsert Profile in Supabase 'profiles' table
+        // 2. Only AFTER Supabase Auth creates the user, create/update the profile record
         const profilePayload = {
             id: userId,
             full_name: fullName.trim(),
