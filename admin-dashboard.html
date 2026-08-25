@@ -582,9 +582,6 @@
                 <li class="nav-item active" data-tab="tab-dashboard" onclick="switchTab('tab-dashboard')">
                     <button class="nav-btn"><i class="fa-solid fa-gauge-high"></i> <span>Dashboard</span></button>
                 </li>
-                <li class="nav-item" data-tab="tab-analytics" onclick="switchTab('tab-analytics')">
-                    <button class="nav-btn"><i class="fa-solid fa-chart-line"></i> <span>Analytics &amp; Reports</span></button>
-                </li>
             </ul>
 
             <div class="menu-category">Management</div>
@@ -999,46 +996,7 @@
             </div>
         </div>
 
-        <!-- ================= VIEW 8: ANALYTICS & REPORTS ================= -->
-        <div class="tab-view" id="tab-analytics">
-            <div class="top-action-bar">
-                <div>
-                    <h1 class="page-title">Analytics &amp; System Reports</h1>
-                    <p class="page-subtitle">Generate exportable audit summaries, user placement rates, and platform revenue metrics</p>
-                </div>
-                <div style="display: flex; gap: 8px;">
-                    <button class="btn-backup" onclick="exportJsonSystemBackup()"><i class="fa-solid fa-file-arrow-down"></i> Export JSON Backup</button>
-                    <button class="btn-backup btn-primary-gradient" onclick="exportAnalyticsCsv()"><i class="fa-solid fa-file-csv"></i> Download CSV Report</button>
-                </div>
-            </div>
 
-            <div class="white-card">
-                <div class="card-header-flex">
-                    <div class="card-heading"><i class="fa-solid fa-calendar-check" style="color: #10b981;"></i> System Performance &amp; Placement Metrics</div>
-                    <div class="filter-btn-group">
-                        <button class="btn-action-sm active">Monthly</button>
-                        <button class="btn-action-sm">Yearly</button>
-                    </div>
-                </div>
-                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; margin-top: 14px;">
-                    <div style="padding: 16px; border-radius: var(--radius-md); background: rgba(59,130,246,0.06); border: 1px solid rgba(59,130,246,0.2);">
-                        <small style="color: var(--text-muted); font-weight: 700; text-transform: uppercase;">Application-to-Interview Conversion</small>
-                        <h2 style="font-size: 1.8rem; color: #3b82f6; margin-top: 4px;">28.6%</h2>
-                        <p style="font-size: 0.78rem; color: var(--text-muted); margin-top: 4px;">+4.2% higher than industry standard</p>
-                    </div>
-                    <div style="padding: 16px; border-radius: var(--radius-md); background: rgba(16,185,129,0.06); border: 1px solid rgba(16,185,129,0.2);">
-                        <small style="color: var(--text-muted); font-weight: 700; text-transform: uppercase;">Successful Hires &amp; Placements</small>
-                        <h2 style="font-size: 1.8rem; color: #10b981; margin-top: 4px;">142 Candidates</h2>
-                        <p style="font-size: 0.78rem; color: var(--text-muted); margin-top: 4px;">Placed in top tech companies</p>
-                    </div>
-                    <div style="padding: 16px; border-radius: var(--radius-md); background: rgba(168,85,247,0.06); border: 1px solid rgba(168,85,247,0.2);">
-                        <small style="color: var(--text-muted); font-weight: 700; text-transform: uppercase;">Average Time to Hire (Days)</small>
-                        <h2 style="font-size: 1.8rem; color: #a855f7; margin-top: 4px;">14 Days</h2>
-                        <p style="font-size: 0.78rem; color: var(--text-muted); margin-top: 4px;">Reduced by 55% with AI Matching</p>
-                    </div>
-                </div>
-            </div>
-        </div>
 
         <!-- ================= VIEW 9: NOTIFICATIONS & BROADCASTS ================= -->
         <div class="tab-view" id="tab-notifications">
