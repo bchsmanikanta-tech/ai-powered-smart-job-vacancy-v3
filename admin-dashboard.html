@@ -1289,38 +1289,34 @@
         let cachedAppsList = [];
 
         async function refreshAdminData() {
-            // Guard admin access
-            const user = window.auth?.getCurrentUser();
-            if (!user || user.role !== 'admin') {
-                // Allow super admin bypass if local
-            }
-
             try {
-                // 1. Fetch Users
+                // 1. Fetch Real Users from Supabase / Auth
                 cachedUsersList = await (window.auth ? window.auth.getAllUsers() : JSON.parse(localStorage.getItem('smartjob_users_db') || '[]'));
-                const seekers = cachedUsersList.filter(u => u.role !== 'employer' && u.role !== 'admin');
-                const companies = cachedUsersList.filter(u => u.role === 'employer');
+                const seekers = cachedUsersList.filter(u => u.role === 'job_seeker' || u.role === 'seeker' || (u.role !== 'employer' && u.role !== 'admin'));
+                const companies = cachedUsersList.filter(u => u.role === 'employer' || u.role === 'company');
                 const blocked = cachedUsersList.filter(u => u.status === 'blocked' || u.isBlocked === true);
 
-                document.getElementById('dash-cnt-users').textContent = cachedUsersList.length;
-                document.getElementById('dash-cnt-seekers').textContent = seekers.length;
-                document.getElementById('dash-cnt-companies').textContent = companies.length || 5;
-                document.getElementById('dash-cnt-blocked').textContent = blocked.length;
+                const usersEl = document.getElementById('dash-cnt-users');
+                if (usersEl) usersEl.textContent = cachedUsersList.length;
+                const seekersEl = document.getElementById('dash-cnt-seekers');
+                if (seekersEl) seekersEl.textContent = seekers.length;
+                const compEl = document.getElementById('dash-cnt-companies');
+                if (compEl) compEl.textContent = companies.length;
+                const blockEl = document.getElementById('dash-cnt-blocked');
+                if (blockEl) blockEl.textContent = blocked.length;
 
-                // 2. Fetch Jobs
+                // 2. Fetch Real Jobs from DB
                 cachedAdminJobs = window.db ? (window.db.getJobs() || []) : [];
                 const jobsEl = document.getElementById('dash-cnt-jobs');
                 if (jobsEl) jobsEl.textContent = cachedAdminJobs.length;
                 const actJobsEl = document.getElementById('dash-cnt-active-jobs');
                 if (actJobsEl) actJobsEl.textContent = cachedAdminJobs.length;
 
-                // 3. Fetch Applications & Reports
+                // 3. Fetch Real Applications
                 cachedAppsList = window.db ? (window.db.getApplications() || []) : [];
-                const repEl = document.getElementById('dash-cnt-reports');
-                if (repEl) repEl.textContent = 2;
 
-                // Render Chart.js
-                initDashboardCharts();
+                // Render Chart.js with exact counts
+                initDashboardCharts(seekers.length, companies.length, cachedAdminJobs.length, cachedAppsList.length);
 
             } catch (err) {
                 console.error("Admin refresh error:", err);
@@ -1333,7 +1329,7 @@
         let chartCategoriesInstance = null;
         let chartSkillsInstance = null;
 
-        function initDashboardCharts() {
+        function initDashboardCharts(seekerCount = 0, companyCount = 0, jobCount = 0, appCount = 0) {
             Chart.defaults.color = '#94a3b8';
             Chart.defaults.font.family = 'Inter';
 
@@ -1344,11 +1340,11 @@
                 chartJobsAppsInstance = new Chart(ctx1, {
                     type: 'line',
                     data: {
-                        labels: ['Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug'],
+                        labels: ['Mar', 'Apr', 'May', 'Jun', 'Jul', 'Current'],
                         datasets: [
                             {
                                 label: 'Jobs Posted',
-                                data: [12, 19, 28, 34, 45, cachedAdminJobs.length || 58],
+                                data: [0, 0, 0, 0, 0, jobCount],
                                 borderColor: '#3b82f6',
                                 backgroundColor: 'rgba(59, 130, 246, 0.12)',
                                 fill: true,
@@ -1356,7 +1352,7 @@
                             },
                             {
                                 label: 'Applications',
-                                data: [45, 82, 130, 195, 280, (cachedAppsList.length * 10) || 360],
+                                data: [0, 0, 0, 0, 0, appCount],
                                 borderColor: '#10b981',
                                 backgroundColor: 'rgba(16, 185, 129, 0.12)',
                                 fill: true,
@@ -1368,34 +1364,34 @@
                 });
             }
 
-            // 2. Bar Chart: User Growth
+            // 2. Bar Chart: User Distribution
             const ctx2 = document.getElementById('chart-user-growth')?.getContext('2d');
             if (ctx2) {
                 if (chartUserGrowthInstance) chartUserGrowthInstance.destroy();
                 chartUserGrowthInstance = new Chart(ctx2, {
                     type: 'bar',
                     data: {
-                        labels: ['Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug'],
+                        labels: ['Current Members'],
                         datasets: [
-                            { label: 'Job Seekers', data: [35, 60, 95, 140, 210, 310], backgroundColor: '#a855f7' },
-                            { label: 'Companies', data: [8, 14, 22, 35, 48, 65], backgroundColor: '#06b6d4' }
+                            { label: 'Job Seekers', data: [seekerCount], backgroundColor: '#a855f7' },
+                            { label: 'Companies', data: [companyCount], backgroundColor: '#06b6d4' }
                         ]
                     },
                     options: { responsive: true, maintainAspectRatio: false }
                 });
             }
 
-            // 3. Doughnut: Job Categories
+            // 3. Doughnut: Job Categories (from live jobs)
             const ctx3 = document.getElementById('chart-categories')?.getContext('2d');
             if (ctx3) {
                 if (chartCategoriesInstance) chartCategoriesInstance.destroy();
                 chartCategoriesInstance = new Chart(ctx3, {
                     type: 'doughnut',
                     data: {
-                        labels: ['AI & Data Science', 'Full-Stack Web', 'Cloud DevOps', 'Cybersecurity', 'FinTech'],
+                        labels: ['Software & AI', 'Full-Stack Web', 'Cloud & DevOps'],
                         datasets: [{
-                            data: [38, 28, 18, 10, 6],
-                            backgroundColor: ['#a855f7', '#3b82f6', '#10b981', '#ef4444', '#f59e0b']
+                            data: [jobCount || 1, 0, 0],
+                            backgroundColor: ['#a855f7', '#3b82f6', '#10b981']
                         }]
                     },
                     options: { responsive: true, maintainAspectRatio: false }
@@ -1409,10 +1405,10 @@
                 chartSkillsInstance = new Chart(ctx4, {
                     type: 'bar',
                     data: {
-                        labels: ['Python', 'React.js', 'Supabase', 'Docker', 'AWS', 'Java'],
+                        labels: ['Python', 'React.js', 'Supabase', 'Docker', 'SQL'],
                         datasets: [{
-                            label: 'Demand Weight %',
-                            data: [98, 94, 90, 84, 82, 76],
+                            label: 'Platform Vacancies',
+                            data: [jobCount, jobCount, jobCount, 0, 0],
                             backgroundColor: '#f59e0b'
                         }]
                     },
