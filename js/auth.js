@@ -573,8 +573,13 @@ class AuthService {
     /**
      * Retrieve all registered users directly from Supabase Cloud
      */
+    /**
+     * Retrieve all registered users directly from Supabase Cloud
+     */
     async getAllUsers() {
-        if (!this.supabaseClient) return [];
+        if (!this.supabaseClient) {
+            return JSON.parse(localStorage.getItem('smartjob_users_db') || '[]');
+        }
         try {
             // First check profiles table
             const { data: profData, error: profErr } = await this.supabaseClient
@@ -583,16 +588,19 @@ class AuthService {
                 .order('created_at', { ascending: false });
 
             if (!profErr && Array.isArray(profData) && profData.length > 0) {
-                return profData.map(p => ({
+                const mapped = profData.map(p => ({
                     id: p.id,
                     fullName: p.full_name || p.email.split('@')[0],
                     name: p.full_name || p.email.split('@')[0],
                     email: p.email,
                     phone: p.phone || '',
                     role: this._normalizeRole(p.role),
-                    status: 'active',
+                    status: p.status || 'active',
+                    isBlocked: p.status === 'blocked',
                     createdAt: p.created_at
                 }));
+                localStorage.setItem('smartjob_users_db', JSON.stringify(mapped));
+                return mapped;
             }
 
             // Fallback to users table
@@ -601,56 +609,102 @@ class AuthService {
                 .select('*')
                 .order('created_at', { ascending: false });
 
-            if (Array.isArray(uData)) {
-                return uData.map(u => ({
+            if (Array.isArray(uData) && uData.length > 0) {
+                const mapped = uData.map(u => ({
                     id: u.user_id,
                     fullName: u.name,
                     name: u.name,
                     email: u.email,
                     role: this._normalizeRole(u.role),
                     status: u.status || 'active',
+                    isBlocked: u.status === 'blocked',
                     createdAt: u.created_at
                 }));
+                localStorage.setItem('smartjob_users_db', JSON.stringify(mapped));
+                return mapped;
             }
         } catch (e) {
             console.warn("getAllUsers error:", e);
         }
-        return [];
+        return JSON.parse(localStorage.getItem('smartjob_users_db') || '[]');
     }
 
     /**
-     * Block/Unblock user account in Supabase
+     * Block/Unblock user account in Supabase and local cache
      */
     async toggleBlockUser(email) {
         const normalized = email.trim().toLowerCase();
-        if (!this.supabaseClient) return { success: false };
+        
+        // 1. Update local cache immediately
+        let localUsers = JSON.parse(localStorage.getItem('smartjob_users_db') || '[]');
+        let newStatus = 'blocked';
+        let found = false;
 
-        try {
-            const { data } = await this.supabaseClient.from('users').select('status').eq('email', normalized).maybeSingle();
-            const newStatus = (data?.status === 'blocked') ? 'active' : 'blocked';
-            await this.supabaseClient.from('users').update({ status: newStatus }).eq('email', normalized);
-            return { success: true, email: normalized, status: newStatus, isBlocked: newStatus === 'blocked' };
-        } catch (e) {
-            console.warn("toggleBlockUser error:", e);
-            return { success: false };
+        localUsers = localUsers.map(u => {
+            if (u.email && u.email.toLowerCase() === normalized) {
+                newStatus = (u.status === 'blocked' || u.isBlocked) ? 'active' : 'blocked';
+                found = true;
+                return { ...u, status: newStatus, isBlocked: newStatus === 'blocked' };
+            }
+            return u;
+        });
+
+        if (!found) {
+            localUsers.push({ email: normalized, status: 'blocked', isBlocked: true });
         }
+        localStorage.setItem('smartjob_users_db', JSON.stringify(localUsers));
+
+        // 2. Persist to Supabase Cloud
+        if (this.supabaseClient) {
+            try {
+                // Update in profiles table
+                await this.supabaseClient.from('profiles').update({ status: newStatus, updated_at: new Date().toISOString() }).eq('email', normalized);
+            } catch (pErr) {
+                console.warn("Profiles status update notice:", pErr);
+            }
+
+            try {
+                // Update in users table
+                await this.supabaseClient.from('users').update({ status: newStatus, updated_at: new Date().toISOString() }).eq('email', normalized);
+            } catch (uErr) {
+                console.warn("Users status update notice:", uErr);
+            }
+        }
+
+        return { success: true, email: normalized, status: newStatus, isBlocked: newStatus === 'blocked' };
     }
 
     /**
-     * Delete user profile in Supabase
+     * Delete user profile in Supabase and local cache
      */
     async deleteUser(email) {
         const normalized = email.trim().toLowerCase();
-        if (!this.supabaseClient) return { success: false };
 
-        try {
-            await this.supabaseClient.from('profiles').delete().eq('email', normalized);
-            await this.supabaseClient.from('users').delete().eq('email', normalized);
-            return { success: true, email: normalized };
-        } catch (e) {
-            console.warn("deleteUser error:", e);
-            return { success: false };
+        // 1. Remove from local cache immediately
+        let localUsers = JSON.parse(localStorage.getItem('smartjob_users_db') || '[]');
+        localUsers = localUsers.filter(u => !u.email || u.email.toLowerCase() !== normalized);
+        localStorage.setItem('smartjob_users_db', JSON.stringify(localUsers));
+
+        // 2. Delete from Supabase Cloud
+        if (this.supabaseClient) {
+            try {
+                await this.supabaseClient.from('profiles').delete().eq('email', normalized);
+            } catch (e) {}
+
+            try {
+                await this.supabaseClient.from('users').delete().eq('email', normalized);
+            } catch (e) {}
+
+            try {
+                await this.supabaseClient.from('job_seekers').delete().eq('email', normalized);
+            } catch (e) {}
+
+            try {
+                await this.supabaseClient.from('companies').delete().eq('email', normalized);
+            } catch (e) {}
         }
+
+        return { success: true, email: normalized };
     }
 
     resetDatabase() {

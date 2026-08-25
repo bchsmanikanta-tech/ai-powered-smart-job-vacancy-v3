@@ -2338,9 +2338,19 @@
 
             try {
                 const res = await window.auth.toggleBlockUser(email);
+
+                // Update in-memory cached list immediately
+                cachedUsersList = cachedUsersList.map(u => {
+                    if (u.email && u.email.toLowerCase() === email.toLowerCase()) {
+                        return { ...u, status: res.status, isBlocked: res.isBlocked };
+                    }
+                    return u;
+                });
+                updateUserCounts(cachedUsersList);
+                const tbody = document.getElementById('user-directory-tbody');
+                if (tbody) displayUsersInTable(cachedUsersList, tbody);
+
                 showToast(`User ${email} is now ${res.status.toUpperCase()}`, shouldBlock ? 'error' : 'success');
-                renderAllAdminUsers();
-                loadAdminDashboardData();
             } catch (err) {
                 showToast(`Error updating user status: ${err.message}`, 'error');
             }
@@ -2354,9 +2364,14 @@
 
             try {
                 await window.auth.deleteUser(email);
+
+                // Update in-memory cached list immediately
+                cachedUsersList = cachedUsersList.filter(u => !u.email || u.email.toLowerCase() !== email.toLowerCase());
+                updateUserCounts(cachedUsersList);
+                const tbody = document.getElementById('user-directory-tbody');
+                if (tbody) displayUsersInTable(cachedUsersList, tbody);
+
                 showToast(`Account ${email} deleted successfully`, 'success');
-                renderAllAdminUsers();
-                loadAdminDashboardData();
             } catch (err) {
                 showToast(`Error deleting account: ${err.message}`, 'error');
             }
