@@ -357,6 +357,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 }, 400);
             } catch (err) {
                 showToast(err.message, 'error');
+                const passErr = document.getElementById('modal-login-password-error');
+                if (passErr) {
+                    passErr.textContent = err.message;
+                    passErr.style.display = 'block';
+                }
                 if (submitBtn) {
                     submitBtn.disabled = false;
                     submitBtn.innerHTML = '<span class="btn-text">Sign In</span> <i class="fa-solid fa-arrow-right btn-icon"></i>';
