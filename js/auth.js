@@ -573,13 +573,15 @@ class AuthService {
     /**
      * Retrieve all registered users directly from Supabase Cloud
      */
-    /**
-     * Retrieve all registered users directly from Supabase Cloud
-     */
     async getAllUsers() {
+        const deletedEmails = JSON.parse(localStorage.getItem('smartjob_deleted_users') || '[]');
+        const blockedEmails = JSON.parse(localStorage.getItem('smartjob_blocked_users') || '[]');
+
         if (!this.supabaseClient) {
-            return JSON.parse(localStorage.getItem('smartjob_users_db') || '[]');
+            const raw = JSON.parse(localStorage.getItem('smartjob_users_db') || '[]');
+            return raw.filter(u => !u.email || !deletedEmails.includes(u.email.toLowerCase()));
         }
+
         try {
             // First check profiles table
             const { data: profData, error: profErr } = await this.supabaseClient
@@ -588,17 +590,22 @@ class AuthService {
                 .order('created_at', { ascending: false });
 
             if (!profErr && Array.isArray(profData) && profData.length > 0) {
-                const mapped = profData.map(p => ({
-                    id: p.id,
-                    fullName: p.full_name || p.email.split('@')[0],
-                    name: p.full_name || p.email.split('@')[0],
-                    email: p.email,
-                    phone: p.phone || '',
-                    role: this._normalizeRole(p.role),
-                    status: p.status || 'active',
-                    isBlocked: p.status === 'blocked',
-                    createdAt: p.created_at
-                }));
+                const mapped = profData
+                    .filter(p => p.email && !deletedEmails.includes(p.email.toLowerCase()))
+                    .map(p => {
+                        const isBlocked = blockedEmails.includes(p.email.toLowerCase()) || p.status === 'blocked';
+                        return {
+                            id: p.id,
+                            fullName: p.full_name || p.email.split('@')[0],
+                            name: p.full_name || p.email.split('@')[0],
+                            email: p.email,
+                            phone: p.phone || '',
+                            role: this._normalizeRole(p.role),
+                            status: isBlocked ? 'blocked' : (p.status || 'active'),
+                            isBlocked: isBlocked,
+                            createdAt: p.created_at
+                        };
+                    });
                 localStorage.setItem('smartjob_users_db', JSON.stringify(mapped));
                 return mapped;
             }
@@ -610,23 +617,30 @@ class AuthService {
                 .order('created_at', { ascending: false });
 
             if (Array.isArray(uData) && uData.length > 0) {
-                const mapped = uData.map(u => ({
-                    id: u.user_id,
-                    fullName: u.name,
-                    name: u.name,
-                    email: u.email,
-                    role: this._normalizeRole(u.role),
-                    status: u.status || 'active',
-                    isBlocked: u.status === 'blocked',
-                    createdAt: u.created_at
-                }));
+                const mapped = uData
+                    .filter(u => u.email && !deletedEmails.includes(u.email.toLowerCase()))
+                    .map(u => {
+                        const isBlocked = blockedEmails.includes(u.email.toLowerCase()) || u.status === 'blocked';
+                        return {
+                            id: u.user_id,
+                            fullName: u.name,
+                            name: u.name,
+                            email: u.email,
+                            role: this._normalizeRole(u.role),
+                            status: isBlocked ? 'blocked' : (u.status || 'active'),
+                            isBlocked: isBlocked,
+                            createdAt: u.created_at
+                        };
+                    });
                 localStorage.setItem('smartjob_users_db', JSON.stringify(mapped));
                 return mapped;
             }
         } catch (e) {
             console.warn("getAllUsers error:", e);
         }
-        return JSON.parse(localStorage.getItem('smartjob_users_db') || '[]');
+
+        const raw = JSON.parse(localStorage.getItem('smartjob_users_db') || '[]');
+        return raw.filter(u => !u.email || !deletedEmails.includes(u.email.toLowerCase()));
     }
 
     /**
@@ -635,37 +649,37 @@ class AuthService {
     async toggleBlockUser(email) {
         const normalized = email.trim().toLowerCase();
         
+        let blockedEmails = JSON.parse(localStorage.getItem('smartjob_blocked_users') || '[]');
+        const isCurrentlyBlocked = blockedEmails.includes(normalized);
+        const newStatus = isCurrentlyBlocked ? 'active' : 'blocked';
+
+        if (newStatus === 'blocked') {
+            if (!blockedEmails.includes(normalized)) blockedEmails.push(normalized);
+        } else {
+            blockedEmails = blockedEmails.filter(e => e !== normalized);
+        }
+        localStorage.setItem('smartjob_blocked_users', JSON.stringify(blockedEmails));
+
         // 1. Update local cache immediately
         let localUsers = JSON.parse(localStorage.getItem('smartjob_users_db') || '[]');
-        let newStatus = 'blocked';
-        let found = false;
-
         localUsers = localUsers.map(u => {
             if (u.email && u.email.toLowerCase() === normalized) {
-                newStatus = (u.status === 'blocked' || u.isBlocked) ? 'active' : 'blocked';
-                found = true;
                 return { ...u, status: newStatus, isBlocked: newStatus === 'blocked' };
             }
             return u;
         });
-
-        if (!found) {
-            localUsers.push({ email: normalized, status: 'blocked', isBlocked: true });
-        }
         localStorage.setItem('smartjob_users_db', JSON.stringify(localUsers));
 
         // 2. Persist to Supabase Cloud
         if (this.supabaseClient) {
             try {
-                // Update in profiles table
-                await this.supabaseClient.from('profiles').update({ status: newStatus, updated_at: new Date().toISOString() }).eq('email', normalized);
+                await this.supabaseClient.from('profiles').update({ status: newStatus, updated_at: new Date().toISOString() }).ilike('email', normalized);
             } catch (pErr) {
                 console.warn("Profiles status update notice:", pErr);
             }
 
             try {
-                // Update in users table
-                await this.supabaseClient.from('users').update({ status: newStatus, updated_at: new Date().toISOString() }).eq('email', normalized);
+                await this.supabaseClient.from('users').update({ status: newStatus, updated_at: new Date().toISOString() }).ilike('email', normalized);
             } catch (uErr) {
                 console.warn("Users status update notice:", uErr);
             }
@@ -675,32 +689,39 @@ class AuthService {
     }
 
     /**
-     * Delete user profile in Supabase and local cache
+     * Delete user profile permanently in Supabase and local cache
      */
     async deleteUser(email) {
         const normalized = email.trim().toLowerCase();
 
-        // 1. Remove from local cache immediately
+        // 1. Add to permanent deleted users blacklist so it can NEVER re-appear
+        let deletedEmails = JSON.parse(localStorage.getItem('smartjob_deleted_users') || '[]');
+        if (!deletedEmails.includes(normalized)) {
+            deletedEmails.push(normalized);
+            localStorage.setItem('smartjob_deleted_users', JSON.stringify(deletedEmails));
+        }
+
+        // 2. Remove from local users cache immediately
         let localUsers = JSON.parse(localStorage.getItem('smartjob_users_db') || '[]');
         localUsers = localUsers.filter(u => !u.email || u.email.toLowerCase() !== normalized);
         localStorage.setItem('smartjob_users_db', JSON.stringify(localUsers));
 
-        // 2. Delete from Supabase Cloud
+        // 3. Delete from Supabase Cloud tables
         if (this.supabaseClient) {
             try {
-                await this.supabaseClient.from('profiles').delete().eq('email', normalized);
+                await this.supabaseClient.from('profiles').delete().ilike('email', normalized);
             } catch (e) {}
 
             try {
-                await this.supabaseClient.from('users').delete().eq('email', normalized);
+                await this.supabaseClient.from('users').delete().ilike('email', normalized);
             } catch (e) {}
 
             try {
-                await this.supabaseClient.from('job_seekers').delete().eq('email', normalized);
+                await this.supabaseClient.from('job_seekers').delete().ilike('email', normalized);
             } catch (e) {}
 
             try {
-                await this.supabaseClient.from('companies').delete().eq('email', normalized);
+                await this.supabaseClient.from('companies').delete().ilike('email', normalized);
             } catch (e) {}
         }
 
