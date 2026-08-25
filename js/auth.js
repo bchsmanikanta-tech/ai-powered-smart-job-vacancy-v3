@@ -260,36 +260,55 @@ class AuthService {
     }
 
     /**
-     * Authenticate user via Supabase Auth signInWithPassword()
-     * NEVER checks local storage for user registration existence!
+     * Authenticate user exclusively via Supabase Auth signInWithPassword()
+     * SINGLE SOURCE OF TRUTH: Supabase Auth (auth.users)
+     * NEVER queries custom users password_hash or local storage!
      */
     async login(emailOrUser, password, rememberMe = false) {
+        const queryEmail = (emailOrUser || '').trim().toLowerCase();
+        console.log("🔐 [LOGIN] Login function started for email:", queryEmail);
+
         if (!this.supabaseClient) {
             this.initSupabase();
             if (!this.supabaseClient) {
+                console.error("❌ [LOGIN] Supabase client is not connected.");
                 throw new Error("Cannot connect to Supabase Cloud Authentication. Please check your network connection.");
             }
         }
 
-        const queryEmail = emailOrUser.trim().toLowerCase();
+        console.log("⚡ [LOGIN] Calling Supabase auth.signInWithPassword()...");
 
         // 1. Authenticate with Supabase Auth
-        const { data, error } = await this.supabaseClient.auth.signInWithPassword({
-            email: queryEmail,
-            password: password
-        });
+        let signInResult;
+        try {
+            signInResult = await this.supabaseClient.auth.signInWithPassword({
+                email: queryEmail,
+                password: password
+            });
+        } catch (netErr) {
+            console.error("❌ [LOGIN] Network exception during signInWithPassword:", netErr);
+            throw new Error(`Network Error: ${netErr.message || "Failed to reach Supabase authentication server"}`);
+        }
 
+        const { data, error } = signInResult;
+
+        // 2. Handle Supabase Auth Error
         if (error) {
-            console.error("❌ Supabase Auth signIn error:", error);
+            console.error("❌ [LOGIN] Supabase returned authentication error:", {
+                message: error.message,
+                status: error.status,
+                name: error.name
+            });
+
             const errStr = (error.message || '').toLowerCase();
             const errCode = (error.error_code || error.code || '').toLowerCase();
 
             if (errStr.includes('invalid login credentials') || errStr.includes('invalid_grant') || errCode.includes('invalid_credentials')) {
                 throw new Error("Invalid email or password. Please verify your credentials and try again.");
             } else if (errStr.includes('email not confirmed') || errCode.includes('email_not_confirmed')) {
-                throw new Error("Your email has not been confirmed yet. Please check your inbox for the confirmation email, or disable 'Confirm email' in Supabase Dashboard -> Authentication -> Providers -> Email.");
+                throw new Error("Your email has not been confirmed yet. Please check your inbox for the confirmation link, or disable 'Confirm email' in Supabase Dashboard -> Authentication -> Providers -> Email.");
             } else if (errStr.includes('user not found') || errStr.includes('no user')) {
-                throw new Error("No account found with this email address. Please register to create an account.");
+                throw new Error("No account found with this email address in Supabase Auth. Please register first.");
             } else if (errStr.includes('rate limit') || errStr.includes('too many requests')) {
                 throw new Error("Too many sign-in attempts. Please wait a minute and try again.");
             } else {
@@ -298,17 +317,40 @@ class AuthService {
         }
 
         if (!data || !data.user) {
+            console.error("❌ [LOGIN] Supabase returned empty user on successful sign in:", data);
             throw new Error("Login failed: Supabase did not return user credentials.");
         }
 
-        const authUser = data.user;
+        console.log("✅ [LOGIN] Supabase signInWithPassword SUCCEEDED! Auth User ID:", data.user.id);
         this.currentSession = data.session;
 
-        // 2. Retrieve Profile from Supabase 'profiles' table
+        // 3. Confirm authenticated user via supabase.auth.getUser()
+        let authUser = data.user;
+        try {
+            const { data: confirmedAuth, error: getErr } = await this.supabaseClient.auth.getUser();
+            if (!getErr && confirmedAuth?.user) {
+                authUser = confirmedAuth.user;
+                console.log("✅ [LOGIN] Verified authenticated user via supabase.auth.getUser():", authUser.id);
+            }
+        } catch (e) {
+            console.warn("⚠️ [LOGIN] Notice verifying auth.getUser():", e);
+        }
+
+        // 4. Retrieve or auto-create Profile from Supabase 'profiles' table using UUID
+        console.log("🔍 [LOGIN] Profile lookup started for UUID:", authUser.id);
         const profile = await this._syncUserProfile(authUser);
 
-        // 3. Create persistent active session
+        if (profile) {
+            console.log("✅ [LOGIN] Profile retrieved successfully. Role:", profile.role);
+        } else {
+            console.log("ℹ️ [LOGIN] Profile was generated from Auth user metadata.");
+        }
+
+        // 5. Create persistent active session
         this.createSession(profile, rememberMe);
+
+        const destUrl = this.getRoleRedirectUrl(profile.role);
+        console.log("🚀 [LOGIN] Final dashboard routing destination:", destUrl);
 
         return {
             success: true,
@@ -319,6 +361,7 @@ class AuthService {
 
     /**
      * Retrieve or auto-create profile record in 'profiles' table
+     * CONNECTS Supabase Auth (auth.users.id) to application profile
      */
     async _syncUserProfile(authUser) {
         if (!authUser) return null;
@@ -326,7 +369,7 @@ class AuthService {
         let profile = null;
         const meta = authUser.user_metadata || {};
 
-        // Query profiles table
+        // Query profiles table by authenticated UUID
         try {
             if (this.supabaseClient) {
                 const { data: profData, error: profErr } = await this.supabaseClient
@@ -343,7 +386,7 @@ class AuthService {
             console.warn("Profiles table lookup notice:", e);
         }
 
-        // If not in profiles, check users table
+        // If not in profiles, check users table by UUID
         if (!profile && this.supabaseClient) {
             try {
                 const { data: uData } = await this.supabaseClient
@@ -364,7 +407,7 @@ class AuthService {
             } catch (e) {}
         }
 
-        // If still not found, construct from auth metadata and upsert into profiles
+        // If profile row doesn't exist yet, auto-create/heal from authenticated user metadata
         if (!profile) {
             profile = {
                 id: authUser.id,
@@ -378,7 +421,7 @@ class AuthService {
                 updated_at: new Date().toISOString()
             };
 
-            // Auto-heal/insert to profiles
+            // Upsert into profiles
             try {
                 if (this.supabaseClient) {
                     await this.supabaseClient.from('profiles').upsert(profile);
