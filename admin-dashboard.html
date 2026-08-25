@@ -657,7 +657,7 @@
                 </button>
             </div>
 
-            <!-- 12 Stats Metric Cards -->
+            <!-- Stats Metric Cards -->
             <div class="stats-grid-12">
                 <div class="stat-card blue">
                     <div class="stat-card-header"><div class="stat-card-icon"><i class="fa-solid fa-users"></i></div><span class="card-tag">Total</span></div>
@@ -684,26 +684,6 @@
                     <div class="stat-card-value" id="dash-cnt-active-jobs">0</div>
                     <div class="stat-card-label">Active Jobs</div>
                 </div>
-                <div class="stat-card amber">
-                    <div class="stat-card-header"><div class="stat-card-icon"><i class="fa-solid fa-clock"></i></div><span class="card-tag">Review</span></div>
-                    <div class="stat-card-value" id="dash-cnt-pending-jobs">0</div>
-                    <div class="stat-card-label">Pending Jobs</div>
-                </div>
-                <div class="stat-card blue">
-                    <div class="stat-card-header"><div class="stat-card-icon"><i class="fa-solid fa-paper-plane"></i></div><span class="card-tag">Received</span></div>
-                    <div class="stat-card-value" id="dash-cnt-apps">0</div>
-                    <div class="stat-card-label">Total Applications</div>
-                </div>
-                <div class="stat-card amber">
-                    <div class="stat-card-header"><div class="stat-card-icon"><i class="fa-solid fa-hourglass-half"></i></div><span class="card-tag">In Queue</span></div>
-                    <div class="stat-card-value" id="dash-cnt-pending-apps">0</div>
-                    <div class="stat-card-label">Pending Applications</div>
-                </div>
-                <div class="stat-card green">
-                    <div class="stat-card-header"><div class="stat-card-icon"><i class="fa-solid fa-award"></i></div><span class="card-tag">Matched</span></div>
-                    <div class="stat-card-value" id="dash-cnt-shortlisted">0</div>
-                    <div class="stat-card-label">Shortlisted Candidates</div>
-                </div>
                 <div class="stat-card rose">
                     <div class="stat-card-header"><div class="stat-card-icon"><i class="fa-solid fa-triangle-exclamation"></i></div><span class="card-tag">Alerts</span></div>
                     <div class="stat-card-value" id="dash-cnt-reports">0</div>
@@ -713,11 +693,6 @@
                     <div class="stat-card-header"><div class="stat-card-icon"><i class="fa-solid fa-ban"></i></div><span class="card-tag">Restricted</span></div>
                     <div class="stat-card-value" id="dash-cnt-blocked">0</div>
                     <div class="stat-card-label">Blocked Users</div>
-                </div>
-                <div class="stat-card cyan">
-                    <div class="stat-card-header"><div class="stat-card-icon"><i class="fa-solid fa-user-plus"></i></div><span class="card-tag">Today</span></div>
-                    <div class="stat-card-value" id="dash-cnt-new-reg">6</div>
-                    <div class="stat-card-label">New Registrations</div>
                 </div>
             </div>
 
@@ -1339,19 +1314,15 @@
 
                 // 2. Fetch Jobs
                 cachedAdminJobs = window.db ? (window.db.getJobs() || []) : [];
-                document.getElementById('dash-cnt-jobs').textContent = cachedAdminJobs.length;
-                document.getElementById('dash-cnt-active-jobs').textContent = cachedAdminJobs.length;
-                document.getElementById('dash-cnt-pending-jobs').textContent = 0;
+                const jobsEl = document.getElementById('dash-cnt-jobs');
+                if (jobsEl) jobsEl.textContent = cachedAdminJobs.length;
+                const actJobsEl = document.getElementById('dash-cnt-active-jobs');
+                if (actJobsEl) actJobsEl.textContent = cachedAdminJobs.length;
 
-                // 3. Fetch Applications
+                // 3. Fetch Applications & Reports
                 cachedAppsList = window.db ? (window.db.getApplications() || []) : [];
-                const pendingApps = cachedAppsList.filter(a => !a.status || a.status === 'Applied' || a.status === 'Under Review').length;
-                const shortlisted = cachedAppsList.filter(a => a.status === 'Shortlisted' || a.status === 'Interview' || a.status === 'Hired').length;
-
-                document.getElementById('dash-cnt-apps').textContent = cachedAppsList.length;
-                document.getElementById('dash-cnt-pending-apps').textContent = pendingApps;
-                document.getElementById('dash-cnt-shortlisted').textContent = shortlisted;
-                document.getElementById('dash-cnt-reports').textContent = 2;
+                const repEl = document.getElementById('dash-cnt-reports');
+                if (repEl) repEl.textContent = 2;
 
                 // Render Chart.js
                 initDashboardCharts();
