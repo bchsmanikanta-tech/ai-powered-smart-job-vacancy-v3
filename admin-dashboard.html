@@ -1056,40 +1056,160 @@
             </div>
         </div>
 
-        <!-- ---------------- VIEW 3: JOB LISTINGS ---------------- -->
+        <!-- ---------------- VIEW 3: JOB LISTINGS MANAGEMENT ---------------- -->
         <div class="tab-view" id="tab-jobs">
             <div class="top-action-bar">
                 <div>
-                    <h1 class="page-title">Job Listings Management</h1>
-                    <p class="page-subtitle">Review, approve, and oversee active vacancies published by companies</p>
+                    <h1 class="page-title">Enterprise Job Listings Management</h1>
+                    <p class="page-subtitle">Publish verified vacancies, moderate employer postings, and feature top opportunities</p>
                 </div>
-                <button class="btn-backup" onclick="renderAdminJobListings()">
-                    <i class="fa-solid fa-rotate"></i> Refresh Jobs
-                </button>
+                <div style="display: flex; gap: 10px;">
+                    <button class="btn-backup" onclick="openAdminPostJobModal()" style="background: linear-gradient(135deg, #10b981, #059669); color: #fff; border: none; box-shadow: 0 4px 12px rgba(16,185,129,0.3);">
+                        <i class="fa-solid fa-plus"></i> Post Official Job
+                    </button>
+                    <button class="btn-backup" onclick="renderAdminJobListings()">
+                        <i class="fa-solid fa-rotate"></i> Refresh Listings
+                    </button>
+                </div>
             </div>
 
+            <!-- Job Stats Mini Cards -->
+            <div class="stats-grid" style="margin-bottom: 20px;">
+                <div class="stat-card-solid purple">
+                    <div>
+                        <div class="stat-card-icon"><i class="fa-solid fa-briefcase"></i></div>
+                        <div class="stat-card-value" id="admin-jobs-total-cnt">0</div>
+                    </div>
+                    <div class="stat-card-label">Total Live Vacancies</div>
+                </div>
+                <div class="stat-card-solid green">
+                    <div>
+                        <div class="stat-card-icon"><i class="fa-solid fa-star"></i></div>
+                        <div class="stat-card-value" id="admin-jobs-featured-cnt">0</div>
+                    </div>
+                    <div class="stat-card-label">Featured &amp; Boosted</div>
+                </div>
+                <div class="stat-card-solid blue">
+                    <div>
+                        <div class="stat-card-icon"><i class="fa-solid fa-building"></i></div>
+                        <div class="stat-card-value" id="admin-jobs-companies-cnt">0</div>
+                    </div>
+                    <div class="stat-card-label">Hiring Organizations</div>
+                </div>
+            </div>
+
+            <!-- Search, Filter & Tab Controls -->
+            <div class="white-card" style="margin-bottom: 20px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 14px;">
+                    <!-- Filter Tabs -->
+                    <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                        <button class="btn-action-sm active" id="job-filter-all" onclick="setJobCategoryFilter('all')" style="padding: 6px 14px; border-radius: 20px; font-weight: 700; background: var(--primary); color: #fff; border: none;">
+                            All Listings (<span id="job-cnt-all">0</span>)
+                        </button>
+                        <button class="btn-action-sm" id="job-filter-featured" onclick="setJobCategoryFilter('featured')" style="padding: 6px 14px; border-radius: 20px; font-weight: 700; color: #f59e0b; border-color: rgba(245,158,11,0.3);">
+                            <i class="fa-solid fa-star"></i> Featured (<span id="job-cnt-featured">0</span>)
+                        </button>
+                        <button class="btn-action-sm" id="job-filter-fulltime" onclick="setJobCategoryFilter('fulltime')" style="padding: 6px 14px; border-radius: 20px; font-weight: 700; color: #10b981; border-color: rgba(16,185,129,0.3);">
+                            Full-Time (<span id="job-cnt-fulltime">0</span>)
+                        </button>
+                        <button class="btn-action-sm" id="job-filter-remote" onclick="setJobCategoryFilter('remote')" style="padding: 6px 14px; border-radius: 20px; font-weight: 700; color: #3b82f6; border-color: rgba(59,130,246,0.3);">
+                            Remote (<span id="job-cnt-remote">0</span>)
+                        </button>
+                    </div>
+
+                    <!-- Search Bar -->
+                    <div style="position: relative; min-width: 260px;">
+                        <i class="fa-solid fa-magnifying-glass" style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--text-muted); font-size: 0.85rem;"></i>
+                        <input type="text" id="admin-job-search-input" onkeyup="filterJobsBySearchQuery()" placeholder="Search title, company, skills..." style="width: 100%; padding: 8px 12px 8px 36px; border-radius: 8px; border: 1px solid var(--border-card); background: var(--bg-card); color: var(--text-main); font-size: 0.85rem;">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Job Listings Table -->
             <div class="white-card">
                 <div style="overflow-x: auto;">
                     <table class="admin-table">
                         <thead>
                             <tr>
-                                <th>Job Title</th>
-                                <th>Company</th>
-                                <th>Location</th>
+                                <th>Job Title &amp; Department</th>
+                                <th>Company / Employer</th>
+                                <th>Location &amp; Type</th>
                                 <th>Compensation</th>
+                                <th>Applicants</th>
                                 <th>Status</th>
-                                <th>Action</th>
+                                <th>Moderation Actions</th>
                             </tr>
                         </thead>
                         <tbody id="jobs-directory-tbody">
                             <tr>
-                                <td colspan="6" style="text-align: center; color: var(--text-muted); padding: 40px;">
-                                    No active job listings found. Vacancies published by employers will appear here.
+                                <td colspan="7" style="text-align: center; color: var(--text-muted); padding: 40px;">
+                                    <i class="fa-solid fa-spinner fa-spin"></i> Loading vacancies from database...
                                 </td>
                             </tr>
                         </tbody>
                     </table>
                 </div>
+            </div>
+        </div>
+
+        <!-- ---------------- ADMIN POST JOB MODAL ---------------- -->
+        <div id="admin-post-job-modal" style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.7); backdrop-filter: blur(4px); z-index: 9999; align-items: center; justify-content: center; padding: 20px;">
+            <div class="white-card" style="max-width: 650px; width: 100%; max-height: 90vh; overflow-y: auto; box-shadow: 0 20px 40px rgba(0,0,0,0.5); border: 1px solid var(--border-card);">
+                <div class="card-header-flex" style="margin-bottom: 16px;">
+                    <div class="card-heading"><i class="fa-solid fa-briefcase" style="color: #10b981;"></i> Post Official Platform Vacancy</div>
+                    <button onclick="closeAdminPostJobModal()" style="background: none; border: none; color: var(--text-muted); font-size: 1.2rem; cursor: pointer;"><i class="fa-solid fa-xmark"></i></button>
+                </div>
+                <form id="admin-post-job-form" onsubmit="handleAdminCreateJobSubmit(event)">
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 12px;">
+                        <div>
+                            <label style="font-size: 0.8rem; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 4px;">Job Title *</label>
+                            <input type="text" id="adm-job-title" placeholder="e.g. Senior AI Research Engineer" required style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--border-card); background: var(--bg-card); color: var(--text-main);">
+                        </div>
+                        <div>
+                            <label style="font-size: 0.8rem; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 4px;">Company Name *</label>
+                            <input type="text" id="adm-job-company" placeholder="e.g. Google Cloud AI" required style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--border-card); background: var(--bg-card); color: var(--text-main);">
+                        </div>
+                    </div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 12px;">
+                        <div>
+                            <label style="font-size: 0.8rem; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 4px;">Location *</label>
+                            <input type="text" id="adm-job-location" placeholder="e.g. Hyderabad / Remote" required style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--border-card); background: var(--bg-card); color: var(--text-main);">
+                        </div>
+                        <div>
+                            <label style="font-size: 0.8rem; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 4px;">Salary / Compensation *</label>
+                            <input type="text" id="adm-job-salary" placeholder="e.g. ₹18,00,000 - ₹28,00,000 PA" required style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--border-card); background: var(--bg-card); color: var(--text-main);">
+                        </div>
+                    </div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 12px;">
+                        <div>
+                            <label style="font-size: 0.8rem; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 4px;">Job Type</label>
+                            <select id="adm-job-type" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--border-card); background: var(--bg-card); color: var(--text-main);">
+                                <option value="Full-Time">Full-Time</option>
+                                <option value="Remote">Remote</option>
+                                <option value="Part-Time">Part-Time</option>
+                                <option value="Internship">Internship</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label style="font-size: 0.8rem; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 4px;">Experience Required</label>
+                            <input type="text" id="adm-job-experience" placeholder="e.g. 2-5 Years" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--border-card); background: var(--bg-card); color: var(--text-main);">
+                        </div>
+                    </div>
+                    <div style="margin-bottom: 12px;">
+                        <label style="font-size: 0.8rem; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 4px;">Skills &amp; Tech Stack (Comma separated)</label>
+                        <input type="text" id="adm-job-skills" placeholder="e.g. Python, React, PostgreSQL, Docker" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--border-card); background: var(--bg-card); color: var(--text-main);">
+                    </div>
+                    <div style="margin-bottom: 16px;">
+                        <label style="font-size: 0.8rem; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 4px;">Job Description &amp; Requirements *</label>
+                        <textarea id="adm-job-desc" rows="4" placeholder="Detail the core responsibilities, engineering culture, and qualifications..." required style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--border-card); background: var(--bg-card); color: var(--text-main); font-family: inherit;"></textarea>
+                    </div>
+                    <div style="display: flex; justify-content: flex-end; gap: 10px;">
+                        <button type="button" class="btn-action-sm" onclick="closeAdminPostJobModal()" style="padding: 10px 18px;">Cancel</button>
+                        <button type="submit" class="btn-backup" style="background: #10b981; color: #fff; border: none; padding: 10px 24px;">
+                            <i class="fa-solid fa-check"></i> Publish Official Vacancy
+                        </button>
+                    </div>
+                </form>
             </div>
         </div>
 
@@ -2268,18 +2388,94 @@
             }
         }
 
-        // ---------------- RENDER JOB LISTINGS (FAST & RELIABLE) ----------------
+        // ---------------- ENTERPRISE JOB LISTINGS MANAGEMENT ENGINE ----------------
+        let currentJobFilter = 'all';
+        let cachedAdminJobs = [];
+
         function renderAdminJobListings() {
             const tbody = document.getElementById('jobs-directory-tbody');
             if (!tbody || !window.db) return;
 
-            const jobs = window.db.getJobs() || [];
+            cachedAdminJobs = window.db.getJobs() || [];
+            const apps = window.db.getApplications() || [];
 
-            if (jobs.length === 0) {
+            // Update Counts
+            const total = cachedAdminJobs.length;
+            const featured = cachedAdminJobs.filter(j => j.featured || j.isFeatured).length;
+            const fulltime = cachedAdminJobs.filter(j => !j.type || j.type.toLowerCase().includes('full')).length;
+            const remote = cachedAdminJobs.filter(j => (j.location && j.location.toLowerCase().includes('remote')) || (j.type && j.type.toLowerCase().includes('remote'))).length;
+            
+            const uniqueCompanies = new Set(cachedAdminJobs.map(j => j.company || 'Enterprise')).size;
+
+            if (document.getElementById('admin-jobs-total-cnt')) document.getElementById('admin-jobs-total-cnt').textContent = total;
+            if (document.getElementById('admin-jobs-featured-cnt')) document.getElementById('admin-jobs-featured-cnt').textContent = featured;
+            if (document.getElementById('admin-jobs-companies-cnt')) document.getElementById('admin-jobs-companies-cnt').textContent = uniqueCompanies;
+
+            if (document.getElementById('job-cnt-all')) document.getElementById('job-cnt-all').textContent = total;
+            if (document.getElementById('job-cnt-featured')) document.getElementById('job-cnt-featured').textContent = featured;
+            if (document.getElementById('job-cnt-fulltime')) document.getElementById('job-cnt-fulltime').textContent = fulltime;
+            if (document.getElementById('job-cnt-remote')) document.getElementById('job-cnt-remote').textContent = remote;
+
+            displayAdminJobsInTable(cachedAdminJobs, tbody, apps);
+        }
+
+        function setJobCategoryFilter(category) {
+            currentJobFilter = category;
+
+            // Highlight Active Button
+            ['all', 'featured', 'fulltime', 'remote'].forEach(f => {
+                const btn = document.getElementById(`job-filter-${f}`);
+                if (btn) {
+                    if (f === category) {
+                        btn.style.background = 'var(--primary)';
+                        btn.style.color = '#fff';
+                        btn.style.border = 'none';
+                    } else {
+                        btn.style.background = 'transparent';
+                        btn.style.color = 'var(--text-muted)';
+                        btn.style.border = '1px solid var(--border-card)';
+                    }
+                }
+            });
+
+            filterJobsBySearchQuery();
+        }
+
+        function filterJobsBySearchQuery() {
+            const query = (document.getElementById('admin-job-search-input')?.value || '').toLowerCase().trim();
+            const tbody = document.getElementById('jobs-directory-tbody');
+            const apps = window.db ? (window.db.getApplications() || []) : [];
+
+            let filtered = cachedAdminJobs;
+
+            if (currentJobFilter === 'featured') {
+                filtered = filtered.filter(j => j.featured || j.isFeatured);
+            } else if (currentJobFilter === 'fulltime') {
+                filtered = filtered.filter(j => !j.type || j.type.toLowerCase().includes('full'));
+            } else if (currentJobFilter === 'remote') {
+                filtered = filtered.filter(j => (j.location && j.location.toLowerCase().includes('remote')) || (j.type && j.type.toLowerCase().includes('remote')));
+            }
+
+            if (query) {
+                filtered = filtered.filter(j => 
+                    (j.title && j.title.toLowerCase().includes(query)) ||
+                    (j.company && j.company.toLowerCase().includes(query)) ||
+                    (j.location && j.location.toLowerCase().includes(query)) ||
+                    (j.skills && Array.isArray(j.skills) && j.skills.some(s => s.toLowerCase().includes(query)))
+                );
+            }
+
+            displayAdminJobsInTable(filtered, tbody, apps);
+        }
+
+        function displayAdminJobsInTable(jobs, tbody, apps) {
+            if (!tbody) return;
+
+            if (!jobs || jobs.length === 0) {
                 tbody.innerHTML = `
                     <tr>
-                        <td colspan="6" style="text-align: center; color: var(--text-muted); padding: 40px;">
-                            No active job listings found. Vacancies published by employers will appear here.
+                        <td colspan="7" style="text-align: center; color: var(--text-muted); padding: 40px;">
+                            No matching job listings found for current filter.
                         </td>
                     </tr>
                 `;
@@ -2288,17 +2484,174 @@
 
             tbody.innerHTML = '';
             jobs.forEach(j => {
+                const isFeatured = j.featured || j.isFeatured;
+                const jobApps = apps.filter(a => a.jobId == j.id || (a.jobTitle && a.jobTitle.toLowerCase() === j.title.toLowerCase()));
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
-                    <td><strong>${j.title}</strong></td>
-                    <td>${j.company || 'Company'}</td>
-                    <td>${j.location || 'Visakhapatnam'}</td>
-                    <td>${j.salary || 'Competitive'}</td>
-                    <td><span class="status-badge badge-active">Live</span></td>
-                    <td><button class="btn-action-sm" onclick="showToast('Job listing verified', 'success')">Inspect</button></td>
+                    <td>
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            ${isFeatured ? `<span title="Featured Listing" style="color: #f59e0b; font-size: 0.95rem;"><i class="fa-solid fa-star"></i></span>` : ''}
+                            <div>
+                                <strong style="color: var(--text-main); font-size: 0.92rem; display: block;">${j.title}</strong>
+                                <small style="color: var(--text-muted);">${j.department || j.category || 'Technology & Engineering'}</small>
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        <strong style="color: var(--text-main);">${j.company || 'Enterprise'}</strong>
+                    </td>
+                    <td>
+                        <span>${j.location || 'Remote'}</span>
+                        <small style="color: var(--text-muted); display: block;">${j.type || 'Full-Time'}</small>
+                    </td>
+                    <td><strong style="color: #10b981;">${j.salary || 'Competitive'}</strong></td>
+                    <td>
+                        <span class="status-badge" style="background: rgba(59,130,246,0.12); color: #3b82f6; font-weight: 700;">
+                            <i class="fa-solid fa-users"></i> ${jobApps.length} Applicants
+                        </span>
+                    </td>
+                    <td>
+                        <span class="status-badge badge-active"><i class="fa-solid fa-circle-check"></i> Verified Live</span>
+                    </td>
+                    <td>
+                        <div style="display: flex; align-items: center; gap: 6px;">
+                            <button class="btn-action-sm" onclick="toggleFeatureJob('${j.id}')" title="${isFeatured ? 'Unfeature Job' : 'Feature Job'}" style="color: ${isFeatured ? '#f59e0b' : 'var(--text-muted)'}; border-color: ${isFeatured ? 'rgba(245,158,11,0.4)' : 'var(--border-card)'};">
+                                <i class="fa-solid fa-star"></i>
+                            </button>
+                            <button class="btn-action-sm" onclick="showJobDetailsModal('${j.id}')" title="Inspect Full Job Details" style="color: #3b82f6; border-color: rgba(59,130,246,0.4);">
+                                <i class="fa-solid fa-eye"></i>
+                            </button>
+                            <button class="btn-action-sm" onclick="deleteAdminJob('${j.id}', '${j.title}')" title="Delete Vacancy" style="color: #ef4444; border-color: rgba(239,68,68,0.4);">
+                                <i class="fa-solid fa-trash"></i>
+                            </button>
+                        </div>
+                    </td>
                 `;
                 tbody.appendChild(tr);
             });
+        }
+
+        async function toggleFeatureJob(jobId) {
+            if (!window.db) return;
+            const jobs = window.db.getJobs() || [];
+            const target = jobs.find(j => j.id == jobId);
+            if (!target) return;
+
+            target.featured = !target.featured;
+            target.isFeatured = target.featured;
+            localStorage.setItem('smarthire_jobs', JSON.stringify(jobs));
+
+            // Sync with Supabase
+            if (window.auth && window.auth.supabaseClient) {
+                try {
+                    await window.auth.supabaseClient.from('jobs').update({ featured: target.featured }).eq('id', jobId);
+                } catch (e) {}
+            }
+
+            showToast(target.featured ? `⭐ Job "${target.title}" is now Featured!` : `Job "${target.title}" unfeatured.`, 'info');
+            renderAdminJobListings();
+        }
+
+        async function deleteAdminJob(jobId, jobTitle) {
+            if (!confirm(`Permanently delete vacancy "${jobTitle}" from platform job board?`)) return;
+
+            if (window.db && typeof window.db.deleteJob === 'function') {
+                await window.db.deleteJob(jobId);
+            } else {
+                let jobs = JSON.parse(localStorage.getItem('smarthire_jobs') || '[]');
+                jobs = jobs.filter(j => j.id != jobId);
+                localStorage.setItem('smarthire_jobs', JSON.stringify(jobs));
+            }
+
+            if (window.auth && window.auth.supabaseClient) {
+                try {
+                    await window.auth.supabaseClient.from('jobs').delete().eq('id', jobId);
+                } catch (e) {}
+            }
+
+            showToast(`✅ Job listing "${jobTitle}" successfully deleted!`, 'success');
+            renderAdminJobListings();
+            loadAdminDashboardData();
+        }
+
+        function showJobDetailsModal(jobId) {
+            const jobs = window.db ? window.db.getJobs() : [];
+            const j = jobs.find(x => x.id == jobId);
+            if (!j) return;
+            alert(`💼 ${j.title} (${j.company})\n\n📍 Location: ${j.location}\n💰 Salary: ${j.salary}\n⏳ Experience: ${j.experience || 'Not specified'}\n\n📝 Description:\n${j.description || 'No detailed JD provided.'}`);
+        }
+
+        function openAdminPostJobModal() {
+            const modal = document.getElementById('admin-post-job-modal');
+            if (modal) modal.style.display = 'flex';
+        }
+
+        function closeAdminPostJobModal() {
+            const modal = document.getElementById('admin-post-job-modal');
+            if (modal) modal.style.display = 'none';
+        }
+
+        async function handleAdminCreateJobSubmit(e) {
+            e.preventDefault();
+            const title = document.getElementById('adm-job-title').value.trim();
+            const company = document.getElementById('adm-job-company').value.trim();
+            const location = document.getElementById('adm-job-location').value.trim();
+            const salary = document.getElementById('adm-job-salary').value.trim();
+            const type = document.getElementById('adm-job-type').value;
+            const experience = document.getElementById('adm-job-experience').value.trim();
+            const skillsRaw = document.getElementById('adm-job-skills').value.trim();
+            const description = document.getElementById('adm-job-desc').value.trim();
+
+            const skills = skillsRaw ? skillsRaw.split(',').map(s => s.trim()).filter(Boolean) : ['General'];
+
+            const newJob = {
+                id: 'job_' + Date.now(),
+                title: title,
+                company: company,
+                location: location,
+                salary: salary,
+                type: type,
+                experience: experience || 'Fresher / 0-2 Years',
+                skills: skills,
+                description: description,
+                featured: true,
+                isFeatured: true,
+                status: 'active',
+                createdAt: new Date().toISOString()
+            };
+
+            // Save locally
+            if (window.db && typeof window.db.saveJob === 'function') {
+                await window.db.saveJob(newJob);
+            } else {
+                const jobs = JSON.parse(localStorage.getItem('smarthire_jobs') || '[]');
+                jobs.unshift(newJob);
+                localStorage.setItem('smarthire_jobs', JSON.stringify(jobs));
+            }
+
+            // Sync to Supabase Cloud
+            if (window.auth && window.auth.supabaseClient) {
+                try {
+                    await window.auth.supabaseClient.from('jobs').insert([{
+                        title: title,
+                        company: company,
+                        location: location,
+                        salary: salary,
+                        type: type,
+                        description: description,
+                        requirements: skillsRaw,
+                        is_active: true
+                    }]);
+                } catch (err) {
+                    console.warn("Supabase job insert sync notice:", err);
+                }
+            }
+
+            closeAdminPostJobModal();
+            document.getElementById('admin-post-job-form').reset();
+            showToast(`✅ Official vacancy "${title}" published live successfully!`, 'success');
+            renderAdminJobListings();
+            loadAdminDashboardData();
         }
 
         // ---------------- JSON SYSTEM BACKUP EXPORT ----------------
