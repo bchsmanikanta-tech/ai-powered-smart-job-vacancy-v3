@@ -3857,32 +3857,36 @@
                         <div style="font-size: 0.72rem; color: var(--text-muted);">Talent Team</div>
                     </div>
                 `;
-                item.onclick = () => selectRecruiterChat(comp, 'Talent Acquisition Team', initials);
+                item.onclick = function() { selectRecruiterChat(comp, 'Talent Acquisition Team', initials, this); };
                 list.appendChild(item);
                 isFirst = false;
             });
 
-            if (firstComp) {
-                selectRecruiterChat(firstComp, 'Talent Acquisition Team', firstComp.substring(0,2).toUpperCase());
+            if (firstComp && list.firstElementChild) {
+                selectRecruiterChat(firstComp, 'Talent Acquisition Team', firstComp.substring(0,2).toUpperCase(), list.firstElementChild);
             }
         }
 
-        function selectRecruiterChat(companyName, recruiterTitle, prefix) {
+        function selectRecruiterChat(companyName, recruiterTitle, prefix, clickedElement) {
             currentActiveCompany = companyName;
 
             document.querySelectorAll('.recruiter-chat-item').forEach(el => {
-                el.style.background = 'transparent';
-                el.style.border = '1px solid transparent';
+                if (el && el.style) {
+                    el.style.background = 'transparent';
+                    el.style.border = '1px solid transparent';
+                }
             });
 
-            const targetItem = event?.currentTarget;
-            if (targetItem) {
+            const targetItem = clickedElement || document.querySelector('.recruiter-chat-item');
+            if (targetItem && targetItem.style) {
                 targetItem.style.background = 'rgba(59,130,246,0.1)';
                 targetItem.style.border = '1px solid rgba(59,130,246,0.2)';
             }
 
-            document.getElementById('recruiter-chat-header-title').textContent = companyName;
-            document.getElementById('recruiter-chat-header-sub').textContent = `${recruiterTitle} • Active Now`;
+            const titleEl = document.getElementById('recruiter-chat-header-title');
+            if (titleEl) titleEl.textContent = companyName;
+            const subEl = document.getElementById('recruiter-chat-header-sub');
+            if (subEl) subEl.textContent = `${recruiterTitle} • Active Now`;
 
             loadSeekerChatStream(companyName);
         }
